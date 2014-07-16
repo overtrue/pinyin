@@ -1,0 +1,22 @@
+{
+	"name": "joychao/pinyin",
+	"description": "Chinese to pinyin translator.",
+	"keywords": [
+		"chinese", 
+		"pinyin", 
+		"cn2pinyin"
+	],
+	"homepage": "https://github.com/joychao/pinyin",
+	"license": "MIT",
+	"authors": [
+        {
+            "name": "Joy chao",
+            "homepage": "http://github.com/joychao"
+        }
+    ],
+    "autoload": {
+        "psr-4": { 
+        	"": "src/"
+        }
+    }
+}
