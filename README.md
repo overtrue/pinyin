@@ -16,7 +16,7 @@ Next, update your project's composer.json file to include Pinyin:
 }
 ```
 
-2.download source file `src/Pinyin.php` and include it.
+2. download source file `src/Pinyin.php` and include it.
 
 
 # Usage
