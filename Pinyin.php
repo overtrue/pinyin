@@ -1,9 +1,5 @@
 <?php
-$setting = [
-            'accent' => 1,
-           ];
-$py = new Pinyin('./dict/cedict_ts.u8', $setting);
-echo $py->trans('带着希望去旅行，比到达终点更美好');
+
 /**
  * Chinese to pinyin translator
  *
