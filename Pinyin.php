@@ -58,8 +58,9 @@ class Pinyin
 	public function trans($string)
 	{
 		$dictionary = $this->loadDictionary();
+		
 		foreach ($dictionary as $line) {
-			$string = str_replace($line['simplified'], $line['pinyin_marks'], $string);
+			$string = str_replace($line['simplified'], "{$line['pinyin_marks']} ", $string);
 			if (!$this->containsChinese($string)) {
 				break;
 			}
@@ -67,17 +68,18 @@ class Pinyin
 
 		// add accents
 		if($this->setting['accent']) {
-			$string = $this->pinyin_addaccents($string);
+			$string = $this->pinyin_addaccents(strtolower($string));
 		} else {
 			$string = $this->removeTone($string);
 		}
 
 		// clean the string
 		$string = $this->removeUnwantedCharacters($string);
+		
 		// add delimiter
 		$string = $this->addDelimiter($string);
 
-		return $string;
+		return $this->escape($string);
 	}
 
 	/**
@@ -218,9 +220,12 @@ class Pinyin
 	 */
 	protected function removeUnwantedCharacters($string)	
 	{
-		$allowChars = ' a-zA-ZāēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛūúǔùüüÜ';
+		$allowChars = ' a-zA-Z0-9āēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛūúǔùüüÜ\p{Han}';
+		$search = array(
+					"/[^$allowChars]/u",
+				  );
 
-		return preg_replace(array("/[^$allowChars]/"), '', $string);
+		return preg_replace($search, '', $string);
 	}
 
 	/**
