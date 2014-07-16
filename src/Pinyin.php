@@ -97,9 +97,11 @@ class Pinyin
             }
         }
 
+        $string = strtolower($string);
+        
         // add accents
         if(self::$setting['accent']) {
-            $string = $instance->pinyin_addaccents(strtolower($string));
+            $string = $instance->pinyin_addaccents($string);
         } else {
             $string = $instance->removeTone($string);
         }
