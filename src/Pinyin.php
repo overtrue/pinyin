@@ -36,15 +36,11 @@ class Pinyin
 	/**
 	 * set the dictionary.
 	 *
-	 * @param string $dictionary dictionary path.
+	 * @param array $setting settings.
 	 */
-	public function __construct($dictionary, array $setting = array())
+	public function __construct(array $setting = array())
 	{
-		if (!$dict = stream_resolve_include_path($dictionary)) {
-			throw new Exception("Error Processing load dictionary '$dictionary'", 1);
-		}
-
-		$this->dictionary = $dictionary;
+		$this->dictionary = __DIR__ . '/cedict/cedict_ts.u8';
 		$this->setting = array_merge($this->setting, $setting);
 	}
 

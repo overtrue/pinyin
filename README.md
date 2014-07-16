@@ -23,7 +23,7 @@ Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 ```php
 <?php
-$py = new Pinyin('./cedict/cedict_ts.u8');
+$py = new Pinyin();
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo 
@@ -40,7 +40,7 @@ echo $py->trans('带着希望去旅行，比到达终点更美好');
 $setting = [
 			'delimiter' => '-',
 		   ];
-$py = new Pinyin('./cedict/cedict_ts.u8', $setting);
+$py = new Pinyin($setting);
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
 // dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
@@ -51,7 +51,7 @@ $setting = [
 			'delimiter' => '-',
 			'accent' => false,
 		   ];
-$py = new Pinyin('./cedict/cedict_ts.u8', $setting);
+$py = new Pinyin($setting);
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
 // dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao
@@ -62,7 +62,7 @@ echo $py->trans('带着希望去旅行，比到达终点更美好');
 $setting = [
 			'accent' => false,
 		   ];
-$py = new Pinyin('./cedict/cedict_ts.u8', $setting);
+$py = new Pinyin($setting);
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
