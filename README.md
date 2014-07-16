@@ -11,7 +11,7 @@ Next, update your project's composer.json file to include Pinyin:
 ```javascript
 {
     "require": {
-        "joychao/pingyin": "~1.0"
+        "joychao/pinyin": "~1.0"
     }
 }
 ```
@@ -22,6 +22,7 @@ Next, update your project's composer.json file to include Pinyin:
 # Usage
 
 ```php
+<?php
 $py = new Pinyin('./cedict/cedict_ts.u8');
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
@@ -57,6 +58,7 @@ echo $py->trans('带着希望去旅行，比到达终点更美好');
 ```
 
 ```php
+<?php
 $setting = [
 			'accent' => false,
 		   ];
