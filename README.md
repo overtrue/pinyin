@@ -6,15 +6,15 @@ Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 # Install
 1. installing via Composer:
 
-Next, update your project's composer.json file to include Pinyin:
+	Next, update your project's composer.json file to include Pinyin:
 
-```javascript
-{
-    "require": {
-        "joychao/pinyin": "~1.0"
-    }
-}
-```
+	```javascript
+	{
+	    "require": {
+	        "joychao/pinyin": "~1.0"
+	    }
+	}
+	```
 
 2. download source file `src/Pinyin.php` and include it.
 
