@@ -235,7 +235,7 @@ class Pinyin
 	 */
 	protected function addDelimiter($string)	
 	{
-		return str_replace(array('  ', ' '), $this->setting['delimiter'], $string);
+		return str_replace(array('  ', ' '), $this->setting['delimiter'], trim($string));
 	}
 
 	/**

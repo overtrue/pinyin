@@ -9,7 +9,7 @@ Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 $py = new Pinyin('./dict/cedict_ts.u8');
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
-// dài zhe xī wàng qu lǚ xíng , bǐ dào dá zhōng diǎn gèng měi hǎo
+// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo 
 ```
 
 ## setting
@@ -25,7 +25,7 @@ $setting = [
 $py = new Pinyin('./dict/cedict_ts.u8', $setting);
 echo $py->trans('带着希望去旅行，比到达终点更美好');
 
-// dài-zhe-xī-wàng-qu-lǚ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
+// dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
 ```
 ```php
 <?php
