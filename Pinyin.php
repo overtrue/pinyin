@@ -1,5 +1,9 @@
 <?php
-
+$setting = [
+			'accent' => false,
+		   ];
+$py = new Pinyin('./cedict_ts.u8', $setting);
+echo $py->trans('带着希望去旅行，比到达终点更美好');
 /**
  * Chinese to pinyin translator
  *
@@ -72,6 +76,9 @@ class Pinyin
 			$string = $this->removeTone($string);
 		}
 
+		// clean the string
+		$string = $this->removeUnwantedCharacters($string);
+		// add delimiter
 		$string = $this->addDelimiter($string);
 
 		return $string;
@@ -204,6 +211,18 @@ class Pinyin
 		$replace = array("\\\\", "\\0", "\\n", "\\r", "\'", '\"', "\\Z");
 
 	    return str_replace($search, $replace, $value);
+	}
+
+	/**
+	 * Remove unwanted characters
+	 *
+	 * @param string $string 
+	 */
+	protected function removeUnwantedCharacters($string)	
+	{
+		$allowChars = ' a-zA-ZāēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛaeioüüAEIOUÜ';
+
+		return preg_replace(array("/[^$allowChars]/"), '', $string);
 	}
 
 	/**
