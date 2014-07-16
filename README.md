@@ -23,8 +23,7 @@ Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 ```php
 <?php
-$py = new Pinyin();
-echo $py->trans('带着希望去旅行，比到达终点更美好');
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo 
 ```
