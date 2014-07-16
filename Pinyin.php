@@ -1,5 +1,9 @@
 <?php
-
+$setting = [
+            'accent' => 1,
+           ];
+$py = new Pinyin('./dict/cedict_ts.u8', $setting);
+echo $py->trans('带着希望去旅行，比到达终点更美好');
 /**
  * Chinese to pinyin translator
  *
@@ -218,7 +222,7 @@ class Pinyin
 	 */
 	protected function removeUnwantedCharacters($string)	
 	{
-		$allowChars = ' a-zA-ZāēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛaeioüüAEIOUÜ';
+		$allowChars = ' a-zA-ZāēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛūúǔùüüÜ';
 
 		return preg_replace(array("/[^$allowChars]/"), '', $string);
 	}
@@ -275,14 +279,14 @@ class Pinyin
 	    if ($accentmap === null) {
 	        # Where to place the accent marks
 	        $stars =
-	            	'a* e* i* o* ü* ' .
+	            	'a* e* i* o* u* ü* ' .
 	                'A* E* I* O* U* Ü* ' .
 	                'a*i a*o e*i ia* ia*o ie* io* iu* ' .
 	                'A*I A*O E*I IA* IA*O IE* IO* IU* ' .
 	                'o*u ua* ua*i ue* ui* uo* üe* ' .
 	                'O*U UA* UA*I UE* UI* UO* ÜE*';
 	        $nostars = 
-	        		'a e i o ü ' .
+	        		'a e i o u ü ' .
 	                'A E I O U Ü ' .
 	                'ai ao ei ia iao ie io iu ' .
 	                'AI AO EI IA IAO IE IO IU ' .
@@ -293,14 +297,14 @@ class Pinyin
 	        $accentmap = array_combine(explode(' ', $nostars), explode(' ', $stars));
 	    }
 
-	    static $vowels = array('a*', 'e*', 'i*', 'o*',  'ü*', ':', 'u*', 'A*', 'E*', 'I*', 'O*', 'U*', 'Ü*');
+	    static $vowels = array('a*', 'e*', 'i*', 'o*', 'u*', 'ü*', 'A*', 'E*', 'I*', 'O*', 'U*', 'Ü*');
 
 	    static $pinyin = array(
-	        1 => array('ā', 'ē', 'ī', 'ō', 'ǖ', 'ǖ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'Ǖ'),
-	        2 => array('á', 'é', 'í', 'ó', 'ǘ', 'ǘ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ǘ'),
-	        3 => array('ǎ', 'ě', 'ǐ', 'ǒ', 'ǚ', 'ǚ', 'Ǎ', 'Ě', 'Ǐ', 'Ǒ', 'Ǔ', 'Ǚ'),
-	        4 => array('à', 'è', 'ì', 'ò', 'ǜ', 'ǜ', 'À', 'È', 'Ì', 'Ò', 'Ù', 'Ǜ'),
-	        5 => array('a', 'e', 'i', 'o', 'ü', 'ü', 'A', 'E', 'I', 'O', 'U', 'Ü')
+	        1 => array('ā', 'ē', 'ī', 'ō', 'ū',  'ǖ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'Ǖ'),
+	        2 => array('á', 'é', 'í', 'ó', 'ú',  'ǘ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ǘ'),
+	        3 => array('ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'Ǎ', 'Ě', 'Ǐ', 'Ǒ', 'Ǔ', 'Ǚ'),
+	        4 => array('à', 'è', 'ì', 'ò', 'ù',  'ǜ', 'À', 'È', 'Ì', 'Ò', 'Ù', 'Ǜ'),
+	        5 => array('a', 'e', 'i', 'o', 'u',  'ü', 'A', 'E', 'I', 'O', 'U', 'Ü')
 	    );
 
 	    list(, $word, $tone) = $match;
