@@ -1,9 +1,5 @@
 <?php
-$setting = [
-			'accent' => false,
-		   ];
-$py = new Pinyin('./cedict_ts.u8', $setting);
-echo $py->trans('带着希望去旅行，比到达终点更美好');
+
 /**
  * Chinese to pinyin translator
  *
@@ -11,7 +7,7 @@ echo $py->trans('带着希望去旅行，比到达终点更美好');
  *
  * @example
  * <pre>
- * 		$py = new Pinyin('./cedict_ts.u8', array('delimiter' => '', 'accent' => false));
+ * 		$py = new Pinyin('./dict/cedict_ts.u8', array('delimiter' => '', 'accent' => false));
  *   	echo $py->trans('带着希望去旅行，比到达终点更美好');
  *   	//output: "dài zhe xī wàng qu luǚ xíng , bǐ dào dá zhōng diǎn gèng měi hǎo"
  * </pre>
@@ -114,7 +110,9 @@ class Pinyin
 	 */
 	protected function getCacheFilename($dictionary)
 	{
-		return md5($dictionary);
+		is_dir(__DIR__ .'/cache/') || mkdir(__DIR__ .'/cache/', 0755, true);
+
+		return __DIR__ .'/cache/' . md5($dictionary);
 	}
 
 	/**
