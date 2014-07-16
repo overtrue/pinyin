@@ -118,7 +118,7 @@ class Pinyin
      *
      * @return array
      */
-    public function loadDictionary()
+    protected function loadDictionary()
     {
         $cacheFilename = $this->getCacheFilename($this->dictionary);
 
