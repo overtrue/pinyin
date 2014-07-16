@@ -27,55 +27,91 @@ class Pinyin
      *
      * @var array
      */
-    protected $setting = array(
-                          'delimiter' => ' ',
-                          'accent'    => true,
-                         );
+    protected static $setting = array(
+                                 'delimiter' => ' ',
+                                 'accent'    => true,
+                                );
 
+    /**
+     * instance
+     *
+     * @var Pinyin
+     */
+    protected static $instance;
+
+    /**
+     * constructor
+     *
+     * set dictionary path.
+     */
+    public function __construct()
+    {
+        $this->dictionary = __DIR__ . '/cedict/cedict_ts.u8';
+    }
 
     /**
      * set the dictionary.
      *
      * @param array $setting settings.
      */
-    public function __construct(array $setting = array())
+    public static function set(array $setting = array())
     {
-        $this->dictionary = __DIR__ . '/cedict/cedict_ts.u8';
-        $this->setting = array_merge($this->setting, $setting);
+        self::$setting = array_merge(self::$setting, $setting);
+    }
+
+    /**
+     * get Pinyin instance
+     *
+     * @return Pinyin
+     */
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self;
+        }
+
+        return self::$instance;
     }
 
     /**
      * chinese to pinyin
      *
-     * @param string $string source string.
+     * @param string $string  source string.
+     * @param array  $setting settings.
      *
      * @return string
      */
-    public function trans($string)
+    public static function trans($string, array $setting = array())
     {
-        $dictionary = $this->loadDictionary();
-        
+        $instance = self::getInstance();
+
+        // merge setting
+        empty($setting) || self::set($setting);
+
+        $dictionary = $instance->loadDictionary();
+            
+        // do replace
         foreach ($dictionary as $line) {
             $string = str_replace($line['simplified'], "{$line['pinyin_marks']} ", $string);
-            if (!$this->containsChinese($string)) {
+            if (!$instance->containsChinese($string)) {
                 break;
             }
         }
 
         // add accents
-        if($this->setting['accent']) {
-            $string = $this->pinyin_addaccents(strtolower($string));
+        if(self::$setting['accent']) {
+            $string = $instance->pinyin_addaccents(strtolower($string));
         } else {
-            $string = $this->removeTone($string);
+            $string = $instance->removeTone($string);
         }
 
         // clean the string
-        $string = $this->removeUnwantedCharacters($string);
+        $string = $instance->removeUnwantedCharacters($string);
         
         // add delimiter
-        $string = $this->addDelimiter($string);
+        $string = $instance->addDelimiter($string);
 
-        return $this->escape($string);
+        return $instance->escape($string);
     }
 
     /**
@@ -231,7 +267,7 @@ class Pinyin
      */
     protected function addDelimiter($string)    
     {
-        return str_replace(array('  ', ' '), $this->setting['delimiter'], trim($string));
+        return str_replace(array('  ', ' '), self::$setting['delimiter'], trim($string));
     }
 
     /**
