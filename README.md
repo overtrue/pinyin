@@ -1,7 +1,7 @@
 pinyin
 ======
 
-Chinese to pinyin translator
+Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 # usage
 
