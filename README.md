@@ -34,6 +34,10 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 - `delimiter` Separator between each pinyin, default is a space ' '.
 - `accent` Whether the output tone.
 
+`Pinyin::set($setting);` or `Pinyin::trans($word, $setting)`
+
+example:
+
 ```php
 <?php
 $setting = [
