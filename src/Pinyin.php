@@ -1,4 +1,10 @@
 <?php
+/**
+ * Pinyin.php
+ * 
+ * @author Joy <anzhengchao@gmail.com>
+ * @date   [2014-07-17 15:49]
+ */
 
 /**
  * Chinese to pinyin translator
@@ -45,6 +51,7 @@ class Pinyin
      */
     public function __construct()
     {
+        ini_set('memory_limit', '160M');
         $this->dictionary = __DIR__ . '/cedict/cedict_ts.u8';
     }
 
@@ -87,6 +94,39 @@ class Pinyin
         // merge setting
         empty($setting) || self::set($setting);
 
+        if (!function_exists('pinyin')) {
+            error_log('转拼音未使用拓展(pinyin)');
+            $string = self::transByPHP($string);
+        } else {
+            $string = pinyin($string, ' ');
+        }
+
+        // add accents
+        if(self::$setting['accent']) {
+            $string = $instance->pinyin_addaccents(strtolower($string));
+        } else {
+            $string = $instance->removeTone(strtolower($string));
+        }
+
+        // clean the string
+        $string = $instance->removeUnwantedCharacters($string);
+        
+        // add delimiter
+        $string = $instance->addDelimiter($string);
+
+        return $instance->escape($string);
+    }
+
+    /**
+     * php代码去解析
+     *
+     * @param string $string 
+     *
+     * @return string
+     */
+    protected static function transByPHP($string)
+    {
+        $instance = self::getInstance();
         $dictionary = $instance->loadDictionary();
             
         // do replace
@@ -97,22 +137,7 @@ class Pinyin
             }
         }
 
-        $string = strtolower($string);
-        
-        // add accents
-        if(self::$setting['accent']) {
-            $string = $instance->pinyin_addaccents($string);
-        } else {
-            $string = $instance->removeTone($string);
-        }
-
-        // clean the string
-        $string = $instance->removeUnwantedCharacters($string);
-        
-        // add delimiter
-        $string = $instance->addDelimiter($string);
-
-        return $instance->escape($string);
+        return $string;
     }
 
     /**
