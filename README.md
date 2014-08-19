@@ -3,6 +3,8 @@ Pinyin
 
 Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 
+	PHP extension is in progress
+
 # Install
 1. installing via Composer:
 
