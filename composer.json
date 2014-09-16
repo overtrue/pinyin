@@ -1,17 +1,17 @@
 {
-	"name": "joychao/pinyin",
+	"name": "overtrue/pinyin",
 	"description": "Chinese to pinyin translator.",
 	"keywords": [
 		"chinese", 
 		"pinyin", 
 		"cn2pinyin"
 	],
-	"homepage": "https://github.com/joychao/pinyin",
+	"homepage": "https://github.com/overtrue/pinyin",
 	"license": "MIT",
 	"authors": [
         {
-            "name": "Joy chao",
-            "homepage": "http://github.com/joychao"
+            "name": "Carlos",
+            "homepage": "http://github.com/overtrue"
         }
     ],
     "autoload": {
