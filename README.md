@@ -13,18 +13,20 @@ Chinese to pinyin translator based on [CC-CEDICT](http://cc-cedict.org/wiki/).
 	```javascript
 	{
 	    "require": {
-	        "joychao/pinyin": "~1.0"
+	        "overtrue/pinyin": "~1.0"
 	    }
 	}
 	```
 
-2. download source file `src/Pinyin.php` and include it.
+2. download source file `src/Overtrue/Pinyin.php` and include it.
 
 
 # Usage
 
 ```php
 <?php
+use \Overtrue\Pinyin;
+
 echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo 
@@ -42,6 +44,8 @@ example:
 
 ```php
 <?php
+use \Overtrue\Pinyin;
+
 $setting = [
 			'delimiter' => '-',
 		   ];
@@ -52,6 +56,9 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 ```
 ```php
 <?php
+
+use \Overtrue\Pinyin;
+
 $setting = [
 			'delimiter' => '-',
 			'accent' => false,
@@ -64,6 +71,9 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好', $setting)
 
 ```php
 <?php
+
+use \Overtrue\Pinyin;
+
 $setting = [
 			'accent' => false,
 		   ];
