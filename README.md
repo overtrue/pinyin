@@ -27,9 +27,12 @@ Pinyin
 <?php
 use \Overtrue\Pinyin;
 
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
+$pinyin = new Pinyin;
 
-// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo 
+
+echo $pinyin->trans('带着希望去旅行，比到达终点更美好');
+
+// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
 ```
 
 
@@ -38,47 +41,32 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 - `delimiter` 分隔符，默认为一个空格 ' '；
 - `accent` 是否输出音调；
 
-`Pinyin::set($setting);` or `Pinyin::trans($word, $setting)`
+`$pinyin->set('delimiter', '-');` or `$pinyin->trans($word, $settings)`
 
 example:
 
 ```php
-<?php
-use \Overtrue\Pinyin;
 
-$setting = [
-			'delimiter' => '-',
-		   ];
-Pinyin::set($setting);
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
+$pinyin->set('delimiter', '-')
+echo $pinyin->trans('带着希望去旅行，比到达终点更美好');
 
 // dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
 ```
 ```php
-<?php
-
-use \Overtrue\Pinyin;
 
 $setting = [
 			'delimiter' => '-',
 			'accent' => false,
 		   ];
 
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好', $setting);
+echo $pinyin->trans('带着希望去旅行，比到达终点更美好', $setting);
 
 // dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao
 ```
 
 ```php
-<?php
-
-use \Overtrue\Pinyin;
-
-$setting = [
-			'accent' => false,
-		   ];
-Pinyin::set($setting);
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
+$pinyin->set('accent', false);
+echo $pinyin->trans('带着希望去旅行，比到达终点更美好');
 
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
