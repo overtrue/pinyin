@@ -46,9 +46,9 @@ echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 - `letter` 只输出首字母，或者直接使用`Pinyin::letter($string)`;
 - `only_chinese` 只保留中文
 
-*全局设置：`Pinyin::set('delimiter', '-');` *
+* 全局设置：* `Pinyin::set('delimiter', '-');`
 
-*临时设置：`Pinyin::pinyin($word, $settings)`*
+* 临时设置：* `Pinyin::pinyin($word, $settings)`
 
 example:
 
