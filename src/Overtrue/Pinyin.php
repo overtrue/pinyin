@@ -1,5 +1,4 @@
 <?php
-
 namespace  Overtrue;
 
 /**
@@ -8,13 +7,32 @@ namespace  Overtrue;
  * @author Carlos <anzhengchao@gmail.com>
  * @date   [2014-07-17 15:49]
  */
+/**
+ * @see \Overtrue\Pinyin::pinyin()
+ *
+ * @return string
+ */
+function pinyin()
+{
+    return forward_static_call_array(array('Overtrue\Pinyin', 'pinyin'), func_get_args());
+}
+
+/**
+ * @see \Overtrue\Pinyin::letter()
+ *
+ * @return string
+ */
+function letter()
+{
+    return forward_static_call_array(array('Overtrue\Pinyin', 'letter'), func_get_args());
+}
 
 /**
  * Chinese to pinyin translator
  *
  * @example
  * <pre>
- *      echo \Overtrue\Pinyin::trans('带着希望去旅行，比到达终点更美好'), "\n";
+ *      echo \Overtrue\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
  *      //output: "dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo"
  * </pre>
  */
@@ -24,19 +42,29 @@ class Pinyin
     /**
      * dictionary path
      *
-     * @var string
+     * @var array
      */
-    protected $dictionary;
+    protected static $dictionary;
 
     /**
      * settings
      *
      * @var array
      */
-    protected $settings = array(
-                                 'delimiter' => ' ',
-                                 'accent'    => true,
-                                );
+    protected static $settings = array(
+                                  'delimiter'    => ' ',
+                                  'traditional'  => false,
+                                  'accent'       => true,
+                                  'letter'       => false,
+                                  'only_chinese' => false,
+                                 );
+
+    /**
+     * the instance
+     *
+     * @var \Overtrue\Pinyin
+     */
+    protected static $instance;
 
     /**
      * constructor
@@ -45,7 +73,23 @@ class Pinyin
      */
     public function __construct()
     {
-        $this->dictionary = __DIR__ . '/cedict/cedict_ts.u8';
+        if (is_null(self::$dictionary)) {
+            self::$dictionary = $this->loadDictionary();
+        }
+    }
+
+    /**
+     * get class instance
+     *
+     * @return Overtrue\Pinyin
+     */
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static;
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -53,9 +97,9 @@ class Pinyin
      *
      * @param array $settings settings.
      */
-    public function set($key, $value)
+    public static function set($key, $value)
     {
-        $this->settings[$key] = $value;
+        self::$settings[$key] = $value;
     }
 
     /**
@@ -63,9 +107,9 @@ class Pinyin
      *
      * @param array $settings settings.
      */
-    public function setting(array $settings = array())
+    public static function settings(array $settings = array())
     {
-        $this->settings = array_merge($this->settings, $setting);
+        self::$settings = array_merge(self::$settings, $settings);
     }
 
     /**
@@ -76,27 +120,34 @@ class Pinyin
      *
      * @return string
      */
-    public function trans($string, array $settings = array())
+    public static function pinyin($string, array $settings = array())
     {
+        $instance = self::getInstance();
+
+        $oldSettings = self::$settings;
+
         // merge setting
-        empty($setting) || $this->settings($setting);
+        empty($settings) || self::settings($settings);
 
-        $string = $this->string2pinyin($string);
+        if (self::$settings['letter']) {
+            self::settings($oldSettings);
 
-        // add accents
-        if($this->settings['accent']) {
-            $string = $this->pinyin_addaccents(strtolower($string));
-        } else {
-            $string = $this->removeTone(strtolower($string));
+            return self::letter($string);
         }
 
-        // clean the string
-        $string = $this->removeUnwantedCharacters($string);
+        // remove non-Chinese char.
+        if (self::$settings['only_chinese']) {
+            $string = $instance->onlyChinese($string);
+        }
+
+        $string = $instance->string2pinyin($string);
 
         // add delimiter
-        $string = $this->addDelimiter($string);
+        $string = $instance->addDelimiter($string, self::$settings['delimiter']);
 
-        return $this->escape($string);
+        self::settings($oldSettings);
+
+        return $instance->escape($string);
     }
 
     /**
@@ -107,19 +158,21 @@ class Pinyin
      *
      * @return string
      */
-    public function firstLetter($string, $delimiter = ' ')
+    public static function letter($string, $delimiter = null)
     {
-        $this->set('delimiter', $delimiter);
+        $instance = self::getInstance();
 
         $letters = [];
 
-        for ($i = 0; $char = $this->getChar($string, $i); $i++) {
-            if ($letter = $this->getCharFirstLetter($char)) {
+        for ($i = 0; $char = $instance->getChar($string, $i); $i++) {
+            if ($letter = $instance->getCharFirstLetter($char)) {
                 $letters[] = $letter;
             }
         }
 
-        return $this->addDelimiter(join(' ', $letters));
+        !is_null($delimiter) || $delimiter = self::$settings['delimiter'];
+
+        return $instance->addDelimiter(join(' ', $letters), $delimiter);
     }
 
     /**
@@ -132,24 +185,58 @@ class Pinyin
     protected function string2pinyin($string)
     {
         $stringLength = $this->getStringLength($string);
-        $dictionary   = $this->loadDictionary();
-
         $pingyin = [];
 
         // do replace
         for ($i = 0; $i < $stringLength; ) {
             $str = $this->getChar($string, $i);
-            $next = null;
+            $next = $str . $this->getChar($string, ++$i);
 
-            while ($i < $stringLength
-                    && $next = $str . $this->getChar($string, ++$i)
-                    && !empty($dictionary[$next])
-                    && $str = $next) {};
+            while ((
+                    !$this->containsChinese($str)
+                    && !$this->containsChinese($next)
+                   ) || ($i < $stringLength && $this->hasPinyin($next))) {
+                $str  = $next;
+                $next = $str . $this->getChar($string, ++$i);
+            };
 
-            $pingyin[] = isset($dictionary[$str]) ? $dictionary[$str] : $str;
+            $pingyin[] = $this->getPinyin($str);
         }
 
         return join(' ', $pingyin);
+    }
+
+    /**
+     * detect the pinyin of string.
+     *
+     * @param string $string source string.
+     *
+     * @return boolean
+     */
+    protected function hasPinyin($string)
+    {
+        return isset(self::$dictionary[$string]);
+    }
+
+    /**
+     * get string pinyin
+     *
+     * @param string $string source string.
+     *
+     * @return string
+     */
+    protected function getPinyin($string)
+    {
+        $pinyin = $this->hasPinyin($string) ? self::$dictionary[$string] : $string;
+
+        // add accents
+        if (self::$settings['accent']) {
+            $pinyin = $this->addaccents(strtolower($pinyin));
+        } else {
+            $pinyin = $this->removeTone(strtolower($pinyin));
+        }
+
+        return $pinyin;
     }
 
     /**
@@ -184,7 +271,7 @@ class Pinyin
      */
     protected function loadDictionary()
     {
-        $cacheFilename = $this->getCacheFilename($this->dictionary);
+        $cacheFilename = $this->getCacheFilename(__DIR__ . '/cedict/cedict_ts.u8');
 
         // load from cache
         if (file_exists($cacheFilename)) {
@@ -192,7 +279,7 @@ class Pinyin
         }
 
         // parse and cache
-        $parsedDictionary = $this->parseDictionary($this->dictionary);
+        $parsedDictionary = $this->parseDictionary(self::$dictionary);
         $this->cache($cacheFilename, $parsedDictionary);
 
         return $parsedDictionary;
@@ -222,7 +309,7 @@ class Pinyin
     protected function parseDictionary($dictionary)
     {
         $handle = fopen($dictionary, 'r');
-        $regex = "#(.*?) (.*?) \[(.*?)\] \/(.*)\/#";
+        $regex = "#(.*?) (.*?) \[(.*?)\]\/#";
 
         $content = array();
 
@@ -232,18 +319,12 @@ class Pinyin
             }
             preg_match($regex, $line, $matches);
 
-            if (empty($matches[2]) || empty($matches[2])) {
+            if (empty($matches[1]) || empty($matches[2]) || empty($matches[3])) {
                 continue;
             }
 
-            $content[$matches[2]] = $matches[3];
-            // $content[$matches[2]] = array(
-            //               //'traditional'    => $matches[1],
-            //               'simplified'     => $matches[2],
-            //               //'pinyin_numbers' => $matches[3],
-            //               'pinyin_marks'   => $matches[3],
-            //               //'translation'    => $this->escape($matches[4]),
-            //              );
+            $key = self::$settings['traditional'] ? $matches[1] : $matches[2];
+            $content[$key] = $matches[3];
         }
 
         return $content;
@@ -258,7 +339,7 @@ class Pinyin
      */
     protected function getCharFirstLetter($char)
     {
-        if (empty($char)) {
+        if (empty($char) || !$this->containsChinese($char)) {
             return '';
         }
 
@@ -356,18 +437,15 @@ class Pinyin
     }
 
     /**
-     * Remove unwanted characters
+     * Remove the non-Chinese characters
      *
-     * @param string $string
+     * @param string $string source string.
+     *
+     * @return string
      */
-    protected function removeUnwantedCharacters($string)
+    protected function onlyChinese($string)
     {
-        $allowChars = ' a-zA-Z0-9āēīōǖǖĀĒĪŌŪǕáéíóǘǘÁÉÍÓÚǗǎěǐǒǚǚǍĚǏǑǓǙàèìòǜǜÀÈÌÒÙǛūúǔùüüÜ\p{Han}';
-        $search = array(
-                    "/[^$allowChars]/u",
-                  );
-
-        return preg_replace($search, '', $string);
+        return preg_replace('/[^\p{Han}]/u', '', $string);
     }
 
     /**
@@ -375,9 +453,9 @@ class Pinyin
      *
      * @param string $string
      */
-    protected function addDelimiter($string)
+    protected function addDelimiter($string, $delimiter = '')
     {
-        return str_replace(array('  ', ' '), $this->settings['delimiter'], trim($string));
+        return preg_replace('/\s+/', strval($delimiter), trim($string));
     }
 
     /**
@@ -405,31 +483,31 @@ class Pinyin
      *
      * @return string The formatted string with tone marks, i.e.
      */
-    protected function pinyin_addaccents($string)
+    protected function addaccents($string)
     {
         # Find words with a number behind them, and replace with callback fn.
         return str_replace('u:', 'ü', preg_replace_callback(
             '~([a-zA-ZüÜ]+\:?)(\d)~',
-            array($this, 'pinyin_addaccents_cb'),
+            array($this, 'addaccentsCallback'),
             $string));
     }
 
     # Helper callback
-    protected function pinyin_addaccents_cb($match)
+    protected function addaccentsCallback($match)
     {
         static $accentmap = null;
 
         if ($accentmap === null) {
             # Where to place the accent marks
             $stars =
-                    'a* e* i* o* u* ü* ' .
+                    'a* e* i* o* u* ü* ü* ' .
                     'A* E* I* O* U* Ü* ' .
                     'a*i a*o e*i ia* ia*o ie* io* iu* ' .
                     'A*I A*O E*I IA* IA*O IE* IO* IU* ' .
                     'o*u ua* ua*i ue* ui* uo* üe* ' .
                     'O*U UA* UA*I UE* UI* UO* ÜE*';
             $nostars =
-                    'a e i o u ü ' .
+                    'a e i o u u: ü ' .
                     'A E I O U Ü ' .
                     'ai ao ei ia iao ie io iu ' .
                     'AI AO EI IA IAO IE IO IU ' .
@@ -443,38 +521,22 @@ class Pinyin
         $vowels = array('a*', 'e*', 'i*', 'o*', 'u*', 'ü*', 'A*', 'E*', 'I*', 'O*', 'U*', 'Ü*');
 
         $pinyin = array(
-            1 => array('ā', 'ē', 'ī', 'ō', 'ū',  'ǖ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'Ǖ'),
-            2 => array('á', 'é', 'í', 'ó', 'ú',  'ǘ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ǘ'),
+            1 => array('ā', 'ē', 'ī', 'ō', 'ū', 'ǖ', 'Ā', 'Ē', 'Ī', 'Ō', 'Ū', 'Ǖ'),
+            2 => array('á', 'é', 'í', 'ó', 'ú', 'ǘ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ǘ'),
             3 => array('ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'Ǎ', 'Ě', 'Ǐ', 'Ǒ', 'Ǔ', 'Ǚ'),
-            4 => array('à', 'è', 'ì', 'ò', 'ù',  'ǜ', 'À', 'È', 'Ì', 'Ò', 'Ù', 'Ǜ'),
-            5 => array('a', 'e', 'i', 'o', 'u',  'ü', 'A', 'E', 'I', 'O', 'U', 'Ü')
+            4 => array('à', 'è', 'ì', 'ò', 'ù', 'ǜ', 'À', 'È', 'Ì', 'Ò', 'Ù', 'Ǜ'),
+            5 => array('a', 'e', 'i', 'o', 'u', 'ü', 'A', 'E', 'I', 'O', 'U', 'Ü')
         );
 
         list(, $word, $tone) = $match;
+
         # Add star to vowelcluster
         $word = strtr($word, $accentmap);
+
         # Replace starred letter with accented
         $word = str_replace($vowels, $pinyin[$tone], $word);
 
         return $word;
     }
 
-    /**
-     * static call
-     *
-     * @param string $method method name.
-     * @param array  $args   params
-     *
-     * @return mixed
-     */
-    public function __callStatic($method, $args)
-    {
-        static $instance;
-
-        if (is_null($instance)) {
-            $instance = new static;
-        }
-
-        return call_user_func_array(array($instance, $method), $args);
-    }
-}
+}// end of class

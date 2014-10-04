@@ -1,7 +1,7 @@
 Pinyin
 ======
 
-基于CC-CEDICT词典的中文转拼音工具，支持多音字转换。 [CC-CEDICT](http://cc-cedict.org/wiki/).
+基于CC-CEDICT词典的中文转拼音工具，准确度高。 [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 
 # 安装
@@ -27,24 +27,34 @@ Pinyin
 <?php
 use \Overtrue\Pinyin;
 
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
-
+//获取拼音
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+//或者: Overtrue\pinyin($string);
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
+
+//获取首字母
+echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
+// D Z X W Q L X B D D Z D G M H
+
 ```
 
 ## 设置
 
 - `delimiter` 分隔符，默认为一个空格 ' '；
 - `accent` 是否输出音调；
+- `letter` 只输出首字母，或者直接使用`Pinyin::letter($string)`;
+- `only_chinese` 只保留中文
 
-`Pinyin::set('delimiter', '-');` or `Pinyin::trans($word, $settings)`
+*全局设置：`Pinyin::set('delimiter', '-');` *
+
+*临时设置：`Pinyin::pinyin($word, $settings)`*
 
 example:
 
 ```php
 
-Pinyin::set('delimiter', '-')
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
+Pinyin::set('delimiter', '-');//全局
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 
 // dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
 ```
@@ -55,14 +65,14 @@ $setting = [
 			'accent' => false,
 		   ];
 
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好', $setting);
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好', $setting);//这里的setting只是临时修改，并非全局设置
 
 // dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao
 ```
 
 ```php
 Pinyin::set('accent', false);
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
