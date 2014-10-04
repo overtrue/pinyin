@@ -459,4 +459,22 @@ class Pinyin
         return $word;
     }
 
+    /**
+     * static call
+     *
+     * @param string $method method name.
+     * @param array  $args   params
+     *
+     * @return mixed
+     */
+    public function __callStatic($method, $args)
+    {
+        static $instance;
+
+        if (is_null($instance)) {
+            $instance = new static;
+        }
+
+        return call_user_func_array(array($instance, $method), $args);
+    }
 }
