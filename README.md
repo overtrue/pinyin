@@ -41,6 +41,7 @@ echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 ## 设置
 
 - `delimiter` 分隔符，默认为一个空格 ' '；
+- `traditional` 繁体
 - `accent` 是否输出音调；
 - `letter` 只输出首字母，或者直接使用`Pinyin::letter($string)`;
 - `only_chinese` 只保留中文
