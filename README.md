@@ -13,7 +13,7 @@ Pinyin
 	```javascript
 	{
 	    "require": {
-	        "overtrue/pinyin": "~1.1"
+	        "overtrue/pinyin": "~1.2"
 	    }
 	}
 	```
