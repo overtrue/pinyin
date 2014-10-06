@@ -14,3 +14,12 @@ php:
   - 5.5
   # aliased to a recent 5.6.x version
   - 5.6
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer install --prefer-source --no-interaction --dev
+
+script: phpunit --verbose
+
+matrix:
+  fast_finish: true
