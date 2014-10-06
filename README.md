@@ -138,6 +138,9 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 - [x] 添加补充词典；
 - [x] 添加词频字典，根据词频提高未匹配词典时多音字准确度；
 
+# Contribution
+欢迎提意见及完善补充词库 `src/Overtrue/data/additional.php`! :kiss:
+
 # 参考
 - [CC-CEDICT](http://cc-cedict.org/wiki/)
 - [現代漢語語音語料庫](http://mmc.sinica.edu.tw/intro_c_01.html)
