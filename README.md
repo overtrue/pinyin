@@ -78,6 +78,12 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
 
+# TODO
+- [x] 添加获取首字母；
+- [x] 支持繁体；
+- [] 添加补充词典；
+- [] 添加词频字典，根据词频调整未匹配词典时多音字问题；
+
 # License
 
 MIT

@@ -4,7 +4,7 @@ $startM = memory_get_usage();
 
 include __DIR__ . '/src/Overtrue/Pinyin.php';
 
-$str = "带着希望去旅行，比到达终点更美好";
+$str = "重庆";
 var_dump(preg_replace('/[^\p{Han}]/u', '', $str));
 $pingyin = new Overtrue\Pinyin;
 echo '<pre>';
