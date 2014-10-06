@@ -184,6 +184,19 @@ class Pinyin
     }
 
     /**
+     * get char
+     *
+     * @param string  $string source string.
+     * @param integer $offset offset.
+     *
+     * @return string
+     */
+    protected function getChar($string, $offset)
+    {
+        return mb_substr($string, $offset, 1, 'UTF-8');
+    }
+
+    /**
      * replace string to pinyin
      *
      * @param string $string
