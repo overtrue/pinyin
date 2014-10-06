@@ -40,7 +40,7 @@ Pinyin::pinyin('投降'); // tóu xiáng
 
 // 都
 Pinyin::pinyin('首都'); // shǒu dū
-都什么年Pinyin::pinyin('代了'); // dōu shén me nián dài le
+Pinyin::pinyin('都什么年代了'); // dōu shén me nián dài le
 
 // 乐
 Pinyin::pinyin('快乐'); // kuài lè
