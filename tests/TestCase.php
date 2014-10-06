@@ -49,7 +49,7 @@ class TestCase extends PHPUnit_Framework_TestCase
     // test without tone
     public function testResultWithoutTone()
     {
-        $this->assertEquals('dai zhe xi wang qu lu xing , bi dao da zhong dian geng mei hao', Pinyin::pinyin('带着希望去旅行，比到达终点更美好', ['accent' => false]));
+        $this->assertEquals('dai zhe xi wang qu lu xing , bi dao da zhong dian geng mei hao', Pinyin::pinyin('带着希望去旅行，比到达终点更美好', array('accent' => false)));
     }
 
     // test user added words
