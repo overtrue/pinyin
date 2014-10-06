@@ -67,7 +67,7 @@ Pinyin::pinyin('难过'); // nán guò
 	```javascript
 	{
 	    "require": {
-	        "overtrue/pinyin": "~1.4"
+	        "overtrue/pinyin": ">=1.4"
 	    }
 	}
 	```
