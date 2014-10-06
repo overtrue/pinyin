@@ -1,7 +1,61 @@
-Pinyin
+Pinyin [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
 ======
 
-基于CC-CEDICT词典的中文转拼音工具。 [CC-CEDICT](http://cc-cedict.org/wiki/).
+基于CC-CEDICT词典的中文转拼音工具, 更准备的汉字转拼音解决方案。 [CC-CEDICT](http://cc-cedict.org/wiki/).
+
+```php
+use \Overtrue\Pinyin;
+
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
+
+//多音字
+// 了
+Pinyin::pinyin('了然'); // liǎo rán
+Pinyin::pinyin('来了'); // lái le
+
+// 还
+Pinyin::pinyin('还有'); // hái yǒu
+Pinyin::pinyin('交还'); // jiāo huán
+
+// 什
+Pinyin::pinyin('什么'); // shén me
+Pinyin::pinyin('什锦'); // shí jǐn
+
+// 便
+Pinyin::pinyin('便当'); // biàn dāng
+Pinyin::pinyin('便宜'); // pián yí
+
+// 剥
+Pinyin::pinyin('剥皮'); // bāo pí
+剥Pinyin::pinyin('皮器'); // bō pí qì
+
+// 不
+赔Pinyin::pinyin('不是'); // péi bú shi
+Pinyin::pinyin('跑了和尚，跑不了庙'); // pǎo le hé shàng , pǎo bù liǎo miào
+
+// 降
+Pinyin::pinyin('降温'); // jiàng wēn
+Pinyin::pinyin('投降'); // tóu xiáng
+
+// 都
+Pinyin::pinyin('首都'); // shǒu dū
+都什么年Pinyin::pinyin('代了'); // dōu shén me nián dài le
+
+// 乐
+Pinyin::pinyin('快乐'); // kuài lè
+Pinyin::pinyin('音乐'); // yīn yuè
+
+// 长
+Pinyin::pinyin('成长'); // chéng zhǎng
+Pinyin::pinyin('长江'); // cháng jiāng
+
+// 难
+Pinyin::pinyin('难民'); // nàn mín
+Pinyin::pinyin('难过'); // nán guò
+...
+
+```
 
 
 # 安装
