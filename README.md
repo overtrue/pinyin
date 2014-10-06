@@ -28,10 +28,10 @@ Pinyin::pinyin('便宜'); // pián yí
 
 // 剥
 Pinyin::pinyin('剥皮'); // bāo pí
-剥Pinyin::pinyin('皮器'); // bō pí qì
+Pinyin::pinyin('剥皮器'); // bō pí qì
 
 // 不
-赔Pinyin::pinyin('不是'); // péi bú shi
+Pinyin::pinyin('赔不是'); // péi bú shi
 Pinyin::pinyin('跑了和尚，跑不了庙'); // pǎo le hé shàng , pǎo bù liǎo miào
 
 // 降
