@@ -253,7 +253,7 @@ class Pinyin
     {
         $additionalWords = include __DIR__ . '/data/additional.php';
 
-        return array_map(function($pinyin){
+        return array_map(function($pinyin) use ($this){
             return $this->formatDictPinyin($pinyin);
         }, $additionalWords);
     }
