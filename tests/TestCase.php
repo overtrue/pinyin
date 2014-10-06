@@ -23,7 +23,7 @@ class TestCase extends PHPUnit_Framework_TestCase
     // test temporary changes delimiter
     public function testTemporaryDelimiter()
     {
-        $this->assertEquals('nín-hǎo', Pinyin::pinyin('您好', '-'));
+        $this->assertEquals('nín-hǎo', Pinyin::pinyin('您好', array('delimiter' => '-')));
         Pinyin::set('delimiter', '*');
         $this->assertEquals('nín*hǎo', Pinyin::pinyin('您好'));
         $this->assertEquals('nín hǎo', Pinyin::pinyin('您好'));
