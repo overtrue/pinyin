@@ -1,8 +1,10 @@
 <?php
 
+include __DIR__ . '../vendor/autoload.php';
+
 use Overtrue\Pinyin;
 
-class TestCase extends extends PHPUnit_Framework_TestCase
+class TestCase extends PHPUnit_Framework_TestCase
 {
     protected $pinyin;
 
@@ -44,7 +46,7 @@ class TestCase extends extends PHPUnit_Framework_TestCase
     }
 
     // test without tone
-    public function testResultWithTone()
+    public function testResultWithoutTone()
     {
         $this->assertEquals('dai zhe xi wang qu lu xing , bi dao da zhong dian geng mei hao', Pinyin::pinyin('带着希望去旅行，比到达终点更美好', ['accent' => false]));
     }
@@ -69,7 +71,7 @@ class TestCase extends extends PHPUnit_Framework_TestCase
         $this->assertEquals('yún nán', Pinyin::pinyin('云南'));
         $this->assertEquals('hǎi nán', Pinyin::pinyin('海南'));
         $this->assertEquals('liáo níng', Pinyin::pinyin('辽宁'));
-        $this->assertEquals('hēi lóng jiāng', Pinyin::pinyin('黑龙江');
+        $this->assertEquals('hēi lóng jiāng', Pinyin::pinyin('黑龙江'));
     }
 
     // test special words
