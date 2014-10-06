@@ -47,6 +47,13 @@ class Pinyin
     protected static $dictionary;
 
     /**
+     * table of pinyin frequency.
+     *
+     * @var array
+     */
+    protected static $frequency;
+
+    /**
      * settings
      *
      * @var array
@@ -75,6 +82,7 @@ class Pinyin
     {
         if (is_null(self::$dictionary)) {
             self::$dictionary = $this->loadDictionary();
+            self::$frequency  = include __DIR__ . '/data/frequency.php';
         }
     }
 
@@ -271,32 +279,19 @@ class Pinyin
      */
     protected function loadDictionary()
     {
-        $cacheFilename = $this->getCacheFilename(__DIR__ . '/cedict/cedict_ts.u8');
+        $dictFilename = __DIR__ .'/data/dict.php';
+        $ceditDictFilename = __DIR__ .'/data/cedict/cedict_ts.u8';
 
         // load from cache
-        if (file_exists($cacheFilename)) {
-            return $this->loadFromCache($cacheFilename);
+        if (file_exists($dictFilename)) {
+            return $this->loadFromCache($dictFilename);
         }
 
         // parse and cache
-        $parsedDictionary = $this->parseDictionary(self::$dictionary);
-        $this->cache($cacheFilename, $parsedDictionary);
+        $parsedDictionary = $this->parseDictionary($ceditDictFilename);
+        $this->cache($dictFilename, $parsedDictionary);
 
         return $parsedDictionary;
-    }
-
-    /**
-     * get the filename of cache file.
-     *
-     * @param string $dictionary dictionary path.
-     *
-     * @return string
-     */
-    protected function getCacheFilename($dictionary)
-    {
-        is_dir(__DIR__ .'/cache/') || mkdir(__DIR__ .'/cache/', 0755, true);
-
-        return __DIR__ .'/cache/' . md5($dictionary);
     }
 
     /**
@@ -306,28 +301,46 @@ class Pinyin
      *
      * @return array
      */
-    protected function parseDictionary($dictionary)
+    protected function parseDictionary($dictionaryFile)
     {
-        $handle = fopen($dictionary, 'r');
-        $regex = "#(.*?) (.*?) \[(.*?)\]\/#";
+        $handle = fopen($dictionaryFile, 'r');
+        $regex = "#(?<trad>.*?) (?<simply>.*?) \[(?<pinyin>.*?)\]#i";
 
         $content = array();
 
-        while ($line = fgets($handle, 4096)) {
+        while ($line = fgets($handle)) {
             if (0 === stripos($line, '#')) {
                 continue;
             }
             preg_match($regex, $line, $matches);
 
-            if (empty($matches[1]) || empty($matches[2]) || empty($matches[3])) {
+            if (empty($matches['trad']) || empty($matches['simply']) || empty($matches['pinyin'])) {
                 continue;
             }
 
-            $key = self::$settings['traditional'] ? $matches[1] : $matches[2];
-            $content[$key] = $matches[3];
+            $key = self::$settings['traditional'] ? $matches['trad'] : $matches['simply'];
+
+            // frequency check
+            if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
+               $content[$key] = $matches['pinyin'];
+            }
         }
 
         return $content;
+    }
+
+    /**
+     * Frequency check
+     *
+     * @param string $pinyin the pinyin with tone.
+     *
+     * @return boolean
+     */
+    protected function moreCommonly($pinyin, $target)
+    {
+        return isset(self::$frequency[$pinyin])
+            && isset(self::$frequency[$target])
+            && self::$frequency[$pinyin] > self::$frequency[$target];
     }
 
     /**
@@ -405,6 +418,10 @@ class Pinyin
      */
     protected function cache($filename, $array)
     {
+        if (empty($array)) {
+            return false;
+        }
+
         file_put_contents($filename, "<?php\nreturn ".var_export($array, true).";") ;
     }
 
