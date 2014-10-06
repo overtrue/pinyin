@@ -1,7 +1,7 @@
 Pinyin [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
 ======
 
-基于CC-CEDICT词典的中文转拼音工具, 更准备的汉字转拼音解决方案。 [CC-CEDICT](http://cc-cedict.org/wiki/).
+基于CC-CEDICT词典的中文转拼音工具, 更准确的汉字转拼音解决方案。 [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 ```php
 use \Overtrue\Pinyin;
