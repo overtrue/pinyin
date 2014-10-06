@@ -170,7 +170,7 @@ class Pinyin
     {
         $instance = self::getInstance();
 
-        $letters = [];
+        $letters = array();
 
         for ($i = 0; $char = $instance->getChar($string, $i); $i++) {
             if ($letter = $instance->getCharFirstLetter($char)) {
