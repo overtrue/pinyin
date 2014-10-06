@@ -18,7 +18,8 @@ php:
 before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
-  - cd tests
+
+script: phpunit ./tests/*.php
 
 matrix:
   fast_finish: true
