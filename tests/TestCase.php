@@ -27,6 +27,7 @@ class TestCase extends PHPUnit_Framework_TestCase
         Pinyin::set('delimiter', '*');
         $this->assertEquals('nín*hǎo', Pinyin::pinyin('您好'));
         $this->assertEquals('nín hǎo', Pinyin::pinyin('您好'));
+        Pinyin::set('delimiter', ' ');
     }
 
     // test get first letter
