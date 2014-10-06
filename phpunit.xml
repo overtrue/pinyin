@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         syntaxCheck="false"
->
+<phpunit colors="true">
     <testsuites>
-        <testsuite name="pinyin test">
+        <testsuite name="Pinyin Test Suite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-
     <filter>
-        <whitelist addUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">src</directory>
+        <whitelist>
+            <directory>../src/</directory>
             <exclude>
-                <directory suffix=".php">vendor</directory>
+                <directory>../vendor/</directory>
             </exclude>
         </whitelist>
     </filter>

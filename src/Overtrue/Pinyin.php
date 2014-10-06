@@ -286,7 +286,7 @@ class Pinyin
 
             // frequency check
             if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = strtolower("{$matches['pinyin']} ");
+               $content[$key] = "{$matches['pinyin']} ";
             }
         }
 
