@@ -1,7 +1,7 @@
 Pinyin
 ======
 
-基于CC-CEDICT词典的中文转拼音工具，准确度高。 [CC-CEDICT](http://cc-cedict.org/wiki/).
+基于CC-CEDICT词典的中文转拼音工具。 [CC-CEDICT](http://cc-cedict.org/wiki/).
 
 
 # 安装
@@ -13,7 +13,7 @@ Pinyin
 	```javascript
 	{
 	    "require": {
-	        "overtrue/pinyin": "~1.1"
+	        "overtrue/pinyin": "~1.2"
 	    }
 	}
 	```
