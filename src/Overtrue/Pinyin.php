@@ -210,7 +210,7 @@ class Pinyin
 
         // add accents
         if (self::$settings['accent']) {
-            $pinyin = $this->addaccents($pinyin);
+            $pinyin = $this->addAccents($pinyin);
         } else {
             $pinyin = $this->removeTone($pinyin);
         }
@@ -483,22 +483,22 @@ class Pinyin
      *
      * @return string The formatted string with tone marks, i.e.
      */
-    protected function addaccents($string)
+    protected function addAccents($string)
     {
-        # Find words with a number behind them, and replace with callback fn.
+        // find words with a number behind them, and replace with callback fn.
         return str_replace('u:', 'ü', preg_replace_callback(
             '~([a-zA-ZüÜ]+\:?)(\d)~',
-            array($this, 'addaccentsCallback'),
+            array($this, 'addAccentsCallback'),
             $string));
     }
 
-    # Helper callback
-    protected function addaccentsCallback($match)
+    // helper callback
+    protected function addAccentsCallback($match)
     {
         static $accentmap = null;
 
         if ($accentmap === null) {
-            # Where to place the accent marks
+            // where to place the accent marks
             $stars =
                     'a* e* i* o* u* ü* ü* ' .
                     'A* E* I* O* U* Ü* ' .
@@ -514,7 +514,7 @@ class Pinyin
                     'ou ua uai ue ui uo üe ' .
                     'OU UA UAI UE UI UO ÜE';
 
-            # Build an array like array('a' => 'a*') and store statically
+            // build an array like array('a' => 'a*') and store statically
             $accentmap = array_combine(explode(' ', $nostars), explode(' ', $stars));
         }
 
@@ -530,10 +530,10 @@ class Pinyin
 
         list(, $word, $tone) = $match;
 
-        # Add star to vowelcluster
+        // add star to vowelcluster
         $word = strtr($word, $accentmap);
 
-        # Replace starred letter with accented
+        // replace starred letter with accented
         $word = str_replace($vowels, $pinyin[$tone], $word);
 
         return $word;
