@@ -254,7 +254,7 @@ class Pinyin
         $additionalWords = include __DIR__ . '/data/additional.php';
 
         return array_map(function($pinyin){
-            return strtolower("$pinyin ");
+            return $this->formatDictPinyin($pinyin);
         }, $additionalWords);
     }
 
@@ -286,11 +286,25 @@ class Pinyin
 
             // frequency check
             if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = "{$matches['pinyin']} ";
+               $content[$key] = $this->formatDictPinyin($matches['pinyin']);
             }
         }
 
         return $content;
+    }
+
+    /**
+     * format pinyin to lowercase.
+     *
+     * @param string $pinyin pinyin string.
+     *
+     * @return string.
+     */
+    protected function formatDictPinyin($pinyin)
+    {
+        return preg_replace_callback('/[A-Z][a-z]{1,}:?\d{1}/', function($matches){
+            return strtolower($matches[0]);
+        }, "{$pinyin} ");
     }
 
     /**
