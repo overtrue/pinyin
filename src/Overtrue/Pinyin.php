@@ -210,9 +210,9 @@ class Pinyin
 
         // add accents
         if (self::$settings['accent']) {
-            $pinyin = $this->addaccents(strtolower($pinyin));
+            $pinyin = $this->addaccents($pinyin);
         } else {
-            $pinyin = $this->removeTone(strtolower($pinyin));
+            $pinyin = $this->removeTone($pinyin);
         }
 
         return $pinyin;
@@ -254,7 +254,7 @@ class Pinyin
         $additionalWords = include __DIR__ . '/data/additional.php';
 
         return array_map(function($pinyin){
-            return "$pinyin ";
+            return strtolower("$pinyin ");
         }, $additionalWords);
     }
 
@@ -286,7 +286,7 @@ class Pinyin
 
             // frequency check
             if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = "{$matches['pinyin']} ";
+               $content[$key] = strtolower("{$matches['pinyin']} ");
             }
         }
 
