@@ -1,6 +1,7 @@
 <?php
 
-include __DIR__ . '../vendor/autoload.php';
+//include __DIR__ . '../vendor/autoload.php';
+include __DIR__ . '/../src/Overtrue/Pinyin.php';
 
 use Overtrue\Pinyin;
 
