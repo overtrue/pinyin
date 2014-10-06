@@ -192,50 +192,8 @@ class Pinyin
      */
     protected function string2pinyin($string)
     {
-        $stringLength = $this->getStringLength($string);
-        $pingyin = [];
-
-        // do replace
-        for ($i = 0; $i < $stringLength; ) {
-            $str = $this->getChar($string, $i);
-            $next = $str . $this->getChar($string, ++$i);
-
-            while ((
-                    !$this->containsChinese($str)
-                    && !$this->containsChinese($next)
-                   ) || ($i < $stringLength && $this->hasPinyin($next))) {
-                $str  = $next;
-                $next = $str . $this->getChar($string, ++$i);
-            };
-
-            $pingyin[] = $this->getPinyin($str);
-        }
-
-        return join(' ', $pingyin);
-    }
-
-    /**
-     * detect the pinyin of string.
-     *
-     * @param string $string source string.
-     *
-     * @return boolean
-     */
-    protected function hasPinyin($string)
-    {
-        return isset(self::$dictionary[$string]);
-    }
-
-    /**
-     * get string pinyin
-     *
-     * @param string $string source string.
-     *
-     * @return string
-     */
-    protected function getPinyin($string)
-    {
-        $pinyin = $this->hasPinyin($string) ? self::$dictionary[$string] : $string;
+        $string = $this->prepare($string);
+        $pinyin = strtr($string, self::$dictionary);
 
         // add accents
         if (self::$settings['accent']) {
@@ -248,50 +206,43 @@ class Pinyin
     }
 
     /**
-     * get char
-     *
-     * @param string  $string source string.
-     * @param integer $offset offset.
-     *
-     * @return string
-     */
-    protected function getChar($string, $offset)
-    {
-        return mb_substr($string, $offset, 1, 'UTF-8');
-    }
-
-    /**
-     * get length of string
-     *
-     * @param string $string source string.
-     *
-     * @return integer
-     */
-    protected function getStringLength($string)
-    {
-        return mb_strlen($string, 'UTF-8');
-    }
-
-    /**
      * load dictionary content
      *
      * @return array
      */
     protected function loadDictionary()
     {
-        $dictFilename = __DIR__ .'/data/dict.php';
-        $ceditDictFilename = __DIR__ .'/data/cedict/cedict_ts.u8';
+        $dictFile        = __DIR__ .'/data/dict.php';
+        $ceditDictFile   = __DIR__ .'/data/cedict/cedict_ts.u8';
+        $additionalWords = $this->getAdditionalWords();
 
         // load from cache
-        if (file_exists($dictFilename)) {
-            return $this->loadFromCache($dictFilename);
+        if (file_exists($dictFile)) {
+            return $this->loadFromCache($dictFile);
         }
 
         // parse and cache
-        $parsedDictionary = $this->parseDictionary($ceditDictFilename);
-        $this->cache($dictFilename, $parsedDictionary);
+        $parsedDictionary = $this->parseDictionary($ceditDictFile);
 
-        return $parsedDictionary;
+        $dictionary = array_merge($parsedDictionary, $additionalWords);
+
+        $this->cache($dictFile, $dictionary);
+
+        return $dictionary;
+    }
+
+    /**
+     * return additional words
+     *
+     * @return array
+     */
+    protected function getAdditionalWords()
+    {
+        $additionalWords = include __DIR__ . '/data/additional.php';
+
+        return array_map(function($pinyin){
+            return "$pinyin ";
+        }, $additionalWords);
     }
 
     /**
@@ -322,7 +273,7 @@ class Pinyin
 
             // frequency check
             if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = $matches['pinyin'];
+               $content[$key] = "{$matches['pinyin']} ";
             }
         }
 
@@ -338,6 +289,9 @@ class Pinyin
      */
     protected function moreCommonly($pinyin, $target)
     {
+        $pinyin = trim($pinyin);
+        $target = trim($target);
+
         return isset(self::$frequency[$pinyin])
             && isset(self::$frequency[$target])
             && self::$frequency[$pinyin] > self::$frequency[$target];
@@ -435,6 +389,22 @@ class Pinyin
     protected function containsChinese($string)
     {
         return preg_match('/\p{Han}+/u', $string);
+    }
+
+    /**
+     * prepare the string.
+     *
+     * @param string $string source string.
+     *
+     * @return string
+     */
+    protected function prepare($string)
+    {
+        $pattern = array(
+                '/([a-z])+(\d)/' => '\\1\\\2', // test4 => test\4
+            );
+
+        return preg_replace(array_keys($pattern), $pattern, $string);
     }
 
     /**
