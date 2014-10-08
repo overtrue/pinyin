@@ -1,38 +1,17 @@
-<?php
-namespace  Overtrue;
-
+<?php namespace  Overtrue\Pinyin;
 /**
  * Pinyin.php
  *
  * @author Carlos <anzhengchao@gmail.com>
  * @date   [2014-07-17 15:49]
  */
-/**
- * @see \Overtrue\Pinyin::pinyin()
- *
- * @return string
- */
-function pinyin()
-{
-    return forward_static_call_array(array('Overtrue\Pinyin', 'pinyin'), func_get_args());
-}
-
-/**
- * @see \Overtrue\Pinyin::letter()
- *
- * @return string
- */
-function letter()
-{
-    return forward_static_call_array(array('Overtrue\Pinyin', 'letter'), func_get_args());
-}
 
 /**
  * Chinese to pinyin translator
  *
  * @example
  * <pre>
- *      echo \Overtrue\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
+ *      echo \Overtrue\Pinyin\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
  *      //output: "dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo"
  * </pre>
  */
@@ -69,7 +48,7 @@ class Pinyin
     /**
      * the instance
      *
-     * @var \Overtrue\Pinyin
+     * @var \Overtrue\Pinyin\Pinyin
      */
     protected static $instance;
 
