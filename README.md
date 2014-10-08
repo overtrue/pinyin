@@ -79,7 +79,7 @@ Pinyin::pinyin('难过'); // nán guò
 
 ```php
 <?php
-use \Overtrue\Pinyin;
+use \Overtrue\Pinyin\Pinyin;
 
 //获取拼音
 echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
