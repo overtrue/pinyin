@@ -142,7 +142,7 @@ composer require overtrue/pinyin:2.*
 然后看起来可能是这样：
 ```php
 	'providers' =>
-		//....
+		//...
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Overtrue\Pinyin\PinyinServiceProvider',
