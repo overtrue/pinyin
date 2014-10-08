@@ -130,7 +130,7 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
 
-# Laravel中使用
+# 在Laravel中使用
 
 ```shell
 composer require overtrue/pinyin:2.*
