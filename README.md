@@ -174,11 +174,16 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 
 ```
 
+# 说明
+- 1.x的命名空间是`\Overtrue`，2.x的命名空间是`\Overtrue\Pinyin`（之前的写法不规范 :see_no_evil:）
+- 函数pinyin()与letter()都是在`\Overtrue\Pinyin`这个命名空间下，所以在使用的时候如果没有use这个命名空间而且也没有写全称(\Overtrue\Pinyin\letter($string))会提示函数不存在。
+
 # TODO
 - [x] 添加获取首字母；
 - [x] 支持繁体；
 - [x] 添加补充词典；
 - [x] 添加词频字典，根据词频提高未匹配词典时多音字准确度；
+- [x] 添加Laravel的serviec provider.
 
 # Contribution
 欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`! :kiss:
