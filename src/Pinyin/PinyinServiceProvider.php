@@ -2,6 +2,9 @@
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Pinyin Service Provider for Laravel
+ */
 class PinyinServiceProvider extends ServiceProvider {
 
     /**
