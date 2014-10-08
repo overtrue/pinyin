@@ -61,21 +61,13 @@ Pinyin::pinyin('难过'); // nán guò
 # 安装
 1. 使用 Composer 安装:
 	```
-<<<<<<< HEAD
 	composer require overtrue/pinyin:2.*
-=======
-	composer require overtrue/pinyin:1.*
->>>>>>> master
 	```
 	或者在你的项目composer.json加入：
 	```javascript
 	{
 	    "require": {
-<<<<<<< HEAD
 	        "overtrue/pinyin": "2.*"
-=======
-	        "overtrue/pinyin": "1.*"
->>>>>>> master
 	    }
 	}
 	```
