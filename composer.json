@@ -2,8 +2,8 @@
 	"name": "overtrue/pinyin",
 	"description": "Chinese to pinyin translator.",
 	"keywords": [
-		"chinese", 
-		"pinyin", 
+		"chinese",
+		"pinyin",
 		"cn2pinyin"
 	],
 	"homepage": "https://github.com/overtrue/pinyin",
@@ -15,8 +15,8 @@
         }
     ],
     "autoload": {
-        "psr-4": { 
-        	"": "src/"
+        "psr-4": {
+        	"Overtrue\\": "src/"
         }
     }
 }

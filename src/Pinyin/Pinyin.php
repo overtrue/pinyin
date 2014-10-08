@@ -1,5 +1,4 @@
-<?php
-namespace  Overtrue;
+<?php namespace  Overtrue\Pinyin;
 
 /**
  * Pinyin.php
@@ -8,7 +7,7 @@ namespace  Overtrue;
  * @date   [2014-07-17 15:49]
  */
 /**
- * @see \Overtrue\Pinyin::pinyin()
+ * @see \Overtrue\Pinyin\Pinyin::pinyin()
  *
  * @return string
  */
@@ -18,7 +17,7 @@ function pinyin()
 }
 
 /**
- * @see \Overtrue\Pinyin::letter()
+ * @see \Overtrue\Pinyin\Pinyin::letter()
  *
  * @return string
  */
@@ -32,7 +31,7 @@ function letter()
  *
  * @example
  * <pre>
- *      echo \Overtrue\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
+ *      echo \Overtrue\Pinyin\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
  *      //output: "dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo"
  * </pre>
  */
@@ -69,7 +68,7 @@ class Pinyin
     /**
      * the instance
      *
-     * @var \Overtrue\Pinyin
+     * @var \Overtrue\Pinyin\Pinyin
      */
     protected static $instance;
 

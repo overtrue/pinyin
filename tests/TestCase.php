@@ -1,9 +1,9 @@
 <?php
 
-//include __DIR__ . '../vendor/autoload.php';
-include __DIR__ . '/../src/Overtrue/Pinyin.php';
+include __DIR__ . '/../vendor/autoload.php';
+//include __DIR__ . '/../src/Overtrue/Pinyin.php';
 
-use Overtrue\Pinyin;
+use Overtrue\Pinyin\Pinyin;
 
 class TestCase extends PHPUnit_Framework_TestCase
 {
