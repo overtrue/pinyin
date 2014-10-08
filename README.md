@@ -149,7 +149,7 @@ composer require overtrue/pinyin:2.*
 	],
 ```
 
-然后你可以添加配置文件：`config/pinyin.php`:
+然后你可以添加配置文件：`config/pinyin.php`(_注意：此项为可选，如果不需要设置则不用创建此文件_):
 ```php
 <?php
 
