@@ -83,13 +83,11 @@ use \Overtrue\Pinyin;
 
 //获取拼音
 echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
-//或者: pinyin($string); //在上面use \Overtrue\Pinyin的情况下才可以这样用哦！，否则就是\Overtrue\Pinyin\pinyin($string);
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
 
 //获取首字母
 echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 // D Z X W Q L X B D D Z D G M H
-//或者 letter($string);
 ```
 
 ## 设置
@@ -100,9 +98,9 @@ echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 - `letter` 只输出首字母，或者直接使用`Pinyin::letter($string)`;
 - `only_chinese` 只保留$string中中文部分。
 
-* 全局设置：*  `Pinyin::set('delimiter', '-');`
+*全局设置：*  `Pinyin::set('delimiter', '-');`
 
-* 临时设置：*  `Pinyin::pinyin($word, $settings)` 在调用的方法后传参
+*临时设置：*  `Pinyin::pinyin($word, $settings)` 在调用的方法后传参
 
 example:
 
@@ -176,7 +174,6 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 
 # 说明
 - 1.x的命名空间是`\Overtrue`，2.x的命名空间是`\Overtrue\Pinyin`（之前的写法不规范 :see_no_evil:）
-- 函数pinyin()与letter()都是在`\Overtrue\Pinyin`这个命名空间下，所以在使用的时候如果没有use这个命名空间而且也没有写全称(\Overtrue\Pinyin\letter($string))会提示函数不存在。
 
 # TODO
 - [x] 添加获取首字母；
