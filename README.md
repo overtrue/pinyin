@@ -92,11 +92,14 @@ echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 
 ## 设置
 
-- `delimiter` 分隔符，默认为一个空格 ' '；
-- `traditional` 繁体
-- `accent` 是否输出音调；
-- `letter` 只输出首字母，或者直接使用`Pinyin::letter($string)`;
-- `only_chinese` 只保留$string中中文部分。
+|      选项      | 描述                                                |
+| -------------  | --------------------------------------------------- |
+| `delimiter`    | 分隔符，默认为一个空格 ' '                          |
+| `traditional`  | 繁体                                                |
+| `accent`       | 是否输出音调                                        |
+| `letter`       | 只输出首字母，或者直接使用`Pinyin::letter($string)` |
+| `only_chinese` | 只保留`$string`中中文部分                           |
+
 
 *全局设置：*  `Pinyin::set('delimiter', '-');`
 
@@ -114,9 +117,9 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 ```php
 
 $setting = [
-			'delimiter' => '-',
-			'accent' => false,
-		   ];
+	    'delimiter' => '-',
+	    'accent'    => false,
+	   ];
 
 echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好', $setting);//这里的setting只是临时修改，并非全局设置
 
