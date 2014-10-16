@@ -66,6 +66,13 @@ class Pinyin
     }
 
     /**
+     * disable clone
+     *
+     * @return void
+     */
+    private function __clone() {}
+
+    /**
      * get class instance
      *
      * @return Overtrue\Pinyin
@@ -76,7 +83,7 @@ class Pinyin
             self::$_instance = new static;
         }
 
-        return self::$instance;
+        return self::$_instance;
     }
 
     /**
@@ -124,7 +131,7 @@ class Pinyin
 
         // remove non-Chinese char.
         if (self::$settings['only_chinese']) {
-            $string = $instance->onlyChinese($string);
+            $string = $instance->keepOnlyChinese($string);
         }
 
         $string = $instance->string2pinyin($string);
@@ -314,7 +321,7 @@ class Pinyin
      */
     protected function getCharFirstLetter($char)
     {
-        if (empty($char) || !$this->containsChinese($char)) {
+        if (empty($char) || !$this->containChinese($char)) {
             return '';
         }
 
@@ -394,9 +401,21 @@ class Pinyin
      *
      * @return int
      */
-    protected function containsChinese($string)
+    protected function containChinese($string)
     {
         return preg_match('/\p{Han}+/u', $string);
+    }
+
+    /**
+     * Remove the non-Chinese characters
+     *
+     * @param string $string source string.
+     *
+     * @return string
+     */
+    protected function keepOnlyChinese($string)
+    {
+        return preg_replace('/[^\p{Han}]/u', '', $string);
     }
 
     /**
@@ -429,18 +448,6 @@ class Pinyin
         $replace = array("\\\\", "\\0", "\\n", "\\r", "\'", '\"', "\\Z");
 
         return str_replace($search, $replace, $value);
-    }
-
-    /**
-     * Remove the non-Chinese characters
-     *
-     * @param string $string source string.
-     *
-     * @return string
-     */
-    protected function onlyChinese($string)
-    {
-        return preg_replace('/[^\p{Han}]/u', '', $string);
     }
 
     /**
@@ -533,7 +540,5 @@ class Pinyin
 
         return $word;
     }
-
-    private function __clone() {};
 
 }// end of class
