@@ -50,7 +50,7 @@ class Pinyin
      *
      * @var \Overtrue\Pinyin\Pinyin
      */
-    protected static $instance;
+    private static $_instance;
 
     /**
      * constructor
@@ -72,8 +72,8 @@ class Pinyin
      */
     public static function getInstance()
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new static;
+        if (is_null(self::$_instance)) {
+            self::$_instance = new static;
         }
 
         return self::$instance;
