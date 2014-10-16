@@ -57,7 +57,7 @@ class Pinyin
      *
      * set dictionary path.
      */
-    public function __construct()
+    private function __construct()
     {
         if (is_null(self::$dictionary)) {
             self::$dictionary = $this->loadDictionary();
@@ -533,5 +533,7 @@ class Pinyin
 
         return $word;
     }
+
+    private function __clone() {};
 
 }// end of class
