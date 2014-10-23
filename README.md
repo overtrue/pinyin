@@ -164,12 +164,13 @@ return [
 ```
 以上的设置会是全局的设置，如需临时设置请在方法里传参，例如:
 ```php
-Pinyin::letter('您好世界', ['delimiter' => '-'])`; //N-H-S-J
+Pinyin::letter('您好世界', ['delimiter' => '-']); //N-H-S-J
 ```
 
 ### 使用
 与上面的使用方法一样：
-```
+
+```php
 use \Overtrue\Pinyin\Pinyin;
 
 //...
