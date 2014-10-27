@@ -354,3 +354,11 @@ footer p + p {
     content: 'at http://github.com/';
   }
 }
+
+.icon svg {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    fill: #666; /* fill:图标默认颜色 */
+}
+.icon svg:hover {fill:#1abc9c;} /* 鼠标移过时颜色 */

@@ -248,12 +248,41 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 <p>MIT</p>
       </section>
     </div>
+    <div class="sns-share">
+      <i data-id="sina" class="icon">
+          <svg><use xlink:href="path/to/sns.svg#icon-iconfont-sina" transform="translate(0 0)"></use></svg>
+      </i>
+      <i data-id="qzone" class="icon">
+          <svg><use xlink:href="path/to/sns.svg#icon-iconfont-qzone" transform="translate(0 0)"></use></svg>
+      </i>
+      <i data-id="qq" class="icon">
+          <svg><use xlink:href="path/to/sns.svg#icon-iconfont-qq" transform="translate(0 0)"></use></svg>
+      </i>
+      <i data-id="renren" class="icon">
+          <svg><use xlink:href="path/to/sns.svg#icon-iconfont-renren" transform="translate(0 0)"></use></svg>
+      </i>
+      <i data-id="douban" class="icon">
+          <svg><use xlink:href="path/to/sns.svg#icon-iconfont-douban" transform="translate(0 0)"></use></svg>
+      </i>
     <footer>
       <p>Project maintained by <a href="https://github.com/overtrue">overtrue</a></p>
       <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
     </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-              <script type="text/javascript">
+          <script src="assets/js/sns.js"></script>
+          <script type="text/javascript">
+              $(document).ready(function(){
+                  var config = {
+                    site   : 'overtrue at GitHub',//来源
+                    pic    : 'http://overtrue.me/pinyin/images/pinyin.jpg',
+                  }; /* 配置 */
+                  SNS.init(config);
+                  $('.sns-share i').click(function(){
+                      SNS.share($(this).data('id'));
+                  });
+              });
+          </script>
+          <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -263,6 +292,6 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
+</div>
   </body>
 </html>
