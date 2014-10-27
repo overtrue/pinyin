@@ -133,6 +133,10 @@ class TestCase extends PHPUnit_Framework_TestCase
         // 难
         $this->assertEquals('nàn mín', Pinyin::pinyin('难民'));
         $this->assertEquals('nán guò', Pinyin::pinyin('难过'));
+
+        // 厦
+        $this->assertEquals('dà shà', Pinyin::pinyin('大厦'));
+        $this->assertEquals('xià mén', Pinyin::pinyin('厦门'));
     }
 
 }
