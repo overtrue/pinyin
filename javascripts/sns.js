@@ -7,7 +7,7 @@
  */
 ;
 if("undefined" == typeof $) {
-	console.log('no jQuery found!');
+	document.write('<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>');
 };
 var pageTitle  = document.title;
 var pageUrl    = encodeURIComponent(window.location.href);
