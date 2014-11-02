@@ -275,7 +275,7 @@ class Pinyin
      *
      * @param string $pinyin pinyin string.
      *
-     * @return string.
+     * @return string
      */
     protected function formatDictPinyin($pinyin)
     {
