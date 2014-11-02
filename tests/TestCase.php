@@ -35,6 +35,8 @@ class TestCase extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals('N H', Pinyin::letter('您好'));
         $this->assertEquals('N-H', Pinyin::letter('您好', '-'));
+        $this->assertEquals('C Q', Pinyin::letter('重庆'));
+        $this->assertEquals('Z Y', Pinyin::letter('重要'));
         $this->assertEquals('NH', Pinyin::letter('您好', ''));
         $this->assertEquals('KXLL', Pinyin::letter('康熙来了', ''));
         $this->assertEquals('D Z X W Q L X B D D Z D G M H', Pinyin::letter('带着希望去旅行，比到达终点更美好'));

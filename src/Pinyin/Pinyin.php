@@ -59,9 +59,9 @@ class Pinyin
      */
     private function __construct()
     {
-        if (is_null(self::$dictionary)) {
-            self::$dictionary = $this->loadDictionary();
-            self::$frequency  = include __DIR__ . '/data/frequency.php';
+        if (is_null(static::$dictionary)) {
+            static::$dictionary = $this->loadDictionary();
+            static::$frequency  = include __DIR__ . '/data/frequency.php';
         }
     }
 
@@ -79,11 +79,11 @@ class Pinyin
      */
     public static function getInstance()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new static;
+        if (is_null(static::$_instance)) {
+            static::$_instance = new static;
         }
 
-        return self::$_instance;
+        return static::$_instance;
     }
 
     /**
@@ -93,7 +93,7 @@ class Pinyin
      */
     public static function set($key, $value)
     {
-        self::$settings[$key] = $value;
+        static::$settings[$key] = $value;
     }
 
     /**
@@ -103,7 +103,7 @@ class Pinyin
      */
     public static function settings(array $settings = array())
     {
-        self::$settings = array_merge(self::$settings, $settings);
+        static::$settings = array_merge(static::$settings, $settings);
     }
 
     /**
@@ -116,32 +116,32 @@ class Pinyin
      */
     public static function pinyin($string, array $settings = array())
     {
-        $instance = self::getInstance();
+        $instance = static::getInstance();
 
-        $oldSettings = self::$settings;
+        $oldSettings = static::$settings;
 
         // merge setting
-        empty($settings) || self::settings($settings);
+        empty($settings) || static::settings($settings);
 
-        if (self::$settings['letter']) {
-            self::settings($oldSettings);
+        if (static::$settings['letter']) {
+            static::settings($oldSettings);
 
-            return self::letter($string);
+            return static::letter($string);
         }
 
-        // remove non-Chinese char.
-        if (self::$settings['only_chinese']) {
-            $string = $instance->keepOnlyChinese($string);
+         // remove non-Chinese char.
+        if (static::$settings['only_chinese']) {
+            $string = $this->keepOnlyChinese($string);
         }
 
-        $string = $instance->string2pinyin($string);
+        $pinyin = $instance->string2pinyin($string);
 
         // add delimiter
-        $string = $instance->addDelimiter($string, self::$settings['delimiter']);
+        $pinyin = $instance->addDelimiter($pinyin, static::$settings['delimiter']);
 
-        self::settings($oldSettings);
+        static::settings($oldSettings);
 
-        return $instance->escape($string);
+        return $instance->escape($pinyin);
     }
 
     /**
@@ -154,32 +154,21 @@ class Pinyin
      */
     public static function letter($string, $delimiter = null)
     {
-        $instance = self::getInstance();
+        $instance = static::getInstance();
 
         $letters = array();
 
-        for ($i = 0; $char = $instance->getChar($string, $i); $i++) {
-            if ($letter = $instance->getCharFirstLetter($char)) {
-                $letters[] = $letter;
-            }
-        }
+        $pinyin = $instance->string2pinyin($instance->keepOnlyChinese($string));
 
-        !is_null($delimiter) || $delimiter = self::$settings['delimiter'];
+        $letters = array_map(function($word){
+            if (!empty($word)) {
+                return strtoupper($word{0});
+            }
+        }, explode(' ', $pinyin));
+
+        !is_null($delimiter) || $delimiter = static::$settings['delimiter'];
 
         return $instance->addDelimiter(join(' ', $letters), $delimiter);
-    }
-
-    /**
-     * get char
-     *
-     * @param string  $string source string.
-     * @param integer $offset offset.
-     *
-     * @return string
-     */
-    protected function getChar($string, $offset)
-    {
-        return mb_substr($string, $offset, 1, 'UTF-8');
     }
 
     /**
@@ -192,16 +181,16 @@ class Pinyin
     protected function string2pinyin($string)
     {
         $string = $this->prepare($string);
-        $pinyin = strtr($string, self::$dictionary);
+        $pinyin = strtr($string, static::$dictionary);
 
         // add accents
-        if (self::$settings['accent']) {
+        if (static::$settings['accent']) {
             $pinyin = $this->addAccents($pinyin);
         } else {
             $pinyin = $this->removeTone($pinyin);
         }
 
-        return $pinyin;
+        return trim($pinyin);
     }
 
     /**
@@ -270,7 +259,7 @@ class Pinyin
                 continue;
             }
 
-            $key = self::$settings['traditional'] ? $matches['trad'] : $matches['simply'];
+            $key = static::$settings['traditional'] ? $matches['trad'] : $matches['simply'];
 
             // frequency check
             if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
@@ -307,63 +296,11 @@ class Pinyin
         $pinyin = trim($pinyin);
         $target = trim($target);
 
-        return isset(self::$frequency[$pinyin])
-            && isset(self::$frequency[$target])
-            && self::$frequency[$pinyin] > self::$frequency[$target];
+        return isset(static::$frequency[$pinyin])
+            && isset(static::$frequency[$target])
+            && static::$frequency[$pinyin] > static::$frequency[$target];
     }
 
-    /**
-     * get first letter of char.
-     *
-     * @param string $string source string.
-     *
-     * @return string
-     */
-    protected function getCharFirstLetter($char)
-    {
-        if (empty($char) || !$this->containChinese($char)) {
-            return '';
-        }
-
-        $fchar = ord($char{0});
-
-        if ($fchar >= ord('A') && $fchar <= ord('z')) {
-            return strtoupper($char{0});
-        }
-
-        $s1 = iconv('UTF-8', 'gb2312', $char);
-        $s2 = iconv('gb2312', 'UTF-8', $s1);
-
-        $s = $s2 == $char ? $s1 : $str;
-
-        $asc = ord($s{0}) * 256 + ord($s{1}) - 65536;
-
-        if ($asc >= - 20319 && $asc <= - 20284) return 'A';
-        if ($asc >= - 20283 && $asc <= - 19776) return 'B';
-        if ($asc >= - 19775 && $asc <= - 19219) return 'C';
-        if ($asc >= - 19218 && $asc <= - 18711) return 'D';
-        if ($asc >= - 18710 && $asc <= - 18527) return 'E';
-        if ($asc >= - 18526 && $asc <= - 18240) return 'F';
-        if ($asc >= - 18239 && $asc <= - 17923) return 'G';
-        if ($asc >= - 17922 && $asc <= - 17418) return 'H';
-        if ($asc >= - 17417 && $asc <= - 16475) return 'J';
-        if ($asc >= - 16474 && $asc <= - 16213) return 'K';
-        if ($asc >= - 16212 && $asc <= - 15641) return 'L';
-        if ($asc >= - 15640 && $asc <= - 15166) return 'M';
-        if ($asc >= - 15165 && $asc <= - 14923) return 'N';
-        if ($asc >= - 14922 && $asc <= - 14915) return 'O';
-        if ($asc >= - 14914 && $asc <= - 14631) return 'P';
-        if ($asc >= - 14630 && $asc <= - 14150) return 'Q';
-        if ($asc >= - 14149 && $asc <= - 14091) return 'R';
-        if ($asc >= - 14090 && $asc <= - 13319) return 'S';
-        if ($asc >= - 13318 && $asc <= - 12839) return 'T';
-        if ($asc >= - 12838 && $asc <= - 12557) return 'W';
-        if ($asc >= - 12556 && $asc <= - 11848) return 'X';
-        if ($asc >= - 11847 && $asc <= - 11056) return 'Y';
-        if ($asc >= - 11055 && $asc <= - 10247) return 'Z';
-
-        return null;
-    }
 
     /**
      * load dictionary from cached file
