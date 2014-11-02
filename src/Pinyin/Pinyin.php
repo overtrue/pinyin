@@ -79,11 +79,11 @@ class Pinyin
      */
     public static function getInstance()
     {
-        if (is_null(static::$_instance)) {
-            static::$_instance = new static;
+        if (is_null(self::$_instance)) {
+            self::$_instance = new static;
         }
 
-        return static::$_instance;
+        return self::$_instance;
     }
 
     /**
@@ -131,7 +131,7 @@ class Pinyin
 
          // remove non-Chinese char.
         if (static::$settings['only_chinese']) {
-            $string = $this->keepOnlyChinese($string);
+            $string = $instance->keepOnlyChinese($string);
         }
 
         $pinyin = $instance->string2pinyin($string);
