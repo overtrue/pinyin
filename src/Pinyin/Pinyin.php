@@ -156,8 +156,6 @@ class Pinyin
     {
         $instance = static::getInstance();
 
-        $letters = array();
-
         $pinyin = $instance->string2pinyin($instance->keepOnlyChinese($string));
 
         $letters = array_map(function($word){
