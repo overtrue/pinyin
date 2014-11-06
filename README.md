@@ -7,6 +7,8 @@ Pinyin
 
 基于[CC-CEDICT](http://cc-cedict.org/wiki/)词典的中文转拼音工具, 更准确的汉字转拼音解决方案。 
 
+SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
+
 ```php
 use \Overtrue\Pinyin\Pinyin; //请注意1.x系列的命名空间不同
 
