@@ -193,7 +193,8 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 - [x] 支持繁体；
 - [x] 添加补充词典；
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
-- [x] 添加Laravel的serviec provider.
+- [x] 添加Laravel4的serviece provider.
+- [ ] 支持Laravel5的service provider.
 
 # Contribution
 欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`! :kiss:
