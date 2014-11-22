@@ -1,9 +1,11 @@
 <?php namespace Overtrue\Pinyin;
 
+use Config;
+
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Pinyin Service Provider for Laravel
+ * Pinyin Service Provider for Laravel 4
  */
 class PinyinServiceProvider extends ServiceProvider {
 
@@ -14,7 +16,7 @@ class PinyinServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $config = config('pinyin');
+        $config = Config::get('pinyin');
 
         Pinyin::settings($config);
     }
