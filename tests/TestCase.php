@@ -33,14 +33,15 @@ class TestCase extends PHPUnit_Framework_TestCase
     // test get first letter
     public function testLetters()
     {
-        $this->assertEquals('N H', Pinyin::letter('您好'));
-        $this->assertEquals('N-H', Pinyin::letter('您好', '-'));
-        $this->assertEquals('C Q', Pinyin::letter('重庆'));
-        $this->assertEquals('Z Y', Pinyin::letter('重要'));
-        $this->assertEquals('NH', Pinyin::letter('您好', ''));
-        $this->assertEquals('KXLL', Pinyin::letter('康熙来了', ''));
-        $this->assertEquals('D Z X W Q L X B D D Z D G M H', Pinyin::letter('带着希望去旅行，比到达终点更美好'));
-        $this->assertEquals('Z Q S L Z W Z W', Pinyin::letter('赵钱孙李 周吴郑王'));
+        $this->assertEquals('n h', Pinyin::letter('您好'));
+        $this->assertEquals('n-h', Pinyin::letter('您好', array('delimiter' => '-')));
+        $this->assertEquals('N-H', Pinyin::letter('您好', array('delimiter' => '-', 'uppercase' => true)));
+        $this->assertEquals('c q', Pinyin::letter('重庆'));
+        $this->assertEquals('z y', Pinyin::letter('重要'));
+        $this->assertEquals('nh', Pinyin::letter('您好', ''));
+        $this->assertEquals('kxll', Pinyin::letter('康熙来了', ''));
+        $this->assertEquals('d z x w q l x b d d z d g m h', Pinyin::letter('带着希望去旅行，比到达终点更美好'));
+        $this->assertEquals('z q s l z w z w', Pinyin::letter('赵钱孙李 周吴郑王'));
     }
 
     // test return with tone
