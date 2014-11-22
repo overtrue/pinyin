@@ -93,7 +93,7 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 
 //获取首字母
 echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
-// D Z X W Q L X B D D Z D G M H
+// d z x w q l x b d d z d g m h
 ```
 
 ## 设置
@@ -170,7 +170,10 @@ return [
 ```
 以上的设置会是全局的设置，如需临时设置请在方法里传参，例如:
 ```php
-Pinyin::letter('您好世界', ['delimiter' => '-']); //N-H-S-J
+
+Pinyin::letter('您好世界', ['delimiter' => '-']); //n-h-s-j
+//大写字母输出
+Pinyin::letter('您好世界', ['delimiter' => '-', 'uppercase' => true]); //N-H-S-J
 ```
 
 ### 使用
@@ -194,6 +197,7 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 - [x] 添加补充词典；
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
 - [x] 添加Laravel4的serviece provider.
+- [x] 添加首字母输出大小写选项`uppercase`
 - [ ] 支持Laravel5的service provider.
 
 # Contribution
