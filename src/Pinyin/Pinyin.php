@@ -169,9 +169,9 @@ class Pinyin
             }
         }, explode(' ', $pinyin));
 
-        !is_null($setting['delimiter']) || $delimiter = static::$settings['delimiter'];
+        !is_null($setting['delimiter']) || $setting['delimiter'] = static::$settings['delimiter'];
 
-        return $instance->addDelimiter(join(' ', $letters), $delimiter);
+        return $instance->addDelimiter(join(' ', $letters), $setting['delimiter']);
     }
 
     /**
