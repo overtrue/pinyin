@@ -152,8 +152,11 @@ class Pinyin
      *
      * @return string
      */
-    public static function letter($string, $delimiter = null)
+    public static function letter($string, $setting = array())
     {
+        $default = array('delimiter' => null, 'uppercase' => false);
+        $setting = array_merge($default, $setting);
+
         $instance = static::getInstance();
 
         $pinyin = $instance->string2pinyin($instance->keepOnlyChinese($string));
@@ -164,9 +167,11 @@ class Pinyin
             }
         }, explode(' ', $pinyin));
 
-        !is_null($delimiter) || $delimiter = static::$settings['delimiter'];
+        !is_null($setting['delimiter']) || $delimiter = static::$settings['delimiter'];
 
-        return $instance->addDelimiter(join(' ', $letters), $delimiter);
+        $letters = $instance->addDelimiter(join(' ', $letters), $delimiter);
+
+        return $setting['uppercase'] ? strtoupper($letters) : $letters;
     }
 
     /**
