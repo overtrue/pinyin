@@ -161,17 +161,17 @@ class Pinyin
 
         $pinyin = $instance->string2pinyin($instance->keepOnlyChinese($string));
 
-        $letters = array_map(function($word){
+        $letterCase = $setting['uppercase'] ? 'strtoupper' : 'strtolower';
+
+        $letters = array_map(function($word) use ($letterCase){
             if (!empty($word)) {
-                return strtoupper($word{0});
+                return $letterCase($word{0});
             }
         }, explode(' ', $pinyin));
 
         !is_null($setting['delimiter']) || $delimiter = static::$settings['delimiter'];
 
-        $letters = $instance->addDelimiter(join(' ', $letters), $delimiter);
-
-        return $setting['uppercase'] ? strtoupper($letters) : $letters;
+        return $instance->addDelimiter(join(' ', $letters), $delimiter);
     }
 
     /**
