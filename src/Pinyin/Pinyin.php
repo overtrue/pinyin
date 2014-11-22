@@ -152,7 +152,7 @@ class Pinyin
      *
      * @return string
      */
-    public static function letter($string, $setting = array())
+    public static function letter($string, array $setting = array())
     {
         $default = array('delimiter' => null, 'uppercase' => false);
         $setting = array_merge($default, $setting);
