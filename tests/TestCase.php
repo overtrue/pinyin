@@ -38,8 +38,8 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('N-H', Pinyin::letter('您好', array('delimiter' => '-', 'uppercase' => true)));
         $this->assertEquals('c q', Pinyin::letter('重庆'));
         $this->assertEquals('z y', Pinyin::letter('重要'));
-        $this->assertEquals('nh', Pinyin::letter('您好', ''));
-        $this->assertEquals('kxll', Pinyin::letter('康熙来了', ''));
+        $this->assertEquals('nh', Pinyin::letter('您好', array('delimiter' => '')));
+        $this->assertEquals('kxll', Pinyin::letter('康熙来了', array('delimiter' => '')));
         $this->assertEquals('d z x w q l x b d d z d g m h', Pinyin::letter('带着希望去旅行，比到达终点更美好'));
         $this->assertEquals('z q s l z w z w', Pinyin::letter('赵钱孙李 周吴郑王'));
     }
