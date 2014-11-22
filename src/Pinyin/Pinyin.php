@@ -147,8 +147,8 @@ class Pinyin
     /**
      * get first letters of chars
      *
-     * @param string $string    source string.
-     * @param string $delimiter delimiter for letters.
+     * @param string $string  source string.
+     * @param string $setting settings
      *
      * @return string
      */
