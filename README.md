@@ -10,7 +10,7 @@ Pinyin
 SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
 
 ```php
-use \Overtrue\Pinyin\Pinyin; //请注意1.x系列的命名空间不同
+use \Overtrue\Pinyin\Pinyin; 
 
 echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
@@ -187,9 +187,6 @@ use \Overtrue\Pinyin\Pinyin;
 $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 
 ```
-
-# 说明
-- 1.x的命名空间是`\Overtrue`，2.x的命名空间是`\Overtrue\Pinyin`（之前的写法不规范 :see_no_evil:）
 
 # TODO
 - [x] 添加获取首字母；
