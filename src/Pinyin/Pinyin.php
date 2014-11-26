@@ -159,8 +159,16 @@ class Pinyin
 
         $pinyin = $instance->string2pinyin($string);
 
+        // add accents
+        if ($settings['accent']) {
+            $pinyin = $instance->addAccents($pinyin);
+        } else {
+            $pinyin = $instance->removeTone($pinyin);
+        }
+
         //add delimiter
         $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
+
 
         $return = array(
                    'src'    => $string,
@@ -187,6 +195,7 @@ class Pinyin
         $letterCase = $setting['uppercase'] ? 'strtoupper' : 'strtolower';
 
         $letters = array();
+
         foreach (explode(' ', $pinyin) as $word) {
             $ord = ord(strtolower($word{0}));
 
@@ -212,14 +221,7 @@ class Pinyin
         $string = $this->prepare($string);
         $pinyin = strtr($string, static::$dictionary);
 
-        // add accents
-        if (static::$settings['accent']) {
-            $pinyin = $this->addAccents($pinyin);
-        } else {
-            $pinyin = $this->removeTone($pinyin);
-        }
-
-        return trim(str_replace("  ", '', $pinyin));
+        return trim(str_replace("  ", ' ', $pinyin));
     }
 
     /**

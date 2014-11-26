@@ -48,7 +48,7 @@ class TestCase extends PHPUnit_Framework_TestCase
     public function testParse()
     {
         $this->assertEquals(array('src' => '您好', 'pinyin' => 'nín hǎo', 'letter' => 'n h'), Pinyin::parse('您好'));
-        $this->assertEquals(array('src' => '-', 'pinyin' => '', 'letter' => ''), Pinyin::parse('-'));
+        $this->assertEquals(array('src' => '-', 'pinyin' => '-', 'letter' => ''), Pinyin::parse('-'));
         $this->assertEquals(array('src' => '', 'pinyin' => '', 'letter' => ''), Pinyin::parse(''));
     }
 
