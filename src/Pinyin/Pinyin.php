@@ -116,62 +116,101 @@ class Pinyin
      */
     public static function pinyin($string, array $settings = array())
     {
-        $instance = static::getInstance();
+        $parsed = self::parse($string, $settings);
 
-        $oldSettings = static::$settings;
-
-        // merge setting
-        empty($settings) || static::settings($settings);
-
-        if (static::$settings['letter']) {
-            static::settings($oldSettings);
-
-            return static::letter($string);
-        }
-
-         // remove non-Chinese char.
-        if (static::$settings['only_chinese']) {
-            $string = $instance->keepOnlyChinese($string);
-        }
-
-        $pinyin = $instance->string2pinyin($string);
-
-        // add delimiter
-        $pinyin = $instance->addDelimiter($pinyin, static::$settings['delimiter']);
-
-        static::settings($oldSettings);
-
-        return $instance->escape($pinyin);
+        return $parsed['pinyin'];
     }
 
     /**
      * get first letters of chars
      *
-     * @param string $string  source string.
-     * @param string $setting settings
+     * @param string $string   source string.
+     * @param string $settings settings
      *
      * @return string
      */
-    public static function letter($string, array $setting = array())
+    public static function letter($string, array $settings = array())
+    {
+        $parsed = self::parse($string, $settings);
+
+        return $parsed['letter'];
+    }
+
+    /**
+     * parse the string to pinyin.
+     *
+     * Overtrue\Pinyin\Pinyin::parse('带着梦想旅行');
+     *
+     * @param string $string
+     * @param array  $settings
+     *
+     * @return array
+     */
+    public static function parse($string, array $settings = array())
+    {
+        $instance = static::getInstance();
+
+        $settings = array_merge(self::$settings, $settings);
+
+        // remove non-Chinese char.
+        if ($settings['only_chinese']) {
+            $string = $instance->justChinese($string);
+        }
+
+        $pinyin = $instance->string2pinyin($string);
+
+        // add accents
+        if ($settings['accent']) {
+            $pinyin = $instance->addAccents($pinyin);
+        } else {
+            $pinyin = $instance->removeTone($pinyin);
+        }
+
+        //add delimiter
+        $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
+
+
+        $return = array(
+                   'src'    => $string,
+                   'pinyin' => $instance->escape($delimitedPinyin),
+                   'letter' => $instance->getFirstLetters($pinyin, $settings),
+                  );
+
+        return $return;
+    }
+
+    /**
+     * get first letters from pinyin
+     *
+     * @param string $pinyin
+     * @param array  $setting
+     *
+     * @return string
+     */
+    protected function getFirstLetters($pinyin, $setting)
     {
         $default = array('delimiter' => null, 'uppercase' => false);
         $setting = array_merge($default, $setting);
 
-        $instance = static::getInstance();
-
-        $pinyin = $instance->string2pinyin($instance->keepOnlyChinese($string));
-
         $letterCase = $setting['uppercase'] ? 'strtoupper' : 'strtolower';
 
-        $letters = array_map(function($word) use ($letterCase){
-            if (!empty($word)) {
-                return $letterCase($word{0});
+        $letters = array();
+
+        foreach (explode(' ', $pinyin) as $word) {
+            if (empty($word)) {
+                continue;
             }
-        }, explode(' ', $pinyin));
+
+            $ord = ord(strtolower($word{0}));
+
+            if ($ord >= 97 && $ord <= 122) {
+                $letters[] = $letterCase($word{0});
+            }
+        }
 
         !is_null($setting['delimiter']) || $setting['delimiter'] = static::$settings['delimiter'];
 
-        return $instance->addDelimiter(join(' ', $letters), $setting['delimiter']);
+        return join($setting['delimiter'], $letters);
     }
 
     /**
@@ -186,14 +225,7 @@ class Pinyin
         $string = $this->prepare($string);
         $pinyin = strtr($string, static::$dictionary);
 
-        // add accents
-        if (static::$settings['accent']) {
-            $pinyin = $this->addAccents($pinyin);
-        } else {
-            $pinyin = $this->removeTone($pinyin);
-        }
-
-        return trim($pinyin);
+        return trim(str_replace("  ", ' ', $pinyin));
     }
 
     /**
@@ -353,7 +385,7 @@ class Pinyin
      *
      * @return string
      */
-    protected function keepOnlyChinese($string)
+    protected function justChinese($string)
     {
         return preg_replace('/[^\p{Han}]/u', '', $string);
     }
@@ -395,7 +427,7 @@ class Pinyin
      *
      * @param string $string
      */
-    protected function addDelimiter($string, $delimiter = '')
+    protected function delimit($string, $delimiter = '')
     {
         return preg_replace('/\s+/', strval($delimiter), trim($string));
     }
