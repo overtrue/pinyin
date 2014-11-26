@@ -1,7 +1,7 @@
 <?php
 
-include __DIR__ . '/../vendor/autoload.php';
-//include __DIR__ . '/../src/Overtrue/Pinyin.php';
+//include __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/../src/Pinyin/Pinyin.php';
 
 use Overtrue\Pinyin\Pinyin;
 
@@ -42,6 +42,14 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('kxll', Pinyin::letter('康熙来了', array('delimiter' => '')));
         $this->assertEquals('d z x w q l x b d d z d g m h', Pinyin::letter('带着希望去旅行，比到达终点更美好'));
         $this->assertEquals('z q s l z w z w', Pinyin::letter('赵钱孙李 周吴郑王'));
+    }
+
+    // test 'parse'
+    public function testParse()
+    {
+        $this->assertEquals(array('src' => '您好', 'pinyin' => 'nín hǎo', 'letter' => 'n h'), Pinyin::parse('您好'));
+        $this->assertEquals(array('src' => '-', 'pinyin' => '', 'letter' => ''), Pinyin::parse('-'));
+        $this->assertEquals(array('src' => '', 'pinyin' => '', 'letter' => ''), Pinyin::parse(''));
     }
 
     // test return with tone

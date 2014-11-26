@@ -146,7 +146,7 @@ class Pinyin
      *
      * @return array
      */
-    public static function parse($string, $settings)
+    public static function parse($string, array $settings = array())
     {
         $instance = static::getInstance();
 
@@ -154,17 +154,17 @@ class Pinyin
 
         // remove non-Chinese char.
         if ($settings['only_chinese']) {
-            $string = $instance->keepOnlyChinese($string);
+            $string = $instance->justChinese($string);
         }
 
         $pinyin = $instance->string2pinyin($string);
 
-        // add delimiter
-        $pinyin = $instance->delimit($pinyin, $settings['delimiter']);
+        //add delimiter
+        $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
 
         $return = array(
                    'src'    => $string,
-                   'pinyin' => $instance->escape($pinyin),
+                   'pinyin' => $instance->escape($delimitedPinyin),
                    'letter' => $instance->getFirstLetters($pinyin, $settings),
                   );
 
@@ -379,7 +379,7 @@ class Pinyin
      *
      * @return string
      */
-    protected function keepOnlyChinese($string)
+    protected function justChinese($string)
     {
         return preg_replace('/[^\p{Han}]/u', '', $string);
     }
