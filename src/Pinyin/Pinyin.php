@@ -182,7 +182,7 @@ class Pinyin
     protected function getFirstLetters($pinyin, $setting)
     {
         $default = array('delimiter' => null, 'uppercase' => false);
-        $setting = array_merge($default, $setting)
+        $setting = array_merge($default, $setting);
 
         $letterCase = $setting['uppercase'] ? 'strtoupper' : 'strtolower';
 
