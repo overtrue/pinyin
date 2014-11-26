@@ -165,7 +165,7 @@ class Pinyin
         $return = array(
                    'src'    => $string,
                    'pinyin' => $instance->escape($pinyin),
-                   'letter' => getFirstLetters($pinyin, $settings),
+                   'letter' => $instance->getFirstLetters($pinyin, $settings),
                   );
 
         return $return;
