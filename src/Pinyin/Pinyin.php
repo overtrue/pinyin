@@ -43,6 +43,7 @@ class Pinyin
                                   'accent'       => true,
                                   'letter'       => false,
                                   'only_chinese' => false,
+                                  'uppercase'    => false
                                  );
 
     /**
@@ -187,12 +188,9 @@ class Pinyin
      *
      * @return string
      */
-    protected function getFirstLetters($pinyin, $setting)
+    protected function getFirstLetters($pinyin, $settings)
     {
-        $default = array('delimiter' => null, 'uppercase' => false);
-        $setting = array_merge($default, $setting);
-
-        $letterCase = $setting['uppercase'] ? 'strtoupper' : 'strtolower';
+        $letterCase = $settings['uppercase'] ? 'strtoupper' : 'strtolower';
 
         $letters = array();
 
@@ -208,9 +206,7 @@ class Pinyin
             }
         }
 
-        !is_null($setting['delimiter']) || $setting['delimiter'] = static::$settings['delimiter'];
-
-        return join($setting['delimiter'], $letters);
+        return join($settings['delimiter'], $letters);
     }
 
     /**
