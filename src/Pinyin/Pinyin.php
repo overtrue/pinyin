@@ -197,9 +197,13 @@ class Pinyin
         $letters = array();
 
         foreach (explode(' ', $pinyin) as $word) {
+            if (empty($word)) {
+                continue;
+            }
+
             $ord = ord(strtolower($word{0}));
 
-            if (!empty($word) && $ord >= 97 && $ord <= 122) {
+            if ($ord >= 97 && $ord <= 122) {
                 $letters[] = $letterCase($word{0});
             }
         }
