@@ -219,7 +219,7 @@ class Pinyin
             $pinyin = $this->removeTone($pinyin);
         }
 
-        return trim($pinyin);
+        return trim(str_replace("  ", '', $pinyin));
     }
 
     /**
