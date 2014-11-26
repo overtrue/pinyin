@@ -170,7 +170,6 @@ class Pinyin
         //add delimiter
         $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
 
-
         $return = array(
                    'src'    => $string,
                    'pinyin' => $instance->escape($delimitedPinyin),
