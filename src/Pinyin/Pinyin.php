@@ -116,7 +116,7 @@ class Pinyin
      */
     public static function pinyin($string, array $settings = array())
     {
-        $parsed = $this->parse($string, $settings);
+        $parsed = self::parse($string, $settings);
 
         return $parsed['pinyin'];
     }
@@ -131,7 +131,7 @@ class Pinyin
      */
     public static function letter($string, array $settings = array())
     {
-        $parsed = $this->parse($string, $settings);
+        $parsed = self::parse($string, $settings);
 
         return $parsed['letter'];
     }
@@ -146,7 +146,7 @@ class Pinyin
      *
      * @return array
      */
-    public function parse($string, $settings)
+    public static function parse($string, $settings)
     {
         $instance = static::getInstance();
 
