@@ -1,7 +1,11 @@
 <?php
 
-//include __DIR__ . '/../vendor/autoload.php';
-include __DIR__ . '/../src/Pinyin/Pinyin.php';
+
+if (gethostname() == 'overtrue') {
+    include __DIR__ . '/../src/Pinyin/Pinyin.php';
+} else {
+    include __DIR__ . '/../vendor/autoload.php';
+}
 
 use Overtrue\Pinyin\Pinyin;
 
@@ -40,6 +44,7 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('z y', Pinyin::letter('重要'));
         $this->assertEquals('nh', Pinyin::letter('您好', array('delimiter' => '')));
         $this->assertEquals('kxll', Pinyin::letter('康熙来了', array('delimiter' => '')));
+        $this->assertEquals('A B Z Z Q Z Z Z Z', Pinyin::letter("阿坝藏族羌族自治州", array('uppercase' => true)));
         $this->assertEquals('d z x w q l x b d d z d g m h', Pinyin::letter('带着希望去旅行，比到达终点更美好'));
         $this->assertEquals('z q s l z w z w', Pinyin::letter('赵钱孙李 周吴郑王'));
     }

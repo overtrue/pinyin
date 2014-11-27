@@ -158,13 +158,12 @@ class Pinyin
             $string = $instance->justChinese($string);
         }
 
-        $pinyin = $instance->string2pinyin($string);
-
+        $source = $instance->string2pinyin($string);
         // add accents
         if ($settings['accent']) {
-            $pinyin = $instance->addAccents($pinyin);
+            $pinyin = $instance->addAccents($source);
         } else {
-            $pinyin = $instance->removeTone($pinyin);
+            $pinyin = $instance->removeTone($source);
         }
 
         //add delimiter
@@ -173,7 +172,7 @@ class Pinyin
         $return = array(
                    'src'    => $string,
                    'pinyin' => $instance->escape($delimitedPinyin),
-                   'letter' => $instance->getFirstLetters($pinyin, $settings),
+                   'letter' => $instance->getFirstLetters($source, $settings),
                   );
 
         return $return;
