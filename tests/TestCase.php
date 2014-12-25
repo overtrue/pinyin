@@ -26,8 +26,8 @@ class TestCase extends PHPUnit_Framework_TestCase
 
     public function testAppends()
     {
-        Pinyin::appends(array('好' => 'buhao1'));
-        $this->assertEquals('buhāo', Pinyin::pinyin('好'));exit;
+        Pinyin::appends(array('好' => 'hao1'));
+        $this->assertEquals('hāo', Pinyin::pinyin('好'));exit;
     }
 
     // test temporary changes delimiter
