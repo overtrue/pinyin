@@ -1,7 +1,6 @@
 <?php namespace Overtrue\Pinyin;
 
 use Config;
-
 use Illuminate\Support\ServiceProvider;
 
 /**
