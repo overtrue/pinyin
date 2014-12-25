@@ -33,6 +33,13 @@ class Pinyin
     protected static $frequency;
 
     /**
+     * appends dict
+     *
+     * @var array
+     */
+    protected static $appends = array();
+
+    /**
      * settings
      *
      * @var array
@@ -61,7 +68,7 @@ class Pinyin
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            static::$dictionary = $this->loadDictionary();
+            $this->loadDictionary();
         }
     }
 
@@ -178,6 +185,18 @@ class Pinyin
     }
 
     /**
+     * 用户自定义补充
+     *
+     * @param array $appends
+     *
+     * @return void
+     */
+    public static function appends($appends = array())
+    {
+        static::$appends = array_merge(static::$appends, static::formatAdditionalWords($appends));
+    }
+
+    /**
      * get first letters from pinyin
      *
      * @param string $pinyin
@@ -216,7 +235,7 @@ class Pinyin
     protected function string2pinyin($string)
     {
         $string = $this->prepare($string);
-        $pinyin = strtr($string, static::$dictionary);
+        $pinyin = strtr($string, array_merge(static::$dictionary, $this->getAdditionalWords()));
 
         return trim(str_replace("  ", ' ', $pinyin));
     }
@@ -230,21 +249,18 @@ class Pinyin
     {
         $dictFile        = __DIR__ .'/data/dict.php';
         $ceditDictFile   = __DIR__ .'/data/cedict/cedict_ts.u8';
-        $additionalWords = $this->getAdditionalWords();
+
+        if (!file_exists($dictFile)) {
+            // parse and cache
+            $dictionary = $this->parseDictionary($ceditDictFile);
+            $this->cache($dictFile, $dictionary);
 
         // load from cache
-        if (file_exists($dictFile)) {
-            return $this->loadFromCache($dictFile);
+        } else {
+            $dictionary = $this->loadFromCache($dictFile);
         }
 
-        // parse and cache
-        $parsedDictionary = $this->parseDictionary($ceditDictFile);
-
-        $this->cache($dictFile, $parsedDictionary);
-
-        $dictionary = array_merge($parsedDictionary, $additionalWords);
-
-        return $dictionary;
+        return self::$dictionary = $dictionary;
     }
 
     /**
@@ -254,10 +270,27 @@ class Pinyin
      */
     protected function getAdditionalWords()
     {
-        $additionalWords = include __DIR__ . '/data/additional.php';
+        static $additionalWords;
 
+        if (empty($additionalWords)) {
+            $additionalWords = include __DIR__ . '/data/additional.php';
+            $additionalWords = static::formatAdditionalWords($additionalWords);
+        }
+
+        return array_merge($additionalWords, static::$appends);
+    }
+
+    /**
+     * format users words
+     *
+     * @param array $additionalWords
+     *
+     * @return array
+     */
+    public static function formatAdditionalWords($additionalWords)
+    {
         foreach ($additionalWords as $words => $pinyin) {
-            $additionalWords[$words] = $this->formatDictPinyin($pinyin);
+            $additionalWords[$words] = static::formatDictPinyin($pinyin);
         }
 
         return $additionalWords;
@@ -292,7 +325,7 @@ class Pinyin
             $key = static::$settings['traditional'] ? trim($matches['trad']) : trim($matches['simply']);
             // frequency check
             if (empty($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = $this->formatDictPinyin($matches['pinyin']);
+               $content[$key] = static::formatDictPinyin($matches['pinyin']);
             }
         }
 
@@ -306,7 +339,7 @@ class Pinyin
      *
      * @return string
      */
-    protected function formatDictPinyin($pinyin)
+    protected static function formatDictPinyin($pinyin)
     {
         return preg_replace_callback('/[A-Z][a-z]{1,}:?\d{1}/', function($matches){
             return strtolower($matches[0]);
