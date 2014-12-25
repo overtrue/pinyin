@@ -94,17 +94,27 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 //获取首字母
 echo Pinyin::letter('带着希望去旅行，比到达终点更美好');
 // d z x w q l x b d d z d g m h
+
+//当前也可以两个同时获取
+echo Pinyin::parse('带着希望去旅行，比到达终点更美好');
+// output:
+// array(
+//  'src'    => '带着希望去旅行，比到达终点更美好',
+// 	'pinyin' => 'dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo',
+// 	'letter' => 'd z x w q l x b d d z d g m h',
+// );
 ```
 
 ## 设置
 
 |      选项      | 描述                                                |
 | -------------  | --------------------------------------------------- |
-| `delimiter`    | 分隔符，默认为一个空格 ' '                          |
-| `traditional`  | 繁体                                                |
-| `accent`       | 是否输出音调                                        |
-| `letter`       | 只输出首字母，或者直接使用`Pinyin::letter($string)` |
-| `only_chinese` | 只保留`$string`中中文部分                           |
+| `delimiter`    | 分隔符，默认为一个空格 ' '                              |
+| `traditional`  | 繁体                                                 |
+| `accent`       | 是否输出音调                                           |
+| `letter`       | 只输出首字母，或者直接使用`Pinyin::letter($string)`      |
+| `only_chinese` | 只保留`$string`中中文部分                              |
+| `uppercase`    | 取首字母时的大写，默认`false`                           |
 
 
 *全局设置：*  `Pinyin::set('delimiter', '-');`
