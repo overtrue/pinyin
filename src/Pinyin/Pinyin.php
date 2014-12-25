@@ -62,7 +62,6 @@ class Pinyin
     {
         if (is_null(static::$dictionary)) {
             static::$dictionary = $this->loadDictionary();
-            static::$frequency  = include __DIR__ . '/data/frequency.php';
         }
     }
 
@@ -241,9 +240,9 @@ class Pinyin
         // parse and cache
         $parsedDictionary = $this->parseDictionary($ceditDictFile);
 
-        $dictionary = array_merge($parsedDictionary, $additionalWords);
+        $this->cache($dictFile, $parsedDictionary);
 
-        $this->cache($dictFile, $dictionary);
+        $dictionary = array_merge($parsedDictionary, $additionalWords);
 
         return $dictionary;
     }
@@ -273,6 +272,8 @@ class Pinyin
      */
     protected function parseDictionary($dictionaryFile)
     {
+        static::$frequency = include __DIR__ . '/data/frequency.php';
+
         $handle = fopen($dictionaryFile, 'r');
         $regex = "#(?<trad>.*?) (?<simply>.*?) \[(?<pinyin>.*?)\]#i";
 
@@ -288,10 +289,9 @@ class Pinyin
                 continue;
             }
 
-            $key = static::$settings['traditional'] ? $matches['trad'] : $matches['simply'];
-
+            $key = static::$settings['traditional'] ? trim($matches['trad']) : trim($matches['simply']);
             // frequency check
-            if (!isset($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
+            if (empty($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
                $content[$key] = $this->formatDictPinyin($matches['pinyin']);
             }
         }
@@ -316,18 +316,24 @@ class Pinyin
     /**
      * Frequency check
      *
-     * @param string $pinyin the pinyin with tone.
+     * @param string $new the pinyin with tone.
+     * @param string $old the pinyin with tone.
      *
      * @return boolean
      */
-    protected function moreCommonly($pinyin, $target)
+    protected function moreCommonly($new, $old)
     {
-        $pinyin = trim($pinyin);
-        $target = trim($target);
+        $new = strtolower(trim($new));
+        $old = strtolower(trim($old));
 
-        return isset(static::$frequency[$pinyin])
-            && isset(static::$frequency[$target])
-            && static::$frequency[$pinyin] > static::$frequency[$target];
+        // contain space
+        if (stripos($new, ' ') || $new == $old) {
+            return false;
+        }
+
+        return isset(static::$frequency[$new])
+            && isset(static::$frequency[$old])
+            && static::$frequency[$new] > static::$frequency[$old];
     }
 
 
