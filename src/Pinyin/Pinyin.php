@@ -82,7 +82,7 @@ class Pinyin
     /**
      * get class instance
      *
-     * @return Overtrue\Pinyin
+     * @return \Overtrue\Pinyin\Pinyin
      */
     public static function getInstance()
     {
@@ -94,9 +94,12 @@ class Pinyin
     }
 
     /**
-     * set.
+     * setter
      *
-     * @param array $settings settings.
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return void
      */
     public static function set($key, $value)
     {
@@ -107,6 +110,8 @@ class Pinyin
      * setting.
      *
      * @param array $settings settings.
+     *
+     * @return void
      */
     public static function settings(array $settings = array())
     {
@@ -200,7 +205,7 @@ class Pinyin
      * get first letters from pinyin
      *
      * @param string $pinyin
-     * @param array  $setting
+     * @param array  $settings
      *
      * @return string
      */
@@ -299,7 +304,7 @@ class Pinyin
     /**
      * parse the dict to php array
      *
-     * @param string $dictionary path of dictionary file.
+     * @param string $dictionaryFile path of dictionary file.
      *
      * @return array
      */
@@ -356,8 +361,8 @@ class Pinyin
      */
     protected function moreCommonly($new, $old)
     {
-        $new = strtolower(trim($new));
-        $old = strtolower(trim($old));
+        $new = trim($new);
+        $old = trim($old);
 
         // contain space
         if (stripos($new, ' ') || $new == $old) {
@@ -388,7 +393,7 @@ class Pinyin
      * @param string $filename  filename.
      * @param array  $array     parsed dictionary.
      *
-     * @return void
+     * @return false|null
      */
     protected function cache($filename, $array)
     {
@@ -443,7 +448,7 @@ class Pinyin
      * Credits for this function go to velcrow, who shared this
      * at http://stackoverflow.com/questions/1162491/alternative-to-mysql-real-escape-string-without-connecting-to-db
      *
-     * @param string $string the string to  be escaped
+     * @param string $value the string to  be escaped
      *
      * @return string the escaped string
      */
