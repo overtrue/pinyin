@@ -103,7 +103,16 @@ echo Pinyin::parse('带着希望去旅行，比到达终点更美好');
 // 	'pinyin' => 'dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo',
 // 	'letter' => 'd z x w q l x b d d z d g m h',
 // );
+
+// 加载自定义补充词库
+$appends = array(
+	'冷' => 're4', 
+);
+Pinyin::appends($appends);
+echo Pinyin::pinyin('冷');
+// rè
 ```
+
 
 ## 设置
 
@@ -205,6 +214,7 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
 - [x] 添加Laravel4的serviece provider.
 - [x] 添加首字母输出大小写选项`uppercase`
+- [x] 支持载入自定义词库:`Pinyin::appends($appends = array())`
 - [ ] 支持Laravel5的service provider.
 
 # Contribution
