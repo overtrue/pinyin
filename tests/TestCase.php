@@ -24,10 +24,16 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('nín hǎo', Pinyin::pinyin('您好'));
     }
 
+    // test appends custom dict.
     public function testAppends()
     {
         Pinyin::appends(array('好' => 'hao1'));
-        $this->assertEquals('hāo', Pinyin::pinyin('好'));exit;
+        $this->assertEquals('hāo', Pinyin::pinyin('好'));
+        $appends = array(
+            '冷' => 're4',
+        );
+        Pinyin::appends($appends);
+        $this->assertEquals('rè', Pinyin::pinyin('冷'));
     }
 
     // test temporary changes delimiter
