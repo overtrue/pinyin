@@ -9,4 +9,6 @@ return array(
         '万' => 'wan4',
         '区' => 'qu1',
         '区庄' => 'ou1 zhuang1',
+        '鴜' => 'ci2',
+        '鹭' => 'lu4',
        );
