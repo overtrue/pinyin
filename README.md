@@ -5,7 +5,7 @@ Pinyin
 [![Latest Stable Version](https://poser.pugx.org/overtrue/pinyin/v/stable.svg)](https://packagist.org/packages/overtrue/pinyin) [![Total Downloads](https://poser.pugx.org/overtrue/pinyin/downloads.svg)](https://packagist.org/packages/overtrue/pinyin) [![Latest Unstable Version](https://poser.pugx.org/overtrue/pinyin/v/unstable.svg)](https://packagist.org/packages/overtrue/pinyin) [![License](https://poser.pugx.org/overtrue/pinyin/license.svg)](https://packagist.org/packages/overtrue/pinyin)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 
-基于[CC-CEDICT](http://cc-cedict.org/wiki/)词典的中文转拼音工具, 更准确的汉字转拼音解决方案。 
+基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的汉字转拼音解决方案。 
 
 SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
 
@@ -69,7 +69,7 @@ Pinyin::pinyin('难过'); // nán guò
 	```
 	composer require overtrue/pinyin:2.*
 	```
-	或者在你的项目composer.json加入：
+	或者在你的项目 composer.json 加入：
 	```javascript
 	{
 	    "require": {
@@ -118,12 +118,12 @@ echo Pinyin::pinyin('冷');
 
 |      选项      | 描述                                                |
 | -------------  | --------------------------------------------------- |
-| `delimiter`    | 分隔符，默认为一个空格 ' '                              |
-| `traditional`  | 繁体                                                 |
-| `accent`       | 是否输出音调                                           |
-| `letter`       | 只输出首字母，或者直接使用`Pinyin::letter($string)`      |
-| `only_chinese` | 只保留`$string`中中文部分                              |
-| `uppercase`    | 取首字母时的大写，默认`false`                           |
+| `delimiter`    | 分隔符，默认为一个空格                              |
+| `traditional`  | 繁体                                                |
+| `accent`       | 是否输出音调                                        |
+| `letter`       | 只输出首字母，或者直接使用 `Pinyin::letter($string)`|
+| `only_chinese` | 只保留 `$string` 中中文部分                         |
+| `uppercase`    | 取首字母时的大写，默认 `false`                      |
 
 
 *全局设置：*  `Pinyin::set('delimiter', '-');`
@@ -146,7 +146,7 @@ $setting = [
 	    'accent'    => false,
 	   ];
 
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好', $setting);//这里的setting只是临时修改，并非全局设置
+echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好', $setting);//这里的 setting 只是临时修改，并非全局设置
 
 // dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao
 ```
@@ -158,16 +158,20 @@ echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
 
-# 在Laravel中使用
+# 在 Laravel 中使用
 
 ```shell
 composer require overtrue/pinyin:2.*
 ```
-在laravel配置文件中`app.php`里`providers`里加入:
+
+在 Laravel 配置文件中 `app.php` 里 `providers` 里加入:
+
 ```php
 'Overtrue\Pinyin\PinyinServiceProvider',
 ```
+
 然后看起来可能是这样：
+
 ```php
 	'providers' =>
 		//...
@@ -178,6 +182,7 @@ composer require overtrue/pinyin:2.*
 ```
 
 然后你可以添加配置文件：`config/pinyin.php`(_注意：此项为可选，如果不需要设置则不用创建此文件_):
+
 ```php
 <?php
 
@@ -187,7 +192,9 @@ return [
 	//...
 ];
 ```
+
 以上的设置会是全局的设置，如需临时设置请在方法里传参，例如:
+
 ```php
 
 Pinyin::letter('您好世界', ['delimiter' => '-']); //n-h-s-j
@@ -196,6 +203,7 @@ Pinyin::letter('您好世界', ['delimiter' => '-', 'uppercase' => true]); //N-H
 ```
 
 ### 使用
+
 与上面的使用方法一样：
 
 ```php
@@ -212,15 +220,16 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 - [x] 支持繁体；
 - [x] 添加补充词典；
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
-- [x] 添加Laravel4的serviece provider.
-- [x] 添加首字母输出大小写选项`uppercase`
-- [x] 支持载入自定义词库:`Pinyin::appends($appends = array())`
-- [ ] 支持Laravel5的service provider.
+- [x] 添加 Laravel4 的 serviece provider；
+- [x] 添加首字母输出大小写选项 `uppercase`；
+- [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
+- [ ] 支持 Laravel5 的service provider。
 
 # Contribution
-欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`! :kiss:
+欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`！ :kiss:
 
 # 参考
+
 - [CC-CEDICT](http://cc-cedict.org/wiki/)
 - [現代漢語語音語料庫](http://mmc.sinica.edu.tw/intro_c_01.html)
 - [汉典](http://www.zdic.net/)
