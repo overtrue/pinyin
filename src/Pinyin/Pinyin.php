@@ -1,8 +1,11 @@
-<?php namespace  Overtrue\Pinyin;
+<?php
+
+namespace  Overtrue\Pinyin;
+
 /**
  * Pinyin.php
  *
- * @author Carlos <anzhengchao@gmail.com>
+ * @author overtrue <anzhengchao@gmail.com>
  * @date   [2014-07-17 15:49]
  */
 
@@ -19,68 +22,67 @@ class Pinyin
 {
 
     /**
-     * dictionary path
+     * Dictionary.
      *
      * @var array
      */
     protected static $dictionary;
 
     /**
-     * table of pinyin frequency.
+     * Table of pinyin frequency.
      *
      * @var array
      */
     protected static $frequency;
 
     /**
-     * appends dict
+     * Appends words.
      *
      * @var array
      */
     protected static $appends = array();
 
     /**
-     * settings
+     * Settings.
      *
      * @var array
      */
     protected static $settings = array(
                                   'delimiter'    => ' ',
-                                  'traditional'  => false,
                                   'accent'       => true,
-                                  'letter'       => false,
                                   'only_chinese' => false,
                                   'uppercase'    => false
                                  );
 
     /**
-     * the instance
+     * The instance.
      *
      * @var \Overtrue\Pinyin\Pinyin
      */
     private static $_instance;
 
+
     /**
-     * constructor
+     * Constructor.
      *
      * set dictionary path.
      */
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            $this->loadDictionary();
+            self::$dictionary = include __DIR__ .'/data/dict.php';
         }
     }
 
     /**
-     * disable clone
+     * Disable clone.
      *
      * @return void
      */
     private function __clone() {}
 
     /**
-     * get class instance
+     * Get class instance
      *
      * @return \Overtrue\Pinyin\Pinyin
      */
@@ -94,7 +96,7 @@ class Pinyin
     }
 
     /**
-     * setter
+     * Setter.
      *
      * @param string $key
      * @param mixed  $value
@@ -107,7 +109,7 @@ class Pinyin
     }
 
     /**
-     * setting.
+     * Global settings.
      *
      * @param array $settings settings.
      *
@@ -119,7 +121,7 @@ class Pinyin
     }
 
     /**
-     * chinese to pinyin
+     * Chinese to pinyin.
      *
      * @param string $string  source string.
      * @param array  $settings settings.
@@ -134,7 +136,7 @@ class Pinyin
     }
 
     /**
-     * get first letters of chars
+     * Get first letters of string.
      *
      * @param string $string   source string.
      * @param string $settings settings
@@ -149,7 +151,7 @@ class Pinyin
     }
 
     /**
-     * parse the string to pinyin.
+     * Parse the string to pinyin.
      *
      * Overtrue\Pinyin\Pinyin::parse('带着梦想旅行');
      *
@@ -190,7 +192,7 @@ class Pinyin
     }
 
     /**
-     * 用户自定义补充
+     * Add custom words.
      *
      * @param array $appends
      *
@@ -202,7 +204,7 @@ class Pinyin
     }
 
     /**
-     * get first letters from pinyin
+     * Get first letters from pinyin.
      *
      * @param string $pinyin
      * @param array  $settings
@@ -231,7 +233,7 @@ class Pinyin
     }
 
     /**
-     * replace string to pinyin
+     * Replace string to pinyin.
      *
      * @param string $string
      *
@@ -239,37 +241,14 @@ class Pinyin
      */
     protected function string2pinyin($string)
     {
-        $string = $this->prepare($string);
-        $pinyin = strtr($string, array_merge(static::$dictionary, $this->getAdditionalWords()));
+        $dictionary = array_merge(self::$dictionary, $this->getAdditionalWords());
+        $pinyin     = strtr($this->prepare($string), $dictionary);
 
         return trim(str_replace("  ", ' ', $pinyin));
     }
 
     /**
-     * load dictionary content
-     *
-     * @return array
-     */
-    protected function loadDictionary()
-    {
-        $dictFile        = __DIR__ .'/data/dict.php';
-        $ceditDictFile   = __DIR__ .'/data/cedict/cedict_ts.u8';
-
-        if (!file_exists($dictFile)) {
-            // parse and cache
-            $dictionary = $this->parseDictionary($ceditDictFile);
-            $this->cache($dictFile, $dictionary);
-
-        // load from cache
-        } else {
-            $dictionary = $this->loadFromCache($dictFile);
-        }
-
-        return self::$dictionary = $dictionary;
-    }
-
-    /**
-     * return additional words
+     * Return additional words.
      *
      * @return array
      */
@@ -279,14 +258,13 @@ class Pinyin
 
         if (empty($additionalWords)) {
             $additionalWords = include __DIR__ . '/data/additional.php';
-            $additionalWords = static::formatAdditionalWords($additionalWords);
         }
 
         return array_merge($additionalWords, static::$appends);
     }
 
     /**
-     * format users words
+     * Format user's words.
      *
      * @param array $additionalWords
      *
@@ -302,43 +280,7 @@ class Pinyin
     }
 
     /**
-     * parse the dict to php array
-     *
-     * @param string $dictionaryFile path of dictionary file.
-     *
-     * @return array
-     */
-    protected function parseDictionary($dictionaryFile)
-    {
-        static::$frequency = include __DIR__ . '/data/frequency.php';
-
-        $handle = fopen($dictionaryFile, 'r');
-        $regex = "#(?<trad>.*?) (?<simply>.*?) \[(?<pinyin>.*?)\]#i";
-
-        $content = array();
-
-        while ($line = fgets($handle)) {
-            if (0 === stripos($line, '#')) {
-                continue;
-            }
-            preg_match($regex, $line, $matches);
-
-            if (empty($matches['trad']) || empty($matches['simply']) || empty($matches['pinyin'])) {
-                continue;
-            }
-
-            $key = static::$settings['traditional'] ? trim($matches['trad']) : trim($matches['simply']);
-            // frequency check
-            if (empty($content[$key]) || $this->moreCommonly($matches['pinyin'], $content[$key])) {
-               $content[$key] = static::formatDictPinyin($matches['pinyin']);
-            }
-        }
-
-        return $content;
-    }
-
-    /**
-     * format pinyin to lowercase.
+     * Format pinyin to lowercase.
      *
      * @param string $pinyin pinyin string.
      *
@@ -352,60 +294,7 @@ class Pinyin
     }
 
     /**
-     * Frequency check
-     *
-     * @param string $new the pinyin with tone.
-     * @param string $old the pinyin with tone.
-     *
-     * @return boolean
-     */
-    protected function moreCommonly($new, $old)
-    {
-        $new = trim($new);
-        $old = trim($old);
-
-        // contain space
-        if (stripos($new, ' ') || $new == $old) {
-            return false;
-        }
-
-        return isset(static::$frequency[$new])
-            && isset(static::$frequency[$old])
-            && static::$frequency[$new] > static::$frequency[$old];
-    }
-
-
-    /**
-     * load dictionary from cached file
-     *
-     * @param string $dictionary cached file name
-     *
-     * @return array
-     */
-    protected function loadFromCache($dictionary)
-    {
-        return include $dictionary;
-    }
-
-    /**
-     * write array to file
-     *
-     * @param string $filename  filename.
-     * @param array  $array     parsed dictionary.
-     *
-     * @return false|null
-     */
-    protected function cache($filename, $array)
-    {
-        if (empty($array)) {
-            return false;
-        }
-
-        file_put_contents($filename, "<?php\nreturn ".var_export($array, true).";") ;
-    }
-
-    /**
-     * check if the string has Chinese chars
+     * Check if the string has Chinese characters.
      *
      * @param string $string string to check.
      *
@@ -417,7 +306,7 @@ class Pinyin
     }
 
     /**
-     * Remove the non-Chinese characters
+     * Remove the non-Chinese characters.
      *
      * @param string $string source string.
      *
@@ -429,7 +318,7 @@ class Pinyin
     }
 
     /**
-     * prepare the string.
+     * Prepare the string.
      *
      * @param string $string source string.
      *
@@ -461,7 +350,7 @@ class Pinyin
     }
 
     /**
-     * add delimiter
+     * Add delimiter.
      *
      * @param string $string
      */
@@ -471,7 +360,7 @@ class Pinyin
     }
 
     /**
-     * remove tone
+     * Remove tone.
      *
      * @param string $string string with tone.
      *
@@ -504,27 +393,29 @@ class Pinyin
             $string));
     }
 
-    // helper callback
+    /**
+     * helper callback
+     *
+     * @param array $match
+     */
     protected function addAccentsCallback($match)
     {
         static $accentmap = null;
 
         if ($accentmap === null) {
             // where to place the accent marks
-            $stars =
-                    'a* e* i* o* u* ü* ü* ' .
-                    'A* E* I* O* U* Ü* ' .
-                    'a*i a*o e*i ia* ia*o ie* io* iu* ' .
-                    'A*I A*O E*I IA* IA*O IE* IO* IU* ' .
-                    'o*u ua* ua*i ue* ui* uo* üe* ' .
-                    'O*U UA* UA*I UE* UI* UO* ÜE*';
-            $nostars =
-                    'a e i o u u: ü ' .
-                    'A E I O U Ü ' .
-                    'ai ao ei ia iao ie io iu ' .
-                    'AI AO EI IA IAO IE IO IU ' .
-                    'ou ua uai ue ui uo üe ' .
-                    'OU UA UAI UE UI UO ÜE';
+            $stars = 'a* e* i* o* u* ü* ü* ' .
+                     'A* E* I* O* U* Ü* ' .
+                     'a*i a*o e*i ia* ia*o ie* io* iu* ' .
+                     'A*I A*O E*I IA* IA*O IE* IO* IU* ' .
+                     'o*u ua* ua*i ue* ui* uo* üe* ' .
+                     'O*U UA* UA*I UE* UI* UO* ÜE*';
+            $nostars = 'a e i o u u: ü ' .
+                       'A E I O U Ü ' .
+                       'ai ao ei ia iao ie io iu ' .
+                       'AI AO EI IA IAO IE IO IU ' .
+                       'ou ua uai ue ui uo üe ' .
+                       'OU UA UAI UE UI UO ÜE';
 
             // build an array like array('a' => 'a*') and store statically
             $accentmap = array_combine(explode(' ', $nostars), explode(' ', $stars));
@@ -551,4 +442,4 @@ class Pinyin
         return $word;
     }
 
-}// end of class
+}// END OF CLASS
