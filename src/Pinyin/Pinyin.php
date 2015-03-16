@@ -128,7 +128,7 @@ class Pinyin
      *
      * @return string
      */
-    public static function pinyin($string, array $settings = array())
+    public static function trans($string, array $settings = array())
     {
         $parsed = self::parse($string, $settings);
 
