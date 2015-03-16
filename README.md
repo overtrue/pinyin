@@ -158,47 +158,8 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 
 # 在 Laravel 中使用
 
-```shell
-composer require overtrue/pinyin:2.*
-```
+独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
-在 Laravel 配置文件中 `app.php` 里 `providers` 里加入:
-
-```php
-'Overtrue\Pinyin\PinyinServiceProvider',
-```
-
-然后看起来可能是这样：
-
-```php
-	'providers' =>
-		//...
-		'Illuminate\Validation\ValidationServiceProvider',
-		'Illuminate\View\ViewServiceProvider',
-		'Overtrue\Pinyin\PinyinServiceProvider',
-	],
-```
-
-然后你可以添加配置文件：`config/pinyin.php`(_注意：此项为可选，如果不需要设置则不用创建此文件_):
-
-```php
-<?php
-
-return [
-	'delimiter' => '-',
-	'accent' => false,
-	//...
-];
-```
-
-以上的设置会是全局的设置，如需临时设置请在方法里传参，例如:
-
-```php
-
-Pinyin::letter('您好世界', ['delimiter' => '-']); //n-h-s-j
-//大写字母输出
-Pinyin::letter('您好世界', ['delimiter' => '-', 'uppercase' => true]); //N-H-S-J
-```
 
 ### 使用
 
@@ -221,7 +182,7 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 - [x] <del>添加 Laravel4 的 serviece provider；</del>
 - [x] 添加首字母输出大小写选项 `uppercase`；
 - [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
-- [x] 支持 Laravel5 的service provider。[overtrue/laravel-pinyin](/overtrue/laravel-pinyin)
+- [x] 支持 Laravel 5 的service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 # Contribution
 欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`！ :kiss:
