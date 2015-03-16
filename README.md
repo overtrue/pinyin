@@ -64,7 +64,7 @@ Pinyin::trans('难过'); // nán guò
 ```
 
 
-# 安装
+## 安装
 1. 使用 Composer 安装:
 	```
 	composer require overtrue/pinyin:2.*
@@ -81,7 +81,7 @@ Pinyin::trans('难过'); // nán guò
 2. 直接下载文件 `src/Pinyin/Pinyin.php` 引入到项目中。
 
 
-# 使用
+## 使用
 
 ```php
 <?php
@@ -114,7 +114,7 @@ echo Pinyin::trans('冷');
 ```
 
 
-## 设置
+### 设置
 
 |      选项      | 描述                                                |
 | -------------  | --------------------------------------------------- |
@@ -156,7 +156,7 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
 
-# 在 Laravel 中使用
+## 在 Laravel 中使用
 
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
@@ -174,7 +174,7 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 
 ```
 
-# TODO
+## TODO
 - [x] 添加获取首字母；
 - [x] 支持繁体；
 - [x] 添加补充词典；
@@ -184,10 +184,10 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 - [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
 - [x] 支持 Laravel 5 的service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
-# Contribution
+## Contribution
 欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`！ :kiss:
 
-# 参考
+## 参考
 
 - [CC-CEDICT](http://cc-cedict.org/wiki/)
 - [現代漢語語音語料庫](http://mmc.sinica.edu.tw/intro_c_01.html)
