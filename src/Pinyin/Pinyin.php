@@ -1,6 +1,6 @@
 <?php
 
-namespace  Overtrue\Pinyin;
+namespace Overtrue\Pinyin;
 
 /**
  * Pinyin.php
