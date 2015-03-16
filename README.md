@@ -119,9 +119,7 @@ echo Pinyin::trans('冷');
 |      选项      | 描述                                                |
 | -------------  | --------------------------------------------------- |
 | `delimiter`    | 分隔符，默认为一个空格                              |
-| `traditional`  | 繁体                                                |
 | `accent`       | 是否输出音调                                        |
-| `letter`       | 只输出首字母，或者直接使用 `Pinyin::letter($string)`|
 | `only_chinese` | 只保留 `$string` 中中文部分                         |
 | `uppercase`    | 取首字母时的大写，默认 `false`                      |
 
