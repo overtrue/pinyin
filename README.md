@@ -1,64 +1,64 @@
-Pinyin 
+Pinyin
 ======
 
 [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
 [![Latest Stable Version](https://poser.pugx.org/overtrue/pinyin/v/stable.svg)](https://packagist.org/packages/overtrue/pinyin) [![Total Downloads](https://poser.pugx.org/overtrue/pinyin/downloads.svg)](https://packagist.org/packages/overtrue/pinyin) [![Latest Unstable Version](https://poser.pugx.org/overtrue/pinyin/v/unstable.svg)](https://packagist.org/packages/overtrue/pinyin) [![License](https://poser.pugx.org/overtrue/pinyin/license.svg)](https://packagist.org/packages/overtrue/pinyin)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 
-基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的汉字转拼音解决方案。 
+基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的汉字转拼音解决方案。
 
 SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
 
 ```php
-use \Overtrue\Pinyin\Pinyin; 
+use \Overtrue\Pinyin\Pinyin;
 
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
 
 //多音字
 // 了
-Pinyin::pinyin('了然'); // liǎo rán
-Pinyin::pinyin('来了'); // lái le
+Pinyin::trans('了然'); // liǎo rán
+Pinyin::trans('来了'); // lái le
 
 // 还
-Pinyin::pinyin('还有'); // hái yǒu
-Pinyin::pinyin('交还'); // jiāo huán
+Pinyin::trans('还有'); // hái yǒu
+Pinyin::trans('交还'); // jiāo huán
 
 // 什
-Pinyin::pinyin('什么'); // shén me
-Pinyin::pinyin('什锦'); // shí jǐn
+Pinyin::trans('什么'); // shén me
+Pinyin::trans('什锦'); // shí jǐn
 
 // 便
-Pinyin::pinyin('便当'); // biàn dāng
-Pinyin::pinyin('便宜'); // pián yí
+Pinyin::trans('便当'); // biàn dāng
+Pinyin::trans('便宜'); // pián yí
 
 // 剥
-Pinyin::pinyin('剥皮'); // bāo pí
-Pinyin::pinyin('剥皮器'); // bō pí qì
+Pinyin::trans('剥皮'); // bāo pí
+Pinyin::trans('剥皮器'); // bō pí qì
 
 // 不
-Pinyin::pinyin('赔不是'); // péi bú shi
-Pinyin::pinyin('跑了和尚，跑不了庙'); // pǎo le hé shàng , pǎo bù liǎo miào
+Pinyin::trans('赔不是'); // péi bú shi
+Pinyin::trans('跑了和尚，跑不了庙'); // pǎo le hé shàng , pǎo bù liǎo miào
 
 // 降
-Pinyin::pinyin('降温'); // jiàng wēn
-Pinyin::pinyin('投降'); // tóu xiáng
+Pinyin::trans('降温'); // jiàng wēn
+Pinyin::trans('投降'); // tóu xiáng
 
 // 都
-Pinyin::pinyin('首都'); // shǒu dū
-Pinyin::pinyin('都什么年代了'); // dōu shén me nián dài le
+Pinyin::trans('首都'); // shǒu dū
+Pinyin::trans('都什么年代了'); // dōu shén me nián dài le
 
 // 乐
-Pinyin::pinyin('快乐'); // kuài lè
-Pinyin::pinyin('音乐'); // yīn yuè
+Pinyin::trans('快乐'); // kuài lè
+Pinyin::trans('音乐'); // yīn yuè
 
 // 长
-Pinyin::pinyin('成长'); // chéng zhǎng
-Pinyin::pinyin('长江'); // cháng jiāng
+Pinyin::trans('成长'); // chéng zhǎng
+Pinyin::trans('长江'); // cháng jiāng
 
 // 难
-Pinyin::pinyin('难民'); // nàn mín
-Pinyin::pinyin('难过'); // nán guò
+Pinyin::trans('难民'); // nàn mín
+Pinyin::trans('难过'); // nán guò
 ...
 
 ```
@@ -88,7 +88,7 @@ Pinyin::pinyin('难过'); // nán guò
 use \Overtrue\Pinyin\Pinyin;
 
 //获取拼音
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
 
 //获取首字母
@@ -106,10 +106,10 @@ echo Pinyin::parse('带着希望去旅行，比到达终点更美好');
 
 // 加载自定义补充词库
 $appends = array(
-	'冷' => 're4', 
+	'冷' => 're4',
 );
 Pinyin::appends($appends);
-echo Pinyin::pinyin('冷');
+echo Pinyin::trans('冷');
 // rè
 ```
 
@@ -128,14 +128,14 @@ echo Pinyin::pinyin('冷');
 
 *全局设置：*  `Pinyin::set('delimiter', '-');`
 
-*临时设置：*  `Pinyin::pinyin($word, $settings)` 在调用的方法后传参
+*临时设置：*  `Pinyin::trans($word, $settings)` 在调用的方法后传参
 
 example:
 
 ```php
 
 Pinyin::set('delimiter', '-');//全局
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 
 // dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo
 ```
@@ -146,14 +146,14 @@ $setting = [
 	    'accent'    => false,
 	   ];
 
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好', $setting);//这里的 setting 只是临时修改，并非全局设置
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好', $setting);//这里的 setting 只是临时修改，并非全局设置
 
 // dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao
 ```
 
 ```php
 Pinyin::set('accent', false);
-echo Pinyin::pinyin('带着希望去旅行，比到达终点更美好');
+echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 
 // dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao
 ```
@@ -211,7 +211,7 @@ use \Overtrue\Pinyin\Pinyin;
 
 //...
 
-$pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
+$pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 
 ```
 
@@ -220,10 +220,10 @@ $pinyin = Pinyin::pinyin("带着希望去旅行，比到达终点更美好");
 - [x] 支持繁体；
 - [x] 添加补充词典；
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
-- [x] 添加 Laravel4 的 serviece provider；
+- [x] <del>添加 Laravel4 的 serviece provider；</del>
 - [x] 添加首字母输出大小写选项 `uppercase`；
 - [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
-- [ ] 支持 Laravel5 的service provider。
+- [x] 支持 Laravel5 的service provider。[overtrue/laravel-pinyin](/overtrue/laravel-pinyin)
 
 # Contribution
 欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`！ :kiss:
