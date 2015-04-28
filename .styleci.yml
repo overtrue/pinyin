@@ -7,3 +7,6 @@ enabled:
 disabled:
   - short_array_syntax
   - phpdoc_short_description
+
+excluded:
+  - src/data
