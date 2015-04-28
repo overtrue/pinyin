@@ -172,6 +172,7 @@ class Pinyin
         }
 
         $source = $instance->string2pinyin($string);
+
         // add accents
         if ($settings['accent']) {
             $pinyin = $instance->addAccents($source);
@@ -184,8 +185,8 @@ class Pinyin
 
         $return = array(
                    'src'    => $string,
-                   'pinyin' => $instance->escape($delimitedPinyin),
-                   'letter' => $instance->getFirstLetters($source, $settings),
+                   'pinyin' => stripslashes($delimitedPinyin),
+                   'letter' => stripslashes($instance->getFirstLetters($source, $settings)),
                   );
 
         return $return;
@@ -257,7 +258,7 @@ class Pinyin
         static $additionalWords;
 
         if (empty($additionalWords)) {
-            $additionalWords = include __DIR__ . '/data/additional.php';
+            $additionalWords = static::formatAdditionalWords(include __DIR__ . '/data/additional.php');
         }
 
         return array_merge($additionalWords, static::$appends);
@@ -290,7 +291,7 @@ class Pinyin
     {
         return preg_replace_callback('/[A-Z][a-z]{1,}:?\d{1}/', function($matches){
             return strtolower($matches[0]);
-        }, "{$pinyin} ");
+        }, " {$pinyin} ");
     }
 
     /**
@@ -312,7 +313,7 @@ class Pinyin
      *
      * @return string
      */
-    protected function justChinese($string)
+    public function justChinese($string)
     {
         return preg_replace('/[^\p{Han}]/u', '', $string);
     }
@@ -327,26 +328,10 @@ class Pinyin
     protected function prepare($string)
     {
         $pattern = array(
-                '/([a-z])+(\d)/' => '\\1\\\2', // test4 => test\4
+                '/([A-z])(\d)/' => '$1\\\\\2', // test4 => test\\4
             );
 
         return preg_replace(array_keys($pattern), $pattern, $string);
-    }
-
-    /**
-     * Credits for this function go to velcrow, who shared this
-     * at http://stackoverflow.com/questions/1162491/alternative-to-mysql-real-escape-string-without-connecting-to-db
-     *
-     * @param string $value the string to  be escaped
-     *
-     * @return string the escaped string
-     */
-    protected function escape($value)
-    {
-        $search  = array("\\", "\x00", "\n", "\r", "'", '"', "\x1a");
-        $replace = array("\\\\", "\\0", "\\n", "\\r", "\'", '\"', "\\Z");
-
-        return str_replace($search, $replace, $value);
     }
 
     /**
@@ -369,8 +354,8 @@ class Pinyin
     protected function removeTone($string)
     {
         $replacement = array(
-                        '/u:/' => 'u',
-                        '/\d/' => '',
+                        '/u:/'           => 'u',
+                        '/([a-z])[1-5]/' => '\\1',
                        );
 
         return preg_replace(array_keys($replacement), $replacement, $string);
@@ -388,7 +373,7 @@ class Pinyin
     {
         // find words with a number behind them, and replace with callback fn.
         return str_replace('u:', 'ü', preg_replace_callback(
-            '~([a-zA-ZüÜ]+\:?)(\d)~',
+            '~([a-zA-ZüÜ]+\:?)([1-5])~',
             array($this, 'addAccentsCallback'),
             $string));
     }
