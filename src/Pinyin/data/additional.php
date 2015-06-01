@@ -11,4 +11,5 @@ return array(
         '区庄' => 'ou1 zhuang1',
         '鴜' => 'ci2',
         '鹭' => 'lu4',
+        '俢' => 'xiu1',
        );
