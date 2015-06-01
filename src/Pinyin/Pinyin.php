@@ -14,7 +14,7 @@ namespace Overtrue\Pinyin;
  *
  * @example
  * <pre>
- *      echo \Overtrue\Pinyin\Pinyin::pinyin('带着希望去旅行，比到达终点更美好'), "\n";
+ *      echo \Overtrue\Pinyin\Pinyin::trans('带着希望去旅行，比到达终点更美好'), "\n";
  *      //output: "dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo"
  * </pre>
  */
