@@ -70,7 +70,7 @@ class Pinyin
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            self::$dictionary = include __DIR__ .'/data/dict.php';
+            self::$dictionary = unserialize(file_get_contents(__DIR__ .'/data/dict.php'));
         }
     }
 
@@ -289,7 +289,7 @@ class Pinyin
      */
     protected static function formatDictPinyin($pinyin)
     {
-        return preg_replace_callback('/[A-Z][a-z]{1,}:?\d{1}/', function($matches){
+        return preg_replace_callback('/[a-z]{1,}:?\d{1}/i', function($matches){
             return strtolower($matches[0]);
         }, " {$pinyin} ");
     }
@@ -355,7 +355,7 @@ class Pinyin
     {
         $replacement = array(
                         '/u:/'           => 'u',
-                        '/([a-z])[1-5]/' => '\\1',
+                        '/([a-z])[1-5]/i' => '\\1',
                        );
 
         return preg_replace(array_keys($replacement), $replacement, $string);

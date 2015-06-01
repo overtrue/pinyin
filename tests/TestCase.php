@@ -187,4 +187,14 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('ai45 liao wu sheng qu ce shi', Pinyin::trans("ai45了无生趣测试"));
     }
 
+    /**
+     * 测试单个音的字
+     *
+     * bug: #19
+     */
+    public function testSingleAccent()
+    {
+        $this->assertEquals('a le tai', Pinyin::trans("阿勒泰", array('accent' => false)));
+        $this->assertEquals('e er duo si', Pinyin::trans("鄂尔多斯", array('accent' => false)));
+    }
 }
