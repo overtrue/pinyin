@@ -1,16 +1,22 @@
 <?php
 
+/**
+ * Pinyin.php.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @author    overtrue <i@overtrue.me>
+ * @copyright 2015 overtrue <i@overtrue.me>
+ *
+ * @link      https://github.com/overtrue/pinyin
+ * @link      http://overtrue.me
+ */
+
 namespace Overtrue\Pinyin;
 
 /**
- * Pinyin.php
- *
- * @author overtrue <anzhengchao@gmail.com>
- * @date   [2014-07-17 15:49]
- */
-
-/**
- * Chinese to pinyin translator
+ * Chinese to pinyin translator.
  *
  * @example
  * <pre>
@@ -20,7 +26,6 @@ namespace Overtrue\Pinyin;
  */
 class Pinyin
 {
-
     /**
      * Dictionary.
      *
@@ -48,10 +53,10 @@ class Pinyin
      * @var array
      */
     protected static $settings = array(
-                                  'delimiter'    => ' ',
-                                  'accent'       => true,
+                                  'delimiter' => ' ',
+                                  'accent' => true,
                                   'only_chinese' => false,
-                                  'uppercase'    => false
+                                  'uppercase' => false,
                                  );
 
     /**
@@ -61,7 +66,6 @@ class Pinyin
      */
     private static $_instance;
 
-
     /**
      * Constructor.
      *
@@ -70,26 +74,26 @@ class Pinyin
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            self::$dictionary = unserialize(file_get_contents(__DIR__ .'/data/dict.php'));
+            self::$dictionary = unserialize(file_get_contents(__DIR__.'/data/dict.php'));
         }
     }
 
     /**
      * Disable clone.
-     *
-     * @return void
      */
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     /**
-     * Get class instance
+     * Get class instance.
      *
      * @return \Overtrue\Pinyin\Pinyin
      */
     public static function getInstance()
     {
         if (is_null(self::$_instance)) {
-            self::$_instance = new static;
+            self::$_instance = new static();
         }
 
         return self::$_instance;
@@ -100,8 +104,6 @@ class Pinyin
      *
      * @param string $key
      * @param mixed  $value
-     *
-     * @return void
      */
     public static function set($key, $value)
     {
@@ -112,8 +114,6 @@ class Pinyin
      * Global settings.
      *
      * @param array $settings settings.
-     *
-     * @return void
      */
     public static function settings(array $settings = array())
     {
@@ -123,7 +123,7 @@ class Pinyin
     /**
      * Chinese to pinyin.
      *
-     * @param string $string  source string.
+     * @param string $string   source string.
      * @param array  $settings settings.
      *
      * @return string
@@ -184,7 +184,7 @@ class Pinyin
         $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
 
         $return = array(
-                   'src'    => $string,
+                   'src' => $string,
                    'pinyin' => stripslashes($delimitedPinyin),
                    'letter' => stripslashes($instance->getFirstLetters($source, $settings)),
                   );
@@ -196,8 +196,6 @@ class Pinyin
      * Add custom words.
      *
      * @param array $appends
-     *
-     * @return void
      */
     public static function appends($appends = array())
     {
@@ -230,7 +228,7 @@ class Pinyin
             }
         }
 
-        return join($settings['delimiter'], $letters);
+        return implode($settings['delimiter'], $letters);
     }
 
     /**
@@ -243,9 +241,9 @@ class Pinyin
     protected function string2pinyin($string)
     {
         $dictionary = array_merge(self::$dictionary, $this->getAdditionalWords());
-        $pinyin     = strtr($this->prepare($string), $dictionary);
+        $pinyin = strtr($this->prepare($string), $dictionary);
 
-        return trim(str_replace("  ", ' ', $pinyin));
+        return trim(str_replace('  ', ' ', $pinyin));
     }
 
     /**
@@ -258,7 +256,7 @@ class Pinyin
         static $additionalWords;
 
         if (empty($additionalWords)) {
-            $additionalWords = static::formatAdditionalWords(include __DIR__ . '/data/additional.php');
+            $additionalWords = static::formatAdditionalWords(include __DIR__.'/data/additional.php');
         }
 
         return array_merge($additionalWords, static::$appends);
@@ -289,7 +287,7 @@ class Pinyin
      */
     protected static function formatDictPinyin($pinyin)
     {
-        return preg_replace_callback('/[a-z]{1,}:?\d{1}/i', function($matches){
+        return preg_replace_callback('/[a-z]{1,}:?\d{1}/i', function ($matches) {
             return strtolower($matches[0]);
         }, " {$pinyin} ");
     }
@@ -354,7 +352,7 @@ class Pinyin
     protected function removeTone($string)
     {
         $replacement = array(
-                        '/u:/'           => 'u',
+                        '/u:/' => 'u',
                         '/([a-z])[1-5]/i' => '\\1',
                        );
 
@@ -363,7 +361,7 @@ class Pinyin
 
     /**
      * Credits for these 2 functions go to Bouke Versteegh, who shared these
-     * at http://stackoverflow.com/questions/1598856/convert-numbered-to-accentuated-pinyin
+     * at http://stackoverflow.com/questions/1598856/convert-numbered-to-accentuated-pinyin.
      *
      * @param string $string The pinyin string with tone numbers, i.e. "ni3 hao3"
      *
@@ -379,7 +377,7 @@ class Pinyin
     }
 
     /**
-     * helper callback
+     * Helper callback.
      *
      * @param array $match
      */
@@ -389,17 +387,17 @@ class Pinyin
 
         if ($accentmap === null) {
             // where to place the accent marks
-            $stars = 'a* e* i* o* u* ü* ü* ' .
-                     'A* E* I* O* U* Ü* ' .
-                     'a*i a*o e*i ia* ia*o ie* io* iu* ' .
-                     'A*I A*O E*I IA* IA*O IE* IO* IU* ' .
-                     'o*u ua* ua*i ue* ui* uo* üe* ' .
+            $stars = 'a* e* i* o* u* ü* ü* '.
+                     'A* E* I* O* U* Ü* '.
+                     'a*i a*o e*i ia* ia*o ie* io* iu* '.
+                     'A*I A*O E*I IA* IA*O IE* IO* IU* '.
+                     'o*u ua* ua*i ue* ui* uo* üe* '.
                      'O*U UA* UA*I UE* UI* UO* ÜE*';
-            $nostars = 'a e i o u u: ü ' .
-                       'A E I O U Ü ' .
-                       'ai ao ei ia iao ie io iu ' .
-                       'AI AO EI IA IAO IE IO IU ' .
-                       'ou ua uai ue ui uo üe ' .
+            $nostars = 'a e i o u u: ü '.
+                       'A E I O U Ü '.
+                       'ai ao ei ia iao ie io iu '.
+                       'AI AO EI IA IAO IE IO IU '.
+                       'ou ua uai ue ui uo üe '.
                        'OU UA UAI UE UI UO ÜE';
 
             // build an array like array('a' => 'a*') and store statically
@@ -413,7 +411,7 @@ class Pinyin
             2 => array('á', 'é', 'í', 'ó', 'ú', 'ǘ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ǘ'),
             3 => array('ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ', 'Ǎ', 'Ě', 'Ǐ', 'Ǒ', 'Ǔ', 'Ǚ'),
             4 => array('à', 'è', 'ì', 'ò', 'ù', 'ǜ', 'À', 'È', 'Ì', 'Ò', 'Ù', 'Ǜ'),
-            5 => array('a', 'e', 'i', 'o', 'u', 'ü', 'A', 'E', 'I', 'O', 'U', 'Ü')
+            5 => array('a', 'e', 'i', 'o', 'u', 'ü', 'A', 'E', 'I', 'O', 'U', 'Ü'),
         );
 
         list(, $word, $tone) = $match;
@@ -426,5 +424,5 @@ class Pinyin
 
         return $word;
     }
+}//end class
 
-}// END OF CLASS
