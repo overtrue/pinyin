@@ -5,5 +5,7 @@
 .gitignore export-ignore
 .scrutinizer.yml export-ignore
 .travis.yml export-ignore
+.styleci.yml export-ignore
+.php_cs export-ignore
 phpunit.php export-ignore
 phpunit.xml export-ignore
