@@ -184,7 +184,7 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 - [x] 支持 Laravel 5 的service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 ## Contribution
-欢迎提意见及完善补充词库 `src/Pinyin/data/additional.php`！ :kiss:
+欢迎提意见及完善补充词库 `src/data/dict.php`！ :kiss:
 
 ## 参考
 

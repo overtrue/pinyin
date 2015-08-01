@@ -67,7 +67,7 @@ class Pinyin
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            self::$dictionary = json_decode(file_get_contents(__DIR__.'/data/dict_new.php'), true);
+            self::$dictionary = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
         }
     }
 
