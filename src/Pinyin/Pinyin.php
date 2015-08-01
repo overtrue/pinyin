@@ -34,13 +34,6 @@ class Pinyin
     protected static $dictionary;
 
     /**
-     * Table of pinyin frequency.
-     *
-     * @var array
-     */
-    protected static $frequency;
-
-    /**
      * Appends words.
      *
      * @var array
@@ -74,7 +67,7 @@ class Pinyin
     private function __construct()
     {
         if (is_null(static::$dictionary)) {
-            self::$dictionary = unserialize(file_get_contents(__DIR__.'/data/dict.php'));
+            self::$dictionary = json_decode(file_get_contents(__DIR__.'/data/dict_new.php'), true);
         }
     }
 
@@ -197,9 +190,9 @@ class Pinyin
      *
      * @param array $appends
      */
-    public static function appends($appends = array())
+    public static function appends(array $appends)
     {
-        static::$appends = array_merge(static::$appends, static::formatAdditionalWords($appends));
+        static::$dictionary = array_merge(self::$dictionary, static::formatWords($appends));
     }
 
     /**
@@ -240,42 +233,25 @@ class Pinyin
      */
     protected function string2pinyin($string)
     {
-        $dictionary = array_merge(self::$dictionary, $this->getAdditionalWords());
-        $pinyin = strtr($this->prepare($string), $dictionary);
+        $pinyin = strtr($this->prepare($string), self::$dictionary);
 
         return trim(str_replace('  ', ' ', $pinyin));
     }
 
     /**
-     * Return additional words.
-     *
-     * @return array
-     */
-    protected function getAdditionalWords()
-    {
-        static $additionalWords;
-
-        if (empty($additionalWords)) {
-            $additionalWords = static::formatAdditionalWords(include __DIR__.'/data/additional.php');
-        }
-
-        return array_merge($additionalWords, static::$appends);
-    }
-
-    /**
      * Format user's words.
      *
-     * @param array $additionalWords
+     * @param array $words
      *
      * @return array
      */
-    public static function formatAdditionalWords($additionalWords)
+    public static function formatWords($words)
     {
-        foreach ($additionalWords as $words => $pinyin) {
-            $additionalWords[$words] = static::formatDictPinyin($pinyin);
+        foreach ($words as $word => $pinyin) {
+            $words[$word] = static::formatDictPinyin($pinyin);
         }
 
-        return $additionalWords;
+        return $words;
     }
 
     /**
@@ -287,7 +263,7 @@ class Pinyin
      */
     protected static function formatDictPinyin($pinyin)
     {
-        return preg_replace_callback('/[a-z]{1,}:?\d{1}/i', function ($matches) {
+        return preg_replace_callback('/[a-z]{1,}:?\d{1}\s?/i', function ($matches) {
             return strtolower($matches[0]);
         }, " {$pinyin} ");
     }
