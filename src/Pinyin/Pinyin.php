@@ -161,7 +161,7 @@ class Pinyin
         $settings = array_merge(self::$settings, $settings);
 
         // add charset set
-        if (!empty($settings['charset'])) {
+        if (!empty($settings['charset']) && $settings['charset'] != 'UTF-8') {
             $string = iconv($settings['charset'], 'UTF-8', $string);
         }
 
