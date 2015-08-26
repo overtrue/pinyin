@@ -11,7 +11,7 @@ Pinyin
 SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
 
 ```php
-use \Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\Pinyin;
 
 echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 // dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
@@ -86,7 +86,7 @@ Pinyin::trans('难过'); // nán guò
 
 ```php
 <?php
-use \Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\Pinyin;
 
 //获取拼音
 echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
@@ -123,6 +123,7 @@ echo Pinyin::trans('冷');
 | `accent`       | 是否输出音调                                        |
 | `only_chinese` | 只保留 `$string` 中中文部分                         |
 | `uppercase`    | 取首字母时的大写，默认 `false`                      |
+| `charset`    | 字符集，默认：`UTF-8`                      |
 
 
 *全局设置：*  `Pinyin::set('delimiter', '-');`
@@ -167,7 +168,7 @@ echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
 与上面的使用方法一样：
 
 ```php
-use \Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\Pinyin;
 
 //...
 
