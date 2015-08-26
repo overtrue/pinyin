@@ -50,6 +50,7 @@ class Pinyin
                                   'accent' => true,
                                   'only_chinese' => false,
                                   'uppercase' => false,
+                                  'charset' => 'UTF-8'  // GB2312,UTF-8
                                  );
 
     /**
@@ -158,6 +159,11 @@ class Pinyin
         $instance = static::getInstance();
 
         $settings = array_merge(self::$settings, $settings);
+
+        // add charset set 
++       if ($settings['charset'] && $settings['charset'] == 'GB2312') {
++           $string = iconv('GB2312', 'UTF-8', $string);
++       }
 
         // remove non-Chinese char.
         if ($settings['only_chinese']) {
