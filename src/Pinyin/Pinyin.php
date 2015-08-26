@@ -160,10 +160,10 @@ class Pinyin
 
         $settings = array_merge(self::$settings, $settings);
 
-        // add charset set 
-+       if ($settings['charset'] && $settings['charset'] == 'GB2312') {
-+           $string = iconv('GB2312', 'UTF-8', $string);
-+       }
+        // add charset set
+        if (!empty($settings['charset'])) {
+            $string = iconv($settings['charset'], 'UTF-8', $string);
+        }
 
         // remove non-Chinese char.
         if ($settings['only_chinese']) {
