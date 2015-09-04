@@ -157,6 +157,7 @@ class Pinyin
     public static function parse($string, array $settings = array())
     {
         $instance = static::getInstance();
+        $raw      = $string;
 
         $settings = array_merge(self::$settings, $settings);
 
@@ -183,7 +184,7 @@ class Pinyin
         $delimitedPinyin = $instance->delimit($pinyin, $settings['delimiter']);
 
         $return = array(
-                   'src' => $string,
+                   'src' => $raw,
                    'pinyin' => stripslashes($delimitedPinyin),
                    'letter' => stripslashes($instance->getFirstLetters($source, $settings)),
                   );
@@ -211,6 +212,8 @@ class Pinyin
      */
     protected function getFirstLetters($pinyin, $settings)
     {
+        $pinyin = preg_replace('/\s?[a-zA-Z]+(\b|\s)/', '', $pinyin);
+
         $letterCase = $settings['uppercase'] ? 'strtoupper' : 'strtolower';
 
         $letters = array();
