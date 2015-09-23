@@ -31,7 +31,13 @@ class Pinyin
      *
      * @var array
      */
-    protected static $dictionary;
+    protected static $dictionary = array();
+
+    /**
+     * Base Path
+     * @var str
+     */
+    protected static $base_path = '';
 
     /**
      * Appends words.
@@ -46,12 +52,12 @@ class Pinyin
      * @var array
      */
     protected static $settings = array(
-                                  'delimiter' => ' ',
-                                  'accent' => true,
-                                  'only_chinese' => false,
-                                  'uppercase' => false,
-                                  'charset' => 'UTF-8'  // GB2312,UTF-8
-                                 );
+            'delimiter' => ' ',
+            'accent' => true,
+            'only_chinese' => false,
+            'uppercase' => false,
+            'charset' => 'UTF-8'  // GB2312,UTF-8
+        );
 
     /**
      * The instance.
@@ -67,9 +73,7 @@ class Pinyin
      */
     private function __construct()
     {
-        if (is_null(static::$dictionary)) {
-            self::$dictionary = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
-        }
+        self::$base_path = __DIR__ . '/../clicp_data/';
     }
 
     /**
@@ -77,6 +81,14 @@ class Pinyin
      */
     private function __clone()
     {
+    }
+
+    // 获取第一个中文字符，并且计算自定义的hash值
+    private static function getHash($str){
+        $is_match = preg_match('/\p{Han}{1}/u', $str, $match);
+        if (!$is_match) return false;
+        $hash = str_replace('%', '',  urlencode($match[0]) );
+        return $hash;
     }
 
     /**
@@ -199,7 +211,7 @@ class Pinyin
      */
     public static function appends(array $appends)
     {
-        static::$dictionary = array_merge(self::$dictionary, static::formatWords($appends));
+        static::$dictionary['custom'] = array_merge(self::$dictionary['custom'], static::formatWords($appends));
     }
 
     /**
@@ -242,8 +254,22 @@ class Pinyin
      */
     protected function string2pinyin($string)
     {
-        $pinyin = strtr($this->prepare($string), self::$dictionary);
-
+        $prepare_string = $this->prepare( $string );
+        $i = 0;
+        $str_len = mb_strlen($string, 'UTF-8');
+        while ( ($hash = self::getHash($prepare_string)) && $i++ < $str_len) {
+            // 根据hash加载文件
+            // $hash = self::getHash($string);
+            if (!isset(self::$dictionary[$hash])) {
+                self::$dictionary[$hash] = json_decode( file_get_contents( self::$base_path . $hash.'.data'), true );
+            }
+            $dictionary = self::$dictionary[$hash];
+            if ( $i==1 && isset(self::$dictionary['custom'])) {//只进行一次自定义拼音替换
+                $dictionary = array_merge( $dictionary, static::$dictionary['custom']);
+            }
+            $prepare_string = strtr($prepare_string, $dictionary);            
+        }
+        $pinyin = $prepare_string;
         return trim(str_replace('  ', ' ', $pinyin));
     }
 
