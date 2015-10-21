@@ -139,6 +139,8 @@ class Pinyin
      */
     public static function letter($string, array $settings = array())
     {
+        $settings = array_merge($settings, array('accent' => false, 'only_chinese' => true));
+
         $parsed = self::parse($string, $settings);
 
         return $parsed['letter'];
@@ -212,8 +214,6 @@ class Pinyin
      */
     protected function getFirstLetters($pinyin, $settings)
     {
-        $pinyin = preg_replace('/\s?[a-zA-Z]+(\b|\s)/', '', $pinyin);
-
         $letterCase = $settings['uppercase'] ? 'strtoupper' : 'strtolower';
 
         $letters = array();
