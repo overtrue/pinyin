@@ -1,5 +1,4 @@
 *.DS_Store
-*test.php
 /vendor
 tmp*
 .php_cs.cache
