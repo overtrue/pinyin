@@ -103,7 +103,7 @@ class TestCase extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals('hello, world!', Pinyin::trans('hello, world!'));
         $this->assertEquals('DNA jiàn dìng', Pinyin::trans('DNA鉴定'));
-        $this->assertEquals('èr shí yī sān tǐ zōng hé zhèng', Pinyin::trans('21三体综合症'));
+        $this->assertEquals('21 sān tǐ zōng hé zhèng', Pinyin::trans('21三体综合症'));
         $this->assertEquals('C pán', Pinyin::trans('C盘'));
         $this->assertEquals('G diǎn', Pinyin::trans('G点'));
         $this->assertEquals('zhōng dù xìng fèi shuǐ zhǒng', Pinyin::trans('中度性肺水肿'));
@@ -126,7 +126,7 @@ class TestCase extends PHPUnit_Framework_TestCase
 
         // 便
         $this->assertEquals('biàn dāng', Pinyin::trans('便当'));
-        $this->assertEquals('pián yí', Pinyin::trans('便宜'));
+        $this->assertEquals('pián yi', Pinyin::trans('便宜'));
 
         // 剥
         $this->assertEquals('bāo pí', Pinyin::trans('剥皮'));
