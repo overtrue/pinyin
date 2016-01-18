@@ -56,7 +56,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
             Pinyin::trans($line);
         }
 
-        echo "\nSingle chars time usage:". ($this->total += (microtime(true) - $timestart)), "\n";
+        echo "\nSingle chars time usage:". (microtime(true) - $timestart), "\n";
     }
 
     public function testDictionary()
@@ -69,6 +69,6 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
             Pinyin::trans($line);
         }
 
-        echo "\nDictionary chars time usage:". ($this->total += (microtime(true) - $timestart)), "\n";
+        echo "\nDictionary chars time usage:". (microtime(true) - $timestart), "\n";
     }
 }
