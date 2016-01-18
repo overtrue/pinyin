@@ -5,7 +5,7 @@ use Overtrue\Pinyin\Pinyin;
 
 class PerformanceTest extends PHPUnit_Framework_TestCase
 {
-    protected $singleChars = [
+    protected $singleChars = array(
             '一 乙',
             '二 十 丁 厂 七 卜 人 入 八 九 几 儿 了 力 乃 刀 又',
             '三 于 干 亏 士 工 土 才 寸 下 大 丈 与 万 上 小 口 巾 山 千 乞 川 亿 个 勺 久 凡 及 夕 丸 么广亡门 义 之 尸 弓 己 已 子 卫 也 女 飞 刃 习 叉 马 乡',
@@ -29,7 +29,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
             '蠢 霸 露',
             '囊',
             '罐',
-            ];
+        );
 
     protected static $start;
 
