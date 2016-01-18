@@ -40,7 +40,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
 
     public static function tearDownAfterClass()
     {
-        echo "Total timeusage(5000 items): \n",microtime(true) - static::$start,"\n";
+        echo "Total timeusage(5000 items): ",microtime(true) - static::$start,"\n";
     }
 
     public function setUp()
