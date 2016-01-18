@@ -107082,5 +107082,6 @@
     "酿酒": " niang4 jiu3 ",
     "酿酒业": " niang4 jiu3 ye4 ",
     "酿酶": " niang4 mei2 ",
-    "�": " ging1 "
+    "�": " ging1 ",
+    "琊": " ya2 "
 }
