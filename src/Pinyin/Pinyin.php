@@ -31,14 +31,7 @@ class Pinyin
      *
      * @var array
      */
-    protected static $dictionary;
-
-    /**
-     * Appends words.
-     *
-     * @var array
-     */
-    protected static $appends = array();
+    protected static $dictionary = array();
 
     /**
      * Settings.
@@ -52,6 +45,12 @@ class Pinyin
                                   'uppercase' => false,
                                   'charset' => 'UTF-8'  // GB2312,UTF-8
                                  );
+    /**
+     * Internal charset used by this package.
+     *
+     * @var string
+     */
+    protected static $internalCharset = 'UTF-8';
 
     /**
      * The instance.
@@ -67,8 +66,9 @@ class Pinyin
      */
     private function __construct()
     {
-        if (is_null(static::$dictionary)) {
-            self::$dictionary = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
+        if (!static::$dictionary) {
+            $list = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
+            static::appends($list);
         }
     }
 
@@ -164,8 +164,8 @@ class Pinyin
         $settings = array_merge(self::$settings, $settings);
 
         // add charset set
-        if (!empty($settings['charset']) && $settings['charset'] != 'UTF-8') {
-            $string = iconv($settings['charset'], 'UTF-8', $string);
+        if (!empty($settings['charset']) && $settings['charset'] != static::$internalCharset) {
+            $string = iconv($settings['charset'], static::$internalCharset, $string);
         }
 
         // remove non-Chinese char.
@@ -201,7 +201,11 @@ class Pinyin
      */
     public static function appends(array $appends)
     {
-        static::$dictionary = array_merge(self::$dictionary, static::formatWords($appends));
+        $list = static::formatWords($appends);
+        foreach ($list as $key => $value) {
+            $firstChar = mb_substr($key, 0, 1, static::$internalCharset);
+            self::$dictionary[$firstChar][$key] = $value;
+        }
     }
 
     /**
@@ -242,7 +246,18 @@ class Pinyin
      */
     protected function string2pinyin($string)
     {
-        $pinyin = strtr($this->prepare($string), self::$dictionary);
+        $preparedString = $this->prepare($string);
+        $count = mb_strlen($preparedString, static::$internalCharset);
+        $dictionary = [];
+
+        $i = 0;
+        while ($i < $count) {
+            $char = mb_substr($preparedString, $i++, 1, static::$internalCharset);
+            $pinyinGroup = isset(self::$dictionary[$char]) ? self::$dictionary[$char] : [];
+            $dictionary = array_merge($dictionary, $pinyinGroup);
+        }
+
+        $pinyin = strtr($preparedString, $dictionary);
 
         return trim(str_replace('  ', ' ', $pinyin));
     }
@@ -272,6 +287,8 @@ class Pinyin
      */
     protected static function formatDictPinyin($pinyin)
     {
+        $pinyin = trim($pinyin);
+
         return preg_replace_callback('/[a-z]{1,}:?\d{1}\s?/i', function ($matches) {
             return strtolower($matches[0]);
         }, " {$pinyin} ");
