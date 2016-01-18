@@ -40,7 +40,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
 
     public static function tearDownAfterClass()
     {
-        echo "Total timeusage: \n",microtime(true) - static::$start,"\n";
+        echo "Total timeusage(5000 items): \n",microtime(true) - static::$start,"\n";
     }
 
     public function setUp()
@@ -65,7 +65,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
         $dictionary = json_decode(file_get_contents(__DIR__ .'/../src/data/dict.php'), true);
         $items = array_keys($dictionary);
 
-        foreach ($items as $line) {
+        foreach (array_slice($items, 20, 5000) as $line) {
             Pinyin::trans($line);
         }
 
