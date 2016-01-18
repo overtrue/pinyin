@@ -66,7 +66,7 @@ class Pinyin
      */
     private function __construct()
     {
-        if (!static::$dictionary) {
+        if (empty(static::$dictionary)) {
             $list = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
             static::appends($list);
         }
@@ -248,12 +248,12 @@ class Pinyin
     {
         $preparedString = $this->prepare($string);
         $count = mb_strlen($preparedString, static::$internalCharset);
-        $dictionary = [];
+        $dictionary = array();
 
         $i = 0;
         while ($i < $count) {
             $char = mb_substr($preparedString, $i++, 1, static::$internalCharset);
-            $pinyinGroup = isset(self::$dictionary[$char]) ? self::$dictionary[$char] : [];
+            $pinyinGroup = isset(self::$dictionary[$char]) ? self::$dictionary[$char] : array();
             $dictionary = array_merge($dictionary, $pinyinGroup);
         }
 
