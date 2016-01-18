@@ -2,7 +2,7 @@
 
 use Overtrue\Pinyin\Pinyin;
 
-class TestCase extends PHPUnit_Framework_TestCase
+class FeatureTest extends PHPUnit_Framework_TestCase
 {
     protected $pinyin;
 
