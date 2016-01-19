@@ -338,10 +338,18 @@ class Pinyin
      * Add delimiter.
      *
      * @param string $string
+     * @param string $delimiter
+     *
+     * @return string
      */
     protected function delimit($string, $delimiter = '')
     {
-        return preg_replace('/\s+/', strval($delimiter), trim($string));
+        $defaultEncoding = mb_regex_encoding();
+        mb_regex_encoding(static::$internalCharset);
+        $string = mb_ereg_replace('\s+', strval($delimiter), trim($string));
+        mb_regex_encoding($defaultEncoding);
+
+        return $string;
     }
 
     /**
