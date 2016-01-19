@@ -32,6 +32,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
         );
 
     protected static $start;
+    protected static $message;
 
     public static function setUpBeforeClass()
     {
@@ -40,12 +41,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
 
     public static function tearDownAfterClass()
     {
-        echo "Total timeusage(5000 items): ",microtime(true) - static::$start,"\n";
-    }
-
-    public function setUp()
-    {
-        echo "\n****************\n";
+        echo self::$message . "\nTotal timeusage: ", microtime(true) - static::$start,"\n";
     }
 
     public function testSingleChars()
@@ -56,7 +52,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
             Pinyin::trans($line);
         }
 
-        echo "\nSingle chars time usage:". (microtime(true) - $timestart), "\n";
+        self::$message .= "\nSingle chars time usage: ". (microtime(true) - $timestart);
     }
 
     public function testDictionary()
@@ -65,10 +61,10 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
         $dictionary = json_decode(file_get_contents(__DIR__ .'/../src/data/dict.php'), true);
         $items = array_keys($dictionary);
 
-        foreach (array_slice($items, 20, 5000) as $line) {
+        foreach (array_slice($items, 20, 50000) as $line) {
             Pinyin::trans($line);
         }
 
-        echo "\nDictionary chars time usage:". (microtime(true) - $timestart), "\n";
+        self::$message .= "\nDictionary chars time usage: ". (microtime(true) - $timestart);
     }
 }
