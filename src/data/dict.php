@@ -54872,7 +54872,7 @@
     "柠檬酸": " ning2 meng2 suan1 ",
     "柠檬鸡": " ning2 meng2 ji1 ",
     "柠檬酸循环": " ning2 meng2 suan1 xun2 huan2 ",
-    "校": " jiao4 ",
+    "校": " xiao4 ",
     "桅": " wei2 ",
     "桠": " ya1 ",
     "桀": " jie2 ",
