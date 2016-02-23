@@ -139,7 +139,7 @@ class Pinyin
      */
     public static function letter($string, array $settings = array())
     {
-        $settings = array_merge($settings, array('accent' => false, 'only_chinese' => true));
+        $settings = array_merge($settings, array('accent' => false));
 
         $parsed = self::parse($string, $settings);
 
