@@ -189,6 +189,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
      * bug: #23
      * bug: #24
      * bug: #29
+     * bug: #235
      */
     public function testSingleAccent()
     {
@@ -207,6 +208,10 @@ class FeatureTest extends PHPUnit_Framework_TestCase
         #29
         $this->assertEquals('dì', Pinyin::trans("地"));
         $this->assertEquals('zhi yu si di', Pinyin::trans("置于死地",  array('accent' => false)));
+
+        #35
+        $this->assertEquals('ji xiao', Pinyin::trans("技校", array('accent' => false)));
+        $this->assertEquals('jiao zheng', Pinyin::trans("校正", array('accent' => false)));
     }
 
     /**
