@@ -42,6 +42,7 @@ class Pinyin
                                   'delimiter' => ' ',
                                   'accent' => true,
                                   'only_chinese' => false,
+                                  'allowPattern' => null,
                                   'uppercase' => false,
                                   'charset' => 'UTF-8'  // GB2312,UTF-8
                                  );
@@ -145,6 +146,10 @@ class Pinyin
 
         return $parsed['letter'];
     }
+	public static function alphanumberLetter($string){
+		$parsed = self::parse($string, array('allowPattern'=>'/[a-z0-9]+/ui','delimiter'=>'', 'accent'=>false, 'only_chinese'=>false));
+		return $parsed['letter'];
+	}
 
     /**
      * Parse the string to pinyin.
@@ -174,7 +179,6 @@ class Pinyin
         }
 
         $source = $instance->string2pinyin($string);
-
         // add accents
         if ($settings['accent']) {
             $pinyin = $instance->addAccents($source);
@@ -228,10 +232,13 @@ class Pinyin
             }
 
             $ord = ord(strtolower($word{0}));
-
-            if ($ord >= 97 && $ord <= 122) {
+			if(!empty($settings['allowPattern']) && !preg_match('/[a-z]+\d/iu',$word) && preg_match_all($settings['allowPattern'], str_replace('\\','',$word), $matched) ){
+				$letters[] = $letterCase(implode($settings['delimiter'],$matched[0]));		
+			}
+			elseif ($ord >= 97 && $ord <= 122 ) {
                 $letters[] = $letterCase($word{0});
-            }
+			}
+
         }
 
         return implode($settings['delimiter'], $letters);
@@ -256,7 +263,6 @@ class Pinyin
             $pinyinGroup = isset(self::$dictionary[$char]) ? self::$dictionary[$char] : array();
             $dictionary = array_merge($dictionary, $pinyinGroup);
         }
-
         $pinyin = strtr($preparedString, $dictionary);
 
         return trim(str_replace('  ', ' ', $pinyin));
