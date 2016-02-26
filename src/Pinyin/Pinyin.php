@@ -140,12 +140,15 @@ class Pinyin
      */
     public static function letter($string, array $settings = array())
     {
-        $settings = array_merge($settings, array('accent' => false));
+        $settings = array_merge($settings, array('accent' => false,'only_chinese'=> true));
 
         $parsed = self::parse($string, $settings);
 
         return $parsed['letter'];
     }
+	/**
+	 *	Get first letters of string
+	 */
 	public static function alphanumberLetter($string){
 		$parsed = self::parse($string, array('allowPattern'=>'/[a-z0-9]+/ui','delimiter'=>'', 'accent'=>false, 'only_chinese'=>false));
 		return $parsed['letter'];
