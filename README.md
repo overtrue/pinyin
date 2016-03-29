@@ -8,8 +8,6 @@ Pinyin
 
 基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的汉字转拼音解决方案。
 
-SAE服务地址：http://string2pinyin.sinaapp.com/doc.html
-
 ```php
 use Overtrue\Pinyin\Pinyin;
 
@@ -182,7 +180,7 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 - [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
 - [x] 添加首字母输出大小写选项 `uppercase`；
 - [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
-- [x] 支持 Laravel 5 的service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
+- [x] 支持 Laravel 5 的 service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 ## Contribution
 欢迎提意见及完善补充词库 `src/data/dict.php`！ :kiss:
