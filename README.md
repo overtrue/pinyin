@@ -175,12 +175,12 @@ $pinyin = Pinyin::trans("带着希望去旅行，比到达终点更美好");
 ```
 
 ## TODO
-- [x] 添加获取首字母；
-- [x] 添加补充词典；
-- [x] 添加音频表，根据音频提高未匹配词典时多音字准确度；
-- [x] 添加首字母输出大小写选项 `uppercase`；
-- [x] 支持载入自定义词库：`Pinyin::appends($appends = array())`；
-- [x] 支持 Laravel 5 的 service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
+- [x] <del>添加获取首字母；</del>
+- [x] <del>添加补充词典；</del>
+- [x] <del>添加音频表，根据音频提高未匹配词典时多音字准确度；</del>
+- [x] <del>添加首字母输出大小写选项 `uppercase`；</del>
+- [x] <del>支持载入自定义词库：`Pinyin::appends($appends = array())`；</del>
+- [x] <del>支持 Laravel 5 的 service provider。[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)</del>
 
 ## Contribution
 欢迎提意见及完善补充词库 `src/data/dict.php`！ :kiss:
