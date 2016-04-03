@@ -5,6 +5,13 @@ use Overtrue\Pinyin\Pinyin;
 class FeatureTest extends PHPUnit_Framework_TestCase
 {
     protected $pinyin;
+	//test alphanumberLetter
+	public function testAlphanumberLetter(){
+		//not support traditional hanzi 
+		//$this->assertEquals('abcwszgrworldcup2016', Pinyin::alphanumberLetter('abc我是中國人,;¡™£¢∞§¶•ªworldcup2016'));
+		$this->assertEquals('abcwszgrworldcup2016', Pinyin::alphanumberLetter('abc我是中国人,;¡™£¢∞§¶•ªworldcup2016'));
+		$this->assertEquals('', Pinyin::alphanumberLetter(''));
+	}
 
     // test delimiter
     public function testDelimiter()
