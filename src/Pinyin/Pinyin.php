@@ -66,10 +66,8 @@ class Pinyin
      */
     private function __construct()
     {
-        if (empty(static::$dictionary)) {
-            $list = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
-            static::appends($list);
-        }
+        $list = json_decode(file_get_contents(dirname(__DIR__).'/data/dict.php'), true);
+        static::appends($list);
     }
 
     /**
@@ -202,6 +200,7 @@ class Pinyin
     public static function appends(array $appends)
     {
         $list = static::formatWords($appends);
+
         foreach ($list as $key => $value) {
             $firstChar = mb_substr($key, 0, 1, static::$internalCharset);
             self::$dictionary[$firstChar][$key] = $value;
