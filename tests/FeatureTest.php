@@ -21,7 +21,10 @@ class FeatureTest extends PHPUnit_Framework_TestCase
             '冷' => 're4',
         );
         Pinyin::appends($appends);
-        $this->assertEquals('rè', Pinyin::trans('冷'));
+        Pinyin::set('accent',false);
+        $this->assertEquals('re', Pinyin::trans('冷'));
+        $this->assertEquals('yin yue', Pinyin::trans('音乐'));
+        Pinyin::set('accent',true);
     }
 
     // test temporary changes delimiter
@@ -229,5 +232,13 @@ class FeatureTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('d z x w q l', Pinyin::letter("ci4ina带着l希望去了hello4"));
         $this->assertEquals('d z x w q l', Pinyin::letter("带着希望去了china", array('only_chinese' => true)));
         $this->assertEquals('d z x w q l', Pinyin::letter("带着le5希望56去了china", array('only_chinese' => true)));
+    }
+
+    /**
+     * 混合内容
+     */
+    public function testFixedTest()
+    {
+        $this->assertEquals('java gong cheng shi', Pinyin::trans("java工程师", ['accent' => false]));
     }
 }
