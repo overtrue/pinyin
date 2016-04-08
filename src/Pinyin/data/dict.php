@@ -70050,6 +70050,8 @@ return array (
   '种植园' => 'zhong4 zhi2 yuan2 ',
   '种植业' => 'zhong4 zhi2 ye4 ',
   '种树' => 'zhong4 shu4 ',
+  '种瓜'=>'zhong4 gua1 ',
+  '种豆'=>'zhong4 dou4 ',
   '种瓜得瓜，种豆得豆' => 'zhong4 gua1 de2 gua1 , zhong4 dou4 de2 dou4 ',
   '种田' => 'zhong4 tian2 ',
   '种畜' => 'zhong3 chu4 ',
