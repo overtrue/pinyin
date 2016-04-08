@@ -74,6 +74,9 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('hǎi nán', Pinyin::pinyin('海南'));
         $this->assertEquals('liáo níng', Pinyin::pinyin('辽宁'));
         $this->assertEquals('hēi lóng jiāng', Pinyin::pinyin('黑龙江'));
+        $this->assertEquals('zhòng guā', Pinyin::pinyin('种瓜'));
+        $this->assertEquals('zhòng dòu', Pinyin::pinyin('种豆'));
+        $this->assertEquals('zhòng guā dé guā zhòng dòu dé dòu', Pinyin::pinyin('种瓜得瓜种豆得豆'));
     }
 
     // test special words
