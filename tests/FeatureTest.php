@@ -162,6 +162,10 @@ class FeatureTest extends PHPUnit_Framework_TestCase
         // 厦
         $this->assertEquals('dà shà', Pinyin::trans('大厦'));
         $this->assertEquals('xià mén', Pinyin::trans('厦门'));
+
+        // 曾
+        $this->assertEquals('céng jīng', Pinyin::trans('曾经'));
+        $this->assertEquals('xìng zēng', Pinyin::trans('姓曾'));
     }
 
     /**
