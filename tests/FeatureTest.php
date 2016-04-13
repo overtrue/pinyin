@@ -243,6 +243,6 @@ class FeatureTest extends PHPUnit_Framework_TestCase
      */
     public function testFixedTest()
     {
-        $this->assertEquals('java gong cheng shi', Pinyin::trans("java工程师", ['accent' => false]));
+        $this->assertEquals('java gong cheng shi', Pinyin::trans("java工程师", array('accent' => false)));
     }
 }
