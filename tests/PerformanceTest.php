@@ -47,12 +47,14 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
     public function testSingleChars()
     {
         $timestart = microtime(true);
+        $count = 0;
 
         foreach ($this->singleChars as $line) {
+            $count += count(explode(' ', $line));
             Pinyin::trans($line);
         }
 
-        self::$message .= "\nSingle chars time usage: ". (microtime(true) - $timestart);
+        self::$message .= "\n{$count} Single chars time usage: ". (microtime(true) - $timestart);
     }
 
     public function testDictionary()
@@ -60,11 +62,12 @@ class PerformanceTest extends PHPUnit_Framework_TestCase
         $timestart = microtime(true);
         $dictionary = json_decode(file_get_contents(__DIR__ .'/../src/data/dict.php'), true);
         $items = array_keys($dictionary);
+        $count = count($items);
 
         foreach (array_slice($items, 20, 50000) as $line) {
             Pinyin::trans($line);
         }
 
-        self::$message .= "\nDictionary chars time usage: ". (microtime(true) - $timestart);
+        self::$message .= "\n{$count} Dictionary chars time usage: ". (microtime(true) - $timestart);
     }
 }
