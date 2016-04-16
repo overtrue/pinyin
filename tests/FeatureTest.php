@@ -4,8 +4,6 @@ use Overtrue\Pinyin\Pinyin;
 
 class FeatureTest extends PHPUnit_Framework_TestCase
 {
-    protected $pinyin;
-
     // test delimiter
     public function testDelimiter()
     {
