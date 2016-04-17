@@ -15,7 +15,7 @@ $regexs = []; // 汉字 => /(pinyin1|pinyin2|...)/
 foreach ($polyphones as $charLine) {
     list($han, $standardPinyin, $extendsPinyin) = explode(' ', trim($charLine));
 
-    $regexs[$han] = '/('.str_replace(',', '|', $extendsPinyin).')/';
+    $regexs[$han] = '/(^|\s)('.$extendsPinyin.')(\s|$)/';
 }
 
 $output = [];
@@ -25,6 +25,11 @@ while (!feof($fp)) {
     $lineReplaced = strtr($line, $regexs);
 
     list($words, $pinyin) = explode(',', $line);
+
+    // 大于4字的句子基本由小词语组成
+    if (mb_strlen($words, 'UTF-8') > 4) {
+        continue;
+    }
 
     if ($lineReplaced !== $line) {
         $matchedChars = array_unique(array_filter(array_diff(utf8_str_split($line), utf8_str_split($lineReplaced))));
@@ -40,6 +45,10 @@ while (!feof($fp)) {
     }
 }
 
+// 长的在前面
+usort($output, function($a, $b){
+    return -1 * (mb_strlen($a, 'UTF-8') <=> mb_strlen($b, 'UTF-8'));
+});
 
 file_put_contents($savePath, join("\n", array_unique($output)));
 

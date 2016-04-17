@@ -53,7 +53,7 @@ $output = [];
 $polyphones = []; // 去除了多音字常用音，只留下不常用的音
 
 foreach ($unihanChars as $code => $group) {
-    $pinyin = $group['kHanyuPinlu'] ?? $group['kXHC1983'] ?? $group['kHanyuPinyin'] ?? $group['kMandarin'] ?? null;
+    $pinyin = $group['kMandarin'] ?? $group['kHanyuPinlu'] ?? $group['kXHC1983'] ?? $group['kHanyuPinyin'] ?? null;
 
     $han = unicode_to_utf8($code);
 
@@ -67,7 +67,7 @@ foreach ($unihanChars as $code => $group) {
     // 如果是多音字
     if (!empty($polyphoneChars[$code]) && preg_match('/\p{Han}/u', $han)) {
         // 从多个拼音里把常用的那个音放前面单独放置
-        $polyphones[] = $han.' '.$pinyin.' '.join('|', array_diff($polyphoneChars[$code], [$pinyin]));
+        $polyphones[] = $han.' '.$pinyin.' ('.join(')|(', array_diff($polyphoneChars[$code], [$pinyin])).')';
     }
 
     $output[] = sprintf('%s %s', $han, $pinyin);
