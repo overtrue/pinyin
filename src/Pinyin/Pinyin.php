@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file is part of the overtrue/pinyin.
+ *
+ * (c) 2016 overtrue <i@overtrue.me>
+ */
+
 /**
  * Pinyin.php.
  *
@@ -43,7 +49,7 @@ class Pinyin
                                   'accent' => true,
                                   'only_chinese' => false,
                                   'uppercase' => false,
-                                  'charset' => 'UTF-8'  // GB2312,UTF-8
+                                  'charset' => 'UTF-8',  // GB2312,UTF-8
                                  );
     /**
      * Internal charset used by this package.
@@ -157,12 +163,12 @@ class Pinyin
     public static function parse($string, array $settings = array())
     {
         $instance = static::getInstance();
-        $raw      = $string;
+        $raw = $string;
 
         $settings = array_merge(self::$settings, $settings);
 
         // add charset set
-        if (!empty($settings['charset']) && $settings['charset'] != static::$internalCharset) {
+        if (!empty($settings['charset']) && $settings['charset'] !== static::$internalCharset) {
             $string = iconv($settings['charset'], static::$internalCharset, $string);
         }
 
