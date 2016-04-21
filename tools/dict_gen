@@ -1,17 +1,29 @@
 #!/usr/bin/env php
 <?php
 
-echo "cleaning ...\n";
-exec('rm -rf '.__DIR__.'/../data/*');
-
-echo "build chars ...\n";
+echo "\nbuild chars ...";
 exec('php '.__DIR__.'/chars_gen');
+echo "Done.";
 
-echo "build words ...\n";
+echo "\nbuild words ...";
 exec('php '.__DIR__.'/words_gen');
+echo "Done.";
 
-echo "build combine ...\n";
-exec('cat '.__DIR__.'/../data/chars.dat >> '.__DIR__.'/../data/words.dat');
-exec('rm -rf '.__DIR__.'/../data/chars.dat');
+echo "\nbuild combine ...";
+exec('cat '.__DIR__.'/chars.dat >> '.__DIR__.'/words.dat');
+echo "Done.";
+$words = [];
+$lines = file(__DIR__.'/words.dat');
 
-echo "Done!\n";
+foreach ($lines as $line) {
+    list($word, $pinyin) = explode(",", trim($line));
+
+    $words[$word] = "\t{$pinyin}\t";
+}
+
+$file = realpath(__DIR__.'/../data/words.dat');
+file_put_contents($file, "<?php \n return ".var_export($words, true).';');
+
+exec('rm -rf '.__DIR__.'/*.dat');
+
+echo "\nDictionary is saved in path: $file!";

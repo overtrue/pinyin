@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$savePath = __DIR__.'/../data/chars.dat';
+$savePath = __DIR__.'/chars.dat';
 $polyphoneCharsPath = __DIR__.'/sources/multi_readings_chars.txt';
 $unihanReadingsFile = __DIR__ . '/sources/Unihan_Readings.txt';
 
@@ -70,7 +70,7 @@ foreach ($unihanChars as $code => $group) {
         $polyphones[] = $han.' '.$pinyin.' ('.join(')|(', array_diff($polyphoneChars[$code], [$pinyin])).')';
     }
 
-    $output[] = sprintf('%s %s', $han, $pinyin);
+    $output[] = sprintf("%s,%s", $han, $pinyin);
 }
 
 file_put_contents($savePath, join("\n", $output));

@@ -18,8 +18,8 @@ interface DictLoaderInterface
      *
      * <pre>
      * [
-     *     '响应时间 xiǎng yìng shí jiān',
-     *     '长篇连载 cháng piān lián zǎi',
+     *     '响应时间' => 'xiǎng yìng shí jiān',
+     *     '长篇连载' => 'cháng piān lián zǎi',
      *     //...
      * ]
      * </pre>

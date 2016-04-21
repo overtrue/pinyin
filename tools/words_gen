@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$savePath = __DIR__.'/../data/words.dat';
+$savePath = __DIR__.'/words.dat';
 $polyphones = file(__DIR__ . '/sources/multi_readings_chars.txt');
 $cceditWords = __DIR__ . '/sources/ccedit-words.txt';
 
@@ -39,7 +39,7 @@ while (!feof($fp)) {
         // ]
         foreach ($matchedChars as $char) {
             if (preg_match($regexs[$char], $pinyin)) {
-                $output[] = sprintf('%s %s', $words, $pinyin);
+                $output[] = sprintf('%s,%s', $words, str_replace(' ', "\t", $pinyin));
             }
         }
     }

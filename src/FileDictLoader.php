@@ -33,12 +33,10 @@ class FileDictLoader implements DictLoaderInterface
     /**
      * Load dict.
      *
-     * @param string $path
-     *
      * @return array
      */
-    public function load($path)
+    public function load()
     {
-        return file($path);
+        return include $this->path;
     }
 }
