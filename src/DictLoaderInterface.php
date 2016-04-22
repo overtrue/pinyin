@@ -27,8 +27,6 @@ interface DictLoaderInterface
      * </pre>
      *
      * @param Closure $callback
-     *
-     * @return array
      */
     public function map(Closure $callback);
 }

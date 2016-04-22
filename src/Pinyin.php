@@ -8,6 +8,8 @@
 
 namespace Overtrue\Pinyin;
 
+use InvalidArgumentException;
+
 define('PINYIN_NONE', 'none');
 define('PINYIN_ASCII', 'ascii');
 define('PINYIN_UNICODE', 'unicode');
@@ -23,9 +25,9 @@ define('PINYIN_UNICODE', 'unicode');
  */
 class Pinyin
 {
-    const PINYIN_DEFAULT = 'default';
-    const PINYIN_ASCII = 'ascii';
-    const PINYIN_UNICODE = 'unicode';
+    const NONE = 'none';
+    const ASCII = 'ascii';
+    const UNICODE = 'unicode';
 
     /**
      * Dict loader.
@@ -49,7 +51,6 @@ class Pinyin
         '”' => '"',
         '‘' => "'",
         '’' => "'",
-        "\t" => " ",
     );
 
     /**
@@ -70,19 +71,19 @@ class Pinyin
      *
      * @return array
      */
-    public function convert($string, $option = self::PINYIN_DEFAULT)
+    public function convert($string, $option = self::NONE)
     {
         $pinyin = $this->romanize($string);
 
-        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/u', $pinyin));
+        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
 
-        if ($option !== self::TONE_UNICODE) {
+        if ($option !== self::UNICODE) {
             foreach ($split as $index => $pinyin) {
-                $split[$index] = $this->format($pinyin, $option == self::PINYIN_ASCII);
+                $split[$index] = $this->format($pinyin, $option === self::ASCII);
             }
         }
 
-        return $split;
+        return array_values($split);
     }
 
     /**
@@ -95,7 +96,11 @@ class Pinyin
      */
     public function permlink($string, $delimiter = '-')
     {
-        return join($delimiter, $this->convert($string, false));
+        if (!in_array($delimiter, array('_', '-', '.', ''), true)) {
+            throw new InvalidArgumentException("Delimiter must be one of: '_', '-', '', '.'.");
+        }
+
+        return implode($delimiter, $this->convert($string, false));
     }
 
     /**
@@ -108,7 +113,7 @@ class Pinyin
      */
     public function abbr($string, $delimiter = '')
     {
-        return join($delimiter, array_map(function($pinyin){
+        return implode($delimiter, array_map(function ($pinyin) {
             return $pinyin[0];
         }, $this->convert($string, false)));
     }
@@ -124,10 +129,13 @@ class Pinyin
     public function sentence($sentence, $withTone = false)
     {
         $marks = array_keys($this->punctuations);
-        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z'.join($marks).'\s]+/u';
+        $punctuationsRegex = preg_quote(implode(array_merge($marks, $this->punctuations)), '/');
+        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z0-9'.$punctuationsRegex.'\s_]+/iu';
 
         $pinyin = preg_replace($regex, '', $this->romanize($sentence));
-        $pinyin = trim(str_replace($marks, $this->punctuations, $pinyin));
+
+        $punctuations = array_merge($this->punctuations, array("\t" => ' ', '  ' => ' '));
+        $pinyin = trim(str_replace(array_keys($punctuations), $punctuations, $pinyin));
 
         return $withTone ? $pinyin : $this->format($pinyin, false);
     }
@@ -165,11 +173,11 @@ class Pinyin
      */
     protected function prepare($string)
     {
-        $string = preg_replace_callback('~[^a-z0-9]+~', function ($matches) {
+        $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
             return "\t".$matches[0];
         }, $string);
 
-        return preg_replace('~[^\p{Han}\p{P}\p{Z}\p{M}\p{N}\p{L}]~u', '', $string);
+        return preg_replace("~[^\p{Han}\p{P}\p{Z}\p{M}\p{N}\p{L}\t]~u", '', $string);
     }
 
     /**
@@ -183,7 +191,7 @@ class Pinyin
     {
         $string = $this->prepare($string);
 
-        $this->getLoader()->map(function($dictionary) use (&$string) {
+        $this->getLoader()->map(function ($dictionary) use (&$string) {
             $string = strtr($string, $dictionary);
         });
 
@@ -200,17 +208,17 @@ class Pinyin
      */
     protected function format($pinyin, $tone = false)
     {
-        $replacements = [
-            'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
-            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
-            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
-            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
-            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['v', 4]
-        ];
+        $replacements = array(
+            'üē' => array('ue', 1), 'üé' => array('ue', 2), 'üě' => array('ue', 3), 'üè' => array('ue', 4),
+            'ā' => array('a', 1), 'ē' => array('e', 1), 'ī' => array('i', 1), 'ō' => array('o', 1), 'ū' => array('u', 1), 'ǖ' => array('v', 1),
+            'á' => array('a', 2), 'é' => array('e', 2), 'í' => array('i', 2), 'ó' => array('o', 2), 'ú' => array('u', 2), 'ǘ' => array('v', 2),
+            'ǎ' => array('a', 3), 'ě' => array('e', 3), 'ǐ' => array('i', 3), 'ǒ' => array('o', 3), 'ǔ' => array('u', 3), 'ǚ' => array('v', 3),
+            'à' => array('a', 4), 'è' => array('e', 4), 'ì' => array('i', 4), 'ò' => array('o', 4), 'ù' => array('u', 4), 'ǜ' => array('v', 4),
+        );
 
         foreach ($replacements as $unicde => $replacements) {
             if (false !== strpos($pinyin, $unicde)) {
-                $pinyin = str_replace($unicde, $replacements[0], $pinyin) . ($tone ? $replacements[1] : '');
+                $pinyin = str_replace($unicde, $replacements[0], $pinyin).($tone ? $replacements[1] : '');
             }
         }
 

@@ -4,6 +4,7 @@
 $savePath = __DIR__.'/chars.dat';
 $polyphoneCharsPath = __DIR__.'/sources/multi_readings_chars.txt';
 $unihanReadingsFile = __DIR__ . '/sources/Unihan_Readings.txt';
+$charPatchesFile = __DIR__ . '/patches/chars.txt';
 
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
     exit('PHP7 required.');
@@ -17,6 +18,12 @@ function unicode_to_utf8($unicode_str) {
 
 $unihanChars = [];
 $polyphoneChars = [];
+$patches = [];
+
+foreach (file($charPatchesFile) as $line) {
+    list($char, $pinyin) = explode(',', trim($line));
+    $patches[$char] = $pinyin;
+}
 
 foreach (file($unihanReadingsFile) as $line) {
     if ($line[0] == '#') {
@@ -64,10 +71,13 @@ foreach ($unihanChars as $code => $group) {
         continue;
     }
 
-    // TODO: 覆盖错误的拼音
+    // 覆盖错误的拼音
+    if (!empty($patches[$han])) {
+        $pinyin = $patches[$han];
+    }
 
     // 如果是多音字
-    if (!empty($polyphoneChars[$code]) && preg_match('/\p{Han}/u', $han)) {
+    if (!empty($polyphoneChars[$code])) {
         // 从多个拼音里把常用的那个音放前面单独放置
         $polyphones[] = $han.' '.$pinyin.' ('.join(')|(', array_diff($polyphoneChars[$code], [$pinyin])).')';
     }

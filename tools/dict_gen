@@ -13,7 +13,7 @@ echo "\nbuild combine ...";
 exec('cat '.__DIR__.'/chars.dat >> '.__DIR__.'/words.dat');
 echo "Done.";
 $words = [];
-$lines = file(__DIR__.'/words.dat');
+$lines = array_merge(file(__DIR__.'/words.dat'), file(__DIR__.'/patches/words.txt'));
 
 foreach ($lines as $line) {
     list($word, $pinyin) = explode(",", trim($line));
@@ -22,6 +22,12 @@ foreach ($lines as $line) {
 }
 
 $file = __DIR__.'/../data/words';
+
+// 排序
+uksort($words, function($key1, $key2){
+    return strlen($key1) > strlen($key2) ? -1 : (strlen($key1) == strlen($key2) ? 0 : 1);
+});
+
 $segments = array_chunk($words, 8000, true);
 
 for ($i = 0; $i < count($segments); $i++) {

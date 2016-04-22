@@ -43,12 +43,10 @@ class FileDictLoader implements DictLoaderInterface
      * Load dict.
      *
      * @param Closure $callback
-     *
-     * @return void
      */
     public function map(Closure $callback)
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $segment = $this->path.'/'.sprintf($this->segmentName, $i);
 
             if (file_exists($segment)) {
