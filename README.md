@@ -42,7 +42,7 @@ $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCI
 | -------------  | ---------------------------------------------------|
 | `PINYIN_NONE`   | 不带音调输出: `mei hao`                           |
 | `PINYIN_ASCII`  | 带数字式音调：  `mei3 hao3`                    |
-| `PINYIN_UNICDE`  | UNICDE 式音调：`měi hǎo`                    |
+| `PINYIN_UNICODE`  | UNICODE 式音调：`měi hǎo`                    |
 
 ### 生成用于链接的拼音字符串
 
@@ -64,7 +64,7 @@ $pinyin->abbr('带着希望去旅行', '-'); // d-z-x-w-q-l-x
 
 ```php
 $pinyin->sentence('带着希望去旅行，比到达终点更美好！');
-// dai zhe xi wang qu lu xing, bi dao da zhong dian geng mei hao!
+// dai zhe xi wang qu lv xing, bi dao da zhong dian geng mei hao!
 
 $pinyin->sentence('带着希望去旅行，比到达终点更美好！', true);
 // dài zhe xī wàng qù lǚ xíng, bǐ dào dá zhōng diǎn gèng měi hǎo!
@@ -74,27 +74,12 @@ $pinyin->sentence('带着希望去旅行，比到达终点更美好！', true);
 
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
-### 使用
-
-与上面的使用方法一样：
-
-```php
-use Overtrue\Pinyin\Pinyin;
-
-//...
-
-$pinyin = app('pinyin')->convert("带着希望去旅行，比到达终点更美好");
-
-```
-
 ## Contribution
-欢迎提意见及完善补充词库 `tools/patches/` :kiss:
+欢迎提意见及完善补充词库 [`tools/patches/`](https://github.com/overtrue/pinyin/tree/v2/tools/patches) :kiss:
 
 ## 参考
 
-- [CC-CEDICT](http://cc-cedict.org/wiki/)
-- [現代漢語語音語料庫](http://mmc.sinica.edu.tw/intro_c_01.html)
-- [汉典](http://www.zdic.net/)
+- [详细参考资料](https://github.com/overtrue/pinyin-resources)
 
 # License
 
