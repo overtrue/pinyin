@@ -8,6 +8,8 @@
 
 namespace Overtrue\Pinyin;
 
+use Closure;
+
 /**
  * Dict loader interface.
  */
@@ -18,13 +20,15 @@ interface DictLoaderInterface
      *
      * <pre>
      * [
-     *     '响应时间' => 'xiǎng yìng shí jiān',
-     *     '长篇连载' => 'cháng piān lián zǎi',
+     *     '响应时间' => "[\t]xiǎng[\t]yìng[\t]shí[\t]jiān",
+     *     '长篇连载' => '[\t]cháng[\t]piān[\t]lián[\t]zǎi',
      *     //...
      * ]
      * </pre>
      *
+     * @param Closure $callback
+     *
      * @return array
      */
-    public function load();
+    public function map(Closure $callback);
 }

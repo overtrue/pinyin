@@ -11,53 +11,22 @@ Pinyin
 ```php
 use Overtrue\Pinyin\Pinyin;
 
-echo Pinyin::trans('带着希望去旅行，比到达终点更美好');
-// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo
+$pinyin = new Pinyin();
 
-//多音字
-// 了
-Pinyin::trans('了然'); // liǎo rán
-Pinyin::trans('来了'); // lái le
+$pinyin->convert('带着希望去旅行，比到达终点更美好');
+// ["dai", "zhe", "xi", "wang", "qu", "lu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
 
-// 还
-Pinyin::trans('还有'); // hái yǒu
-Pinyin::trans('交还'); // jiāo huán
+$pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_TONE);
+// ["dai", "zhe", "xi", "wang", "qu", "lu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
 
-// 什
-Pinyin::trans('什么'); // shén me
-Pinyin::trans('什锦'); // shí jǐn
+$pinyin->permlink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lu-xing
+$pinyin->permlink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lu.xing
 
-// 便
-Pinyin::trans('便当'); // biàn dāng
-Pinyin::trans('便宜'); // pián yí
+$pinyin->abbr('带着希望去旅行'); // dzxwqlx
+$pinyin->abbr('带着希望去旅行', '-'); // d-z-x-w-q-l-x
 
-// 剥
-Pinyin::trans('剥皮'); // bāo pí
-Pinyin::trans('剥皮器'); // bō pí qì
-
-// 不
-Pinyin::trans('赔不是'); // péi bú shi
-Pinyin::trans('跑了和尚，跑不了庙'); // pǎo le hé shàng , pǎo bù liǎo miào
-
-// 降
-Pinyin::trans('降温'); // jiàng wēn
-Pinyin::trans('投降'); // tóu xiáng
-
-// 都
-Pinyin::trans('首都'); // shǒu dū
-Pinyin::trans('都什么年代了'); // dōu shén me nián dài le
-
-// 乐
-Pinyin::trans('快乐'); // kuài lè
-Pinyin::trans('音乐'); // yīn yuè
-
-// 长
-Pinyin::trans('成长'); // chéng zhǎng
-Pinyin::trans('长江'); // cháng jiāng
-
-// 难
-Pinyin::trans('难民'); // nàn mín
-Pinyin::trans('难过'); // nán guò
+$pinyin->sentence('带着希望去旅行，比到达终点更美好！');
+// dai zhe xi wang qu lu xing, bi dao da zhong dian geng mei hao!
 ...
 
 ```

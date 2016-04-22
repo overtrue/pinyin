@@ -16,7 +16,7 @@
     ],
     "autoload": {
         "psr-4": {
-        	"Overtrue\\": "src/"
+        	"Overtrue\\Pinyin\\": "src/"
         }
     },
 	"require-dev": {

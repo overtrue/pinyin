@@ -10,7 +10,9 @@ if (version_compare(PHP_VERSION, '7.0.0', '<')) {
 }
 
 function unicode_to_utf8($unicode_str) {
-    return $char = json_decode('"\u'.$unicode_str.'"');
+    $char = json_decode('"\u'.$unicode_str.'"');
+
+    return preg_match('/\p{Han}/u', $char) ? $char : false;
 }
 
 $unihanChars = [];
@@ -57,7 +59,7 @@ foreach ($unihanChars as $code => $group) {
 
     $han = unicode_to_utf8($code);
 
-    if (is_null($pinyin) ) {
+    if (is_null($pinyin) || empty($han)) {
         echo "Skip non-chinese code: $code(".$han.")\n";
         continue;
     }

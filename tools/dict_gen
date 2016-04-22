@@ -18,12 +18,16 @@ $lines = file(__DIR__.'/words.dat');
 foreach ($lines as $line) {
     list($word, $pinyin) = explode(",", trim($line));
 
-    $words[$word] = "\t{$pinyin}\t";
+    $words[$word] = "\t{$pinyin}";
 }
 
-$file = realpath(__DIR__.'/../data/words.dat');
-file_put_contents($file, "<?php \n return ".var_export($words, true).';');
+$file = __DIR__.'/../data/words';
+$segments = array_chunk($words, 8000, true);
+
+for ($i = 0; $i < count($segments); $i++) {
+    $segment = $segments[$i];
+    file_put_contents($file.'_'.$i, "<?php \n return ".var_export($segment, true).';');
+    echo "\nsemgment is saved in path: {$file}_{$i}!";
+}
 
 exec('rm -rf '.__DIR__.'/*.dat');
-
-echo "\nDictionary is saved in path: $file!";

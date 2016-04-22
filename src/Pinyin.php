@@ -8,9 +8,9 @@
 
 namespace Overtrue\Pinyin;
 
-define('PINYIN_TONE_NONE', 'none');
-define('PINYIN_TONE_ASCII', 'ascii');
-define('PINYIN_TONE_UNICODE', 'unicode');
+define('PINYIN_NONE', 'none');
+define('PINYIN_ASCII', 'ascii');
+define('PINYIN_UNICODE', 'unicode');
 
 /**
  * Chinese to pinyin translator.
@@ -23,9 +23,9 @@ define('PINYIN_TONE_UNICODE', 'unicode');
  */
 class Pinyin
 {
-    const TONE_NONE = 'none';
-    const TONE_ASCII = 'ascii';
-    const TONE_UNICODE = 'unicode';
+    const PINYIN_DEFAULT = 'default';
+    const PINYIN_ASCII = 'ascii';
+    const PINYIN_UNICODE = 'unicode';
 
     /**
      * Dict loader.
@@ -50,7 +50,6 @@ class Pinyin
         '‘' => "'",
         '’' => "'",
         "\t" => " ",
-        "  " => " ",
     );
 
     /**
@@ -71,7 +70,7 @@ class Pinyin
      *
      * @return array
      */
-    public function convert($string, $option = self::TONE_NONE)
+    public function convert($string, $option = self::PINYIN_DEFAULT)
     {
         $pinyin = $this->romanize($string);
 
@@ -79,7 +78,7 @@ class Pinyin
 
         if ($option !== self::TONE_UNICODE) {
             foreach ($split as $index => $pinyin) {
-                $split[$index] = $this->format($pinyin, $option == self::TONE_ASCII);
+                $split[$index] = $this->format($pinyin, $option == self::PINYIN_ASCII);
             }
         }
 
@@ -96,7 +95,7 @@ class Pinyin
      */
     public function permlink($string, $delimiter = '-')
     {
-        return join($delimiter, $this->convert($string, self::TONE_NONE));
+        return join($delimiter, $this->convert($string, false));
     }
 
     /**
@@ -111,22 +110,26 @@ class Pinyin
     {
         return join($delimiter, array_map(function($pinyin){
             return $pinyin[0];
-        }, $this->convert($string, self::TONE_NONE)));
+        }, $this->convert($string, false)));
     }
 
     /**
      * Chinese to pinyin sentense.
      *
      * @param string $sentence
+     * @param string $option
      *
      * @return string
      */
-    public function sentence($sentence)
+    public function sentence($sentence, $withTone = false)
     {
         $marks = array_keys($this->punctuations);
         $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z'.join($marks).'\s]+/u';
 
-        return trim(str_replace($marks, $this->punctuations, preg_replace($regex, '', $this->romanize($sentence))));
+        $pinyin = preg_replace($regex, '', $this->romanize($sentence));
+        $pinyin = trim(str_replace($marks, $this->punctuations, $pinyin));
+
+        return $withTone ? $pinyin : $this->format($pinyin, false);
     }
 
     /**
@@ -150,7 +153,7 @@ class Pinyin
      */
     public function getLoader()
     {
-        return $this->loader ?: new FileDictLoader(__DIR__.'/../data/words.dat');
+        return $this->loader ?: new FileDictLoader(__DIR__.'/../data/');
     }
 
     /**
@@ -162,6 +165,10 @@ class Pinyin
      */
     protected function prepare($string)
     {
+        $string = preg_replace_callback('~[^a-z0-9]+~', function ($matches) {
+            return "\t".$matches[0];
+        }, $string);
+
         return preg_replace('~[^\p{Han}\p{P}\p{Z}\p{M}\p{N}\p{L}]~u', '', $string);
     }
 
@@ -176,9 +183,11 @@ class Pinyin
     {
         $string = $this->prepare($string);
 
-        $dictionary = $this->getLoader()->load();
+        $this->getLoader()->map(function($dictionary) use (&$string) {
+            $string = strtr($string, $dictionary);
+        });
 
-        return strtr($string, $dictionary);
+        return $string;
     }
 
     /**

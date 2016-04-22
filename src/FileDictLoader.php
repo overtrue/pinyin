@@ -8,11 +8,20 @@
 
 namespace Overtrue\Pinyin;
 
+use Closure;
+
 /**
  * Dict File loader.
  */
 class FileDictLoader implements DictLoaderInterface
 {
+    /**
+     * Words segment name.
+     *
+     * @var string
+     */
+    protected $segmentName = 'words_%s';
+
     /**
      * Dict path.
      *
@@ -33,10 +42,19 @@ class FileDictLoader implements DictLoaderInterface
     /**
      * Load dict.
      *
-     * @return array
+     * @param Closure $callback
+     *
+     * @return void
      */
-    public function load()
+    public function map(Closure $callback)
     {
-        return include $this->path;
+        for ($i = 0; $i < 100; $i++) {
+            $segment = $this->path.'/'.sprintf($this->segmentName, $i);
+
+            if (file_exists($segment)) {
+                $dictionary = (array) include $segment;
+                $callback($dictionary);
+            }
+        }
     }
 }
