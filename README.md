@@ -75,7 +75,7 @@ $pinyin->sentence('带着希望去旅行，比到达终点更美好！', true);
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 ## Contribution
-欢迎提意见及完善补充词库 [`tools/patches/`](https://github.com/overtrue/pinyin/tree/v2/tools/patches) :kiss:
+欢迎提意见及完善补充词库 [`tools/patches/`](https://github.com/overtrue/pinyin/tree/master/tools/patches) :kiss:
 
 ## 参考
 
