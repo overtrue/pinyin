@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+echo "\nbuild chars ...";
+exec('php '.__DIR__.'/chars_gen');
+echo "Done.";
+
+echo "\nbuild words ...";
+exec('php '.__DIR__.'/words_gen');
+echo "Done.";
+
+echo "\nbuild combine ...";
+exec('cat '.__DIR__.'/chars.dat >> '.__DIR__.'/words.dat');
+echo "Done.";
+$words = [];
+$lines = array_merge(file(__DIR__.'/words.dat'), file(__DIR__.'/patches/words.txt'));
+
+foreach ($lines as $line) {
+    list($word, $pinyin) = explode(",", trim($line));
+
+    $words[$word] = "\t{$pinyin}";
+}
+
+$file = __DIR__.'/../data/words';
+
+// 排序
+uksort($words, function($key1, $key2){
+    return strlen($key1) > strlen($key2) ? -1 : (strlen($key1) == strlen($key2) ? 0 : 1);
+});
+
+$segments = array_chunk($words, 8000, true);
+
+for ($i = 0; $i < count($segments); $i++) {
+    $segment = $segments[$i];
+    file_put_contents($file.'_'.$i, "<?php \n return ".var_export($segment, true).';');
+    echo "\nsemgment is saved in path: {$file}_{$i}!";
+}
+
+exec('rm -rf '.__DIR__.'/*.dat');

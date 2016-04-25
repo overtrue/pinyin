@@ -1,0 +1,92 @@
+#!/usr/bin/env php
+<?php
+
+$savePath = __DIR__.'/chars.dat';
+$polyphoneCharsPath = __DIR__.'/sources/multi_readings_chars.txt';
+$unihanReadingsFile = __DIR__ . '/sources/Unihan_Readings.txt';
+$charPatchesFile = __DIR__ . '/patches/chars.txt';
+
+if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+    exit('PHP7 required.');
+}
+
+function unicode_to_utf8($unicode_str) {
+    $char = json_decode('"\u'.$unicode_str.'"');
+
+    return preg_match('/\p{Han}/u', $char) ? $char : false;
+}
+
+$unihanChars = [];
+$polyphoneChars = [];
+$patches = [];
+
+foreach (file($charPatchesFile) as $line) {
+    list($char, $pinyin) = explode(',', trim($line));
+    $patches[$char] = $pinyin;
+}
+
+foreach (file($unihanReadingsFile) as $line) {
+    if ($line[0] == '#') {
+        continue;
+    }
+
+    $parts = explode("\t", trim($line));
+
+    if (count($parts) < 3) {
+        continue;
+    }
+
+    list($code, $type, $reading) = $parts;
+
+    $code = substr($code, 2);
+
+    if (!in_array($type, ['kHanyuPinlu','kXHC1983','kHanyuPinyin', 'kMandarin'])) {
+        continue;
+    }
+
+    $readings = array_filter(preg_split('/[\*,.:()0-9\s]+/', $reading)); // filter empty items.
+
+    // 记录多音字： [
+    //      '4E50' => [pinyin1, pinyin2, ...]
+    // ]
+    if (count($readings) > 1) {
+        $polyphoneChars[$code] = array_unique(array_merge($polyphoneChars[$code] ?? [], $readings));
+    }
+
+    $reading = reset($readings);
+
+    $unihanChars[$code][$type] = $reading;
+}
+
+$output = [];
+$polyphones = []; // 去除了多音字常用音，只留下不常用的音
+
+foreach ($unihanChars as $code => $group) {
+    $pinyin = $group['kMandarin'] ?? $group['kHanyuPinlu'] ?? $group['kXHC1983'] ?? $group['kHanyuPinyin'] ?? null;
+
+    $han = unicode_to_utf8($code);
+
+    if (is_null($pinyin) || empty($han)) {
+        echo "Skip non-chinese code: $code(".$han.")\n";
+        continue;
+    }
+
+    // 覆盖错误的拼音
+    if (!empty($patches[$han])) {
+        $pinyin = $patches[$han];
+    }
+
+    // 如果是多音字
+    if (!empty($polyphoneChars[$code])) {
+        // 从多个拼音里把常用的那个音放前面单独放置
+        $polyphones[] = $han.' '.$pinyin.' ('.join(')|(', array_diff($polyphoneChars[$code], [$pinyin])).')';
+    }
+
+    $output[] = sprintf("%s,%s", $han, $pinyin);
+}
+
+file_put_contents($savePath, join("\n", $output));
+file_put_contents($polyphoneCharsPath, join("\n", $polyphones));
+
+echo count($output)." mandarin readings saved in $savePath\n";
+echo count($polyphones)." multi mandarin chars saved in $polyphoneCharsPath";

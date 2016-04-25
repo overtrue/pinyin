@@ -5,8 +5,9 @@ enabled:
   - strict_param
 
 disabled:
-  - short_array_syntax
+  - long_array_syntax
   - phpdoc_short_description
 
 excluded:
   - src/data
+  - tools
