@@ -9,7 +9,7 @@ build:
     tests:
         override:
             -
-                command: phpunit --coverage-clover=my-coverage-file
+                command: ./vendor/bin/phpunit --coverage-clover=my-coverage-file
                 coverage:
                     file: my-coverage-file
                     format: php-clover
