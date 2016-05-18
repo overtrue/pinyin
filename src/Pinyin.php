@@ -87,6 +87,29 @@ class Pinyin
     }
 
     /**
+     * Convert string (person name) to pinyin.
+     *
+     * @param string $stringName
+     * @param string $option
+     *
+     * @return array
+     */
+    public function convertName($stringName, $option = self::NONE)
+    {
+        $pinyin = $this->romanize($stringName, true);
+
+        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
+
+        if ($option !== self::UNICODE) {
+            foreach ($split as $index => $pinyin) {
+                $split[$index] = $this->format($pinyin, $option === self::ASCII);
+            }
+        }
+
+        return array_values($split);
+    }
+
+    /**
      * Return a pinyin permlink from string.
      *
      * @param string $string
@@ -184,17 +207,45 @@ class Pinyin
      * Convert Chinese to pinyin.
      *
      * @param string $string
+     * @param bool   $isName
      *
      * @return string
      */
-    protected function romanize($string)
+    protected function romanize($string, $isName = false)
     {
         $string = $this->prepare($string);
 
-        $this->getLoader()->map(function ($dictionary) use (&$string) {
+        $dictLoader = $this->getLoader();
+
+        if ($isName) {
+            $string = $this->convertSurname($string, $dictLoader);
+        }
+
+        $dictLoader->map(function ($dictionary) use (&$string) {
             $string = strtr($string, $dictionary);
         });
 
+        return $string;
+    }
+
+    /**
+     * Convert Chinese Surname to pinyin.
+     *
+     * @param string                               $string
+     * @param \Overtrue\Pinyin\DictLoaderInterface $dictLoader
+     *
+     * @return string
+     */
+    protected function convertSurname($string, $dictLoader) {
+        $dictLoader->mapSurname(function ($dictionary) use (&$string) {
+            foreach ($dictionary as $surname => $pinyin) {
+                if (strpos($string, $surname) === 0) {
+                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'));
+                    break;
+                }
+            }
+        });
+        
         return $string;
     }
 

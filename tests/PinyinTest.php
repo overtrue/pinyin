@@ -70,6 +70,8 @@ class PinyinTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($loader, $pinyin->getLoader());
         $this->assertSame('foo bar', $pinyin->sentence('你好'));
+
+        $this->assertSame(array('shan'), $pinyin->convertName('单'));
     }
 
     // test special words
@@ -212,4 +214,13 @@ class MockLoader implements DictLoaderInterface
             );
         $callback($dictionary);
     }
+
+    public function mapSurname(Closure $callback)
+    {
+        $dictionary = array(
+                '单' => "shan",
+            );
+        $callback($dictionary);
+    }
+
 }

@@ -55,4 +55,19 @@ class FileDictLoader implements DictLoaderInterface
             }
         }
     }
+
+    /**
+     * Load surname dict.
+     *
+     * @param Closure $callback
+     */
+    public function mapSurname(Closure $callback)
+    {
+        $surnames = $this->path.'/surname';
+        
+        if (file_exists($surnames)) {
+            $dictionary = (array) include $surnames;
+            $callback($dictionary);
+        }
+    }
 }
