@@ -70,8 +70,19 @@ class PinyinTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($loader, $pinyin->getLoader());
         $this->assertSame('foo bar', $pinyin->sentence('你好'));
+    }
 
+    public function tesetConvertName()
+    {
         $this->assertSame(array('shan'), $pinyin->convertName('单'));
+        $this->assertSame(array('gu', 'dan'), $pinyin->convertName('孤单'));
+        $this->assertSame(array('shan', 'dan', 'dan'), $pinyin->convertName('单单单'));
+        $this->assertSame(array('piao', 'dan', 'pu'), $pinyin->convertName('朴单朴'));
+        $this->assertSame(array('yu', 'chi', 'pu'), $pinyin->convertName('尉迟朴'));
+        $this->assertSame(array('wei', 'mou', 'mou'), $pinyin->convertName('尉某某'));
+        $this->assertSame(array('yu', 'chi', 'mou', 'mou'), $pinyin->convertName('尉迟某某'));
+        $this->assertSame(array('mou', 'mou', 'wei', 'chi',), $pinyin->convertName('某某尉迟'));
+        $this->assertSame(array('mou', 'wei', 'chi', 'mou'), $pinyin->convertName('某尉迟某'));
     }
 
     // test special words
@@ -219,6 +230,8 @@ class MockLoader implements DictLoaderInterface
     {
         $dictionary = array(
                 '单' => "shan",
+                '朴' => 'piao',
+                '尉迟' => 'yu chi',
             );
         $callback($dictionary);
     }
