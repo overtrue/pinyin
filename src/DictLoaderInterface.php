@@ -29,4 +29,11 @@ interface DictLoaderInterface
      * @param Closure $callback
      */
     public function map(Closure $callback);
+
+    /**
+     * Load surname dict.
+     *
+     * @param Closure $callback
+     */
+    public function mapSurname(Closure $callback);
 }
