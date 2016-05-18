@@ -72,17 +72,18 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         $this->assertSame('foo bar', $pinyin->sentence('你好'));
     }
 
-    public function tesetConvertName()
+    public function testName()
     {
-        $this->assertSame(array('shan'), $pinyin->convertName('单'));
-        $this->assertSame(array('gu', 'dan'), $pinyin->convertName('孤单'));
-        $this->assertSame(array('shan', 'dan', 'dan'), $pinyin->convertName('单单单'));
-        $this->assertSame(array('piao', 'dan', 'pu'), $pinyin->convertName('朴单朴'));
-        $this->assertSame(array('yu', 'chi', 'pu'), $pinyin->convertName('尉迟朴'));
-        $this->assertSame(array('wei', 'mou', 'mou'), $pinyin->convertName('尉某某'));
-        $this->assertSame(array('yu', 'chi', 'mou', 'mou'), $pinyin->convertName('尉迟某某'));
-        $this->assertSame(array('mou', 'mou', 'wei', 'chi',), $pinyin->convertName('某某尉迟'));
-        $this->assertSame(array('mou', 'wei', 'chi', 'mou'), $pinyin->convertName('某尉迟某'));
+        $pinyin = new Pinyin();
+
+        $this->assertSame(array('shan'), $pinyin->name('单'));
+        $this->assertSame(array('gu', 'dan'), $pinyin->name('孤单'));
+        $this->assertSame(array('shan', 'dan', 'dan'), $pinyin->name('单单单'));
+        $this->assertSame(array('piao', 'dan', 'pu'), $pinyin->name('朴单朴'));
+        $this->assertSame(array('yu', 'chi', 'pu'), $pinyin->name('尉迟朴'));
+        $this->assertSame(array('wei', 'mou', 'mou'), $pinyin->name('尉某某'));
+        $this->assertSame(array('yu', 'chi', 'mou', 'mou'), $pinyin->name('尉迟某某'));
+        $this->assertSame(array('mou', 'mou', 'yu', 'chi',), $pinyin->name('某某尉迟')); // 尉迟 是词语，在词典里有，所以这里不变
     }
 
     // test special words

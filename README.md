@@ -70,6 +70,15 @@ $pinyin->sentence('带着希望去旅行，比到达终点更美好！', true);
 // dài zhe xī wàng qù lǚ xíng, bǐ dào dá zhōng diǎn gèng měi hǎo!
 ```
 
+### 翻译姓名
+
+姓名的姓的读音有些与普通字不一样，比如 ‘单’ 常见的音为 `dan`，而作为姓的时候读 `shan`。
+
+```php
+$pinyin->name('单某某'); // ['shan', 'mou', 'mou']
+$pinyin->name('单某某', PINYIN_UNICODE); // ["shàn","mǒu","mǒu"]
+```
+
 ## 在 Laravel 中使用
 
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)

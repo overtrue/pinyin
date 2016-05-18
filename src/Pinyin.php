@@ -75,15 +75,7 @@ class Pinyin
     {
         $pinyin = $this->romanize($string);
 
-        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
-
-        if ($option !== self::UNICODE) {
-            foreach ($split as $index => $pinyin) {
-                $split[$index] = $this->format($pinyin, $option === self::ASCII);
-            }
-        }
-
-        return array_values($split);
+        return $this->splitWords($pinyin, $option);
     }
 
     /**
@@ -94,19 +86,11 @@ class Pinyin
      *
      * @return array
      */
-    public function convertName($stringName, $option = self::NONE)
+    public function name($stringName, $option = self::NONE)
     {
         $pinyin = $this->romanize($stringName, true);
 
-        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
-
-        if ($option !== self::UNICODE) {
-            foreach ($split as $index => $pinyin) {
-                $split[$index] = $this->format($pinyin, $option === self::ASCII);
-            }
-        }
-
-        return array_values($split);
+        return $this->splitWords($pinyin, $option);
     }
 
     /**
@@ -247,6 +231,27 @@ class Pinyin
         });
 
         return $string;
+    }
+
+    /**
+     * Split pinyin string to words.
+     *
+     * @param string $pinyin
+     * @param string $option
+     *
+     * @return array
+     */
+    public function splitWords($pinyin, $option)
+    {
+        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
+
+        if ($option !== self::UNICODE) {
+            foreach ($split as $index => $pinyin) {
+                $split[$index] = $this->format($pinyin, $option === self::ASCII);
+            }
+        }
+
+        return array_values($split);
     }
 
     /**
