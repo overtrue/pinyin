@@ -218,21 +218,34 @@ class Pinyin
         $dictLoader = $this->getLoader();
 
         if ($isName) {
-            $dictLoader->mapSurname(function ($dictionary) use (&$string) {
-                foreach ($dictionary as $surname => $pinyin) {
-                    $len = strlen($surname);
-                    if (substr($string, 0, $len) == $surname) {
-                        $string = $pinyin . substr($string, $len);
-                        break;
-                    }
-                }
-            });
+            $string = $this->convertSurname($string, $dictLoader);
         }
 
         $dictLoader->map(function ($dictionary) use (&$string) {
             $string = strtr($string, $dictionary);
         });
 
+        return $string;
+    }
+
+    /**
+     * Convert Chinese Surname to pinyin.
+     *
+     * @param string                               $string
+     * @param \Overtrue\Pinyin\DictLoaderInterface $dictLoader
+     *
+     * @return string
+     */
+    protected function convertSurname($string, $dictLoader) {
+        $dictLoader->mapSurname(function ($dictionary) use (&$string) {
+            foreach ($dictionary as $surname => $pinyin) {
+                if (strpos($string, $surname) === 0) {
+                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'));
+                    break;
+                }
+            }
+        });
+        
         return $string;
     }
 
