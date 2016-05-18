@@ -240,12 +240,12 @@ class Pinyin
         $dictLoader->mapSurname(function ($dictionary) use (&$string) {
             foreach ($dictionary as $surname => $pinyin) {
                 if (strpos($string, $surname) === 0) {
-                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'));
+                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'), null, 'UTF-8');
                     break;
                 }
             }
         });
-        
+
         return $string;
     }
 
