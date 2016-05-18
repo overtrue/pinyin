@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+$savePath = __DIR__.'/../data/surnames';
+$surnames = file(__DIR__.'/sources/surnames.txt');
+
+if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+    exit('PHP7 required.');
+}
+
+$words = [];
+
+foreach ($surnames as $line) {
+    $items = explode(',', trim($line));
+
+    list($surname, $pinyin) = $items;
+
+    $words[trim($surname)] = "\t".preg_replace('/\s+/', "\t",trim($pinyin));
+}
+
+file_put_contents($savePath, "<?php \n return ".var_export($words, true).';');
+
+echo count($words)." words saved in $savePath";

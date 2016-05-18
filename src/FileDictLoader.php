@@ -63,8 +63,8 @@ class FileDictLoader implements DictLoaderInterface
      */
     public function mapSurname(Closure $callback)
     {
-        $surnames = $this->path.'/surname';
-        
+        $surnames = $this->path.'/surnames';
+
         if (file_exists($surnames)) {
             $dictionary = (array) include $surnames;
             $callback($dictionary);
