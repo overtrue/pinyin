@@ -18,8 +18,8 @@ foreach ($surnames as $line) {
     $words[trim($surname)] = "\t".preg_replace('/\s+/', "\t",trim($pinyin));
 }
 
-uasort($words, function($a, $b){
-    return $a <=> $b;
+uksort($words, function($a, $b){
+    return strlen($b) <=> strlen($a);
 });
 
 file_put_contents($savePath, "<?php \n return ".var_export($words, true).';');
