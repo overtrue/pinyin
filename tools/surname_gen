@@ -18,6 +18,10 @@ foreach ($surnames as $line) {
     $words[trim($surname)] = "\t".preg_replace('/\s+/', "\t",trim($pinyin));
 }
 
+uasort($words, function($a, $b){
+    return $a <=> $b;
+});
+
 file_put_contents($savePath, "<?php \n return ".var_export($words, true).';');
 
 echo count($words)." words saved in $savePath";
