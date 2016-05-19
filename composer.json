@@ -1,14 +1,14 @@
 {
-	"name": "overtrue/pinyin",
-	"description": "Chinese to pinyin translator.",
-	"keywords": [
-		"chinese",
-		"pinyin",
-		"cn2pinyin"
-	],
-	"homepage": "https://github.com/overtrue/pinyin",
-	"license": "MIT",
-	"authors": [
+    "name": "overtrue/pinyin",
+    "description": "Chinese to pinyin translator.",
+    "keywords": [
+        "chinese",
+        "pinyin",
+        "cn2pinyin"
+    ],
+    "homepage": "https://github.com/overtrue/pinyin",
+    "license": "MIT",
+    "authors": [
         {
             "name": "Carlos",
             "homepage": "http://github.com/overtrue"
@@ -16,13 +16,13 @@
     ],
     "autoload": {
         "psr-4": {
-        	"Overtrue\\Pinyin\\": "src/"
+            "Overtrue\\Pinyin\\": "src/"
         }
     },
     "require": {
-        "php":">=5.4.0"
+        "php": ">=5.4.0"
     },
-	"require-dev": {
-		"phpunit/phpunit": "~4.8"
-	}
+    "require-dev": {
+        "phpunit/phpunit": "~4.8"
+    }
 }
