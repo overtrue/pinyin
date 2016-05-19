@@ -84,6 +84,7 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         $this->assertSame(array('wei', 'mou', 'mou'), $pinyin->name('尉某某'));
         $this->assertSame(array('yu', 'chi', 'mou', 'mou'), $pinyin->name('尉迟某某'));
         $this->assertSame(array('mou', 'mou', 'yu', 'chi',), $pinyin->name('某某尉迟')); // 尉迟 是词语，在词典里有，所以这里不变
+        $this->assertSame(array('zhai', 'di', 'di',), $pinyin->name('翟翟翟'));
     }
 
     // test special words
