@@ -34,7 +34,7 @@ class Pinyin
      *
      * @var \Overtrue\Pinyin\DictLoaderInterface
      */
-    protected $loader;
+    protected $loader = null;
 
     /**
      * Punctuations map.
@@ -137,7 +137,7 @@ class Pinyin
     {
         $marks = array_keys($this->punctuations);
         $punctuationsRegex = preg_quote(implode(array_merge($marks, $this->punctuations)), '/');
-        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z0-9'.$punctuationsRegex.'\s_]+/iu';
+        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z0-9' . $punctuationsRegex . '\s_]+/iu';
 
         $pinyin = preg_replace($regex, '', $this->romanize($sentence));
 
@@ -168,7 +168,10 @@ class Pinyin
      */
     public function getLoader()
     {
-        return $this->loader ?: new FileDictLoader(__DIR__.'/../data/');
+        if ($this->loader === null) {
+            $this->loader = new FileDictLoader(__DIR__ . '/../data/');
+        }
+        return $this->loader;
     }
 
     /**
@@ -181,7 +184,7 @@ class Pinyin
     protected function prepare($string)
     {
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
-            return "\t".$matches[0];
+            return "\t" . $matches[0];
         }, $string);
 
         return preg_replace("~[^\p{Han}\p{P}\p{Z}\p{M}\p{N}\p{L}\t]~u", '', $string);
@@ -191,7 +194,7 @@ class Pinyin
      * Convert Chinese to pinyin.
      *
      * @param string $string
-     * @param bool   $isName
+     * @param bool $isName
      *
      * @return string
      */
@@ -215,12 +218,13 @@ class Pinyin
     /**
      * Convert Chinese Surname to pinyin.
      *
-     * @param string                               $string
+     * @param string $string
      * @param \Overtrue\Pinyin\DictLoaderInterface $dictLoader
      *
      * @return string
      */
-    protected function convertSurname($string, $dictLoader) {
+    protected function convertSurname($string, $dictLoader)
+    {
         $dictLoader->mapSurname(function ($dictionary) use (&$string) {
             foreach ($dictionary as $surname => $pinyin) {
                 if (strpos($string, $surname) === 0) {
@@ -258,7 +262,7 @@ class Pinyin
      * Format.
      *
      * @param string $pinyin
-     * @param bool   $tone
+     * @param bool $tone
      *
      * @return string
      */
@@ -274,7 +278,7 @@ class Pinyin
 
         foreach ($replacements as $unicde => $replacements) {
             if (false !== strpos($pinyin, $unicde)) {
-                $pinyin = str_replace($unicde, $replacements[0], $pinyin).($tone ? $replacements[1] : '');
+                $pinyin = str_replace($unicde, $replacements[0], $pinyin) . ($tone ? $replacements[1] : '');
             }
         }
 
