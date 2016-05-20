@@ -7,7 +7,7 @@
     <meta name="keyword" content="Pinyin,汉字转拼音,中文转拼音, PHP,overtrue,安正超">
     <mata name="description" content="overtrue/pinyin - 基于CC-CEDICT词典的中文转拼音工具, 更准确的PHP汉字转拼音解决方案。 ">
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/prism.css">
     <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -36,174 +36,131 @@
         </ul>
       </header>
       <section>
-        <h1>
-<a name="pinyin-" class="anchor" href="#pinyin-"><span class="octicon octicon-link"></span></a>Pinyin <a href="https://travis-ci.org/overtrue/pinyin"><img src="https://travis-ci.org/overtrue/pinyin.svg?branch=master" alt="Build Status"></a>
-</h1>
+         <!-- doc -->
 
-<p>基于CC-CEDICT词典的中文转拼音工具, 更准确的汉字转拼音解决方案。 <a href="http://cc-cedict.org/wiki/">CC-CEDICT</a>.</p>
-<p>SAE服务API：<a href="http://string2pinyin.sinaapp.com/doc.html">http://string2pinyin.sinaapp.com/doc.html</a></p>
-<div class="highlight highlight-php"><pre><span class="k">use</span> <span class="nx">\Overtrue\Pinyin\Pinyin</span><span class="p">;</span> <span class="c1">//请注意1.x系列的命名空间不同</span>
+        <div id="content">
+          <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
+        </div>
+        <script id="doc-markdown" type="text/plain">
+          Pinyin
+          ======
 
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">);</span>
-<span class="c1">// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo</span>
+          [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
+          [![Latest Stable Version](https://poser.pugx.org/overtrue/pinyin/v/stable.svg)](https://packagist.org/packages/overtrue/pinyin) [![Total Downloads](https://poser.pugx.org/overtrue/pinyin/downloads.svg)](https://packagist.org/packages/overtrue/pinyin) [![Latest Unstable Version](https://poser.pugx.org/overtrue/pinyin/v/unstable.svg)](https://packagist.org/packages/overtrue/pinyin) [![License](https://poser.pugx.org/overtrue/pinyin/license.svg)](https://packagist.org/packages/overtrue/pinyin)
+          [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
+          [![Code Coverage](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 
-<span class="c1">//多音字</span>
-<span class="c1">// 了</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'了然'</span><span class="p">);</span> <span class="c1">// liǎo rán</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'来了'</span><span class="p">);</span> <span class="c1">// lái le</span>
+          基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的支持多音字的汉字转拼音解决方案。
 
-<span class="c1">// 还</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'还有'</span><span class="p">);</span> <span class="c1">// hái yǒu</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'交还'</span><span class="p">);</span> <span class="c1">// jiāo huán</span>
 
-<span class="c1">// 什</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'什么'</span><span class="p">);</span> <span class="c1">// shén me</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'什锦'</span><span class="p">);</span> <span class="c1">// shí jǐn</span>
+          ## 安装
 
-<span class="c1">// 便</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'便当'</span><span class="p">);</span> <span class="c1">// biàn dāng</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'便宜'</span><span class="p">);</span> <span class="c1">// pián yí</span>
+          使用 Composer 安装:
 
-<span class="c1">// 剥</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'剥皮'</span><span class="p">);</span> <span class="c1">// bāo pí</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'剥皮器'</span><span class="p">);</span> <span class="c1">// bō pí qì</span>
+          ```
+          composer require "overtrue/pinyin:~3.0"
+          ```
 
-<span class="c1">// 不</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'赔不是'</span><span class="p">);</span> <span class="c1">// péi bú shi</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'跑了和尚，跑不了庙'</span><span class="p">);</span> <span class="c1">// pǎo le hé shàng , pǎo bù liǎo miào</span>
+          ## 使用
 
-<span class="c1">// 降</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'降温'</span><span class="p">);</span> <span class="c1">// jiàng wēn</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'投降'</span><span class="p">);</span> <span class="c1">// tóu xiáng</span>
+          ### 拼音数组
 
-<span class="c1">// 都</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'首都'</span><span class="p">);</span> <span class="c1">// shǒu dū</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'都什么年代了'</span><span class="p">);</span> <span class="c1">// dōu shén me nián dài le</span>
+          ```php
+          use Overtrue\Pinyin\Pinyin;
 
-<span class="c1">// 乐</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'快乐'</span><span class="p">);</span> <span class="c1">// kuài lè</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'音乐'</span><span class="p">);</span> <span class="c1">// yīn yuè</span>
+          $pinyin = new Pinyin();
 
-<span class="c1">// 长</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'成长'</span><span class="p">);</span> <span class="c1">// chéng zhǎng</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'长江'</span><span class="p">);</span> <span class="c1">// cháng jiāng</span>
+          $pinyin->convert('带着希望去旅行，比到达终点更美好');
+          // ["dai", "zhe", "xi", "wang", "qu", "lu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
 
-<span class="c1">// 难</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'难民'</span><span class="p">);</span> <span class="c1">// nàn mín</span>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'难过'</span><span class="p">);</span> <span class="c1">// nán guò</span>
-<span class="o">...</span>
+          $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_UNICODE);
+          // ["dài","zhe","xī","wàng","qù","lǚ","xíng","bǐ","dào","dá","zhōng","diǎn","gèng","měi","hǎo"]
 
-</pre></div>
+          $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCII);
+          //["dai4","zhe","xi1","wang4","qu4","lv3","xing2","bi3","dao4","da2","zhong1","dian3","geng4","mei3","hao3"]
+          ```
 
-<h1>
-<a name="%E5%AE%89%E8%A3%85" class="anchor" href="#%E5%AE%89%E8%A3%85"><span class="octicon octicon-link"></span></a>安装</h1>
+          选项：
 
-<ol>
-<li>
-<p>使用 Composer 安装:</p>
+          |      选项      | 描述                                                |
+          | -------------  | ---------------------------------------------------|
+          | `PINYIN_NONE`   | 不带音调输出: `mei hao`                           |
+          | `PINYIN_ASCII`  | 带数字式音调：  `mei3 hao3`                    |
+          | `PINYIN_UNICODE`  | UNICODE 式音调：`měi hǎo`                    |
 
-<pre><code>composer require overtrue/pinyin:2.*
-</code></pre>
+          ### 生成用于链接的拼音字符串
 
-<p>或者在你的项目composer.json加入：</p>
+          ```php
+          $pinyin->permlink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lu-xing
+          $pinyin->permlink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lu.xing
+          ```
 
-<div class="highlight highlight-javascript"><pre><span class="p">{</span>
-    <span class="s2">"require"</span><span class="o">:</span> <span class="p">{</span>
-        <span class="s2">"overtrue/pinyin"</span><span class="o">:</span> <span class="s2">"2.*"</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</li>
-<li><p>直接下载文件 <code>src/Pinyin/Pinyin.php</code> 引入到项目中。</p></li>
-</ol><h1>
-<a name="%E4%BD%BF%E7%94%A8" class="anchor" href="#%E4%BD%BF%E7%94%A8"><span class="octicon octicon-link"></span></a>使用</h1>
+          ### 获取首字符字符串
 
-<div class="highlight highlight-php"><pre><span class="o">&lt;?</span><span class="nx">php</span>
-<span class="k">use</span> <span class="nx">\Overtrue\Pinyin\Pinyin</span><span class="p">;</span>
+          ```php
+          $pinyin->abbr('带着希望去旅行'); // dzxwqlx
+          $pinyin->abbr('带着希望去旅行', '-'); // d-z-x-w-q-l-x
+          ```
 
-<span class="c1">//获取拼音</span>
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">);</span>
-<span class="c1">// dài zhe xī wàng qù lǔ xíng bǐ dào dá zhōng diǎn gèng měi hǎo</span>
+          ### 翻译整段文字为拼音
 
-<span class="c1">//获取首字母</span>
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">letter</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">);</span>
-<span class="c1">// D Z X W Q L X B D D Z D G M H</span>
-</pre></div>
+          将会保留中文字符：`，。 ！ ？ ： “ ” ‘ ’` 并替换为对应的英文符号。
 
-<h2>
-<a name="%E8%AE%BE%E7%BD%AE" class="anchor" href="#%E8%AE%BE%E7%BD%AE"><span class="octicon octicon-link"></span></a>设置</h2>
+          ```php
+          $pinyin->sentence('带着希望去旅行，比到达终点更美好！');
+          // dai zhe xi wang qu lv xing, bi dao da zhong dian geng mei hao!
 
-<ul>
-<li>
-<code>delimiter</code> 分隔符，默认为一个空格 ' '；</li>
-<li>
-<code>accent</code> 是否输出音调；</li>
-<li>
-<code>only_chinese</code> 只保留$string中中文部分。</li>
-</ul><p><em>全局设置：</em>  <code>Pinyin::set('delimiter', '-');</code></p>
+          $pinyin->sentence('带着希望去旅行，比到达终点更美好！', true);
+          // dài zhe xī wàng qù lǚ xíng, bǐ dào dá zhōng diǎn gèng měi hǎo!
+          ```
 
-<p><em>临时设置：</em>  <code>Pinyin::trans($word, $settings)</code> 在调用的方法后传参</p>
+          ### 翻译姓名
 
-<p>example:</p>
+          姓名的姓的读音有些与普通字不一样，比如 ‘单’ 常见的音为 `dan`，而作为姓的时候读 `shan`。
 
-<div class="highlight highlight-php"><pre>
-<span class="nx">Pinyin</span><span class="o">::</span><span class="na">set</span><span class="p">(</span><span class="s1">'delimiter'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">);</span><span class="c1">//全局</span>
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">);</span>
+          ```php
+          $pinyin->name('单某某'); // ['shan', 'mou', 'mou']
+          $pinyin->name('单某某', PINYIN_UNICODE); // ["shàn","mǒu","mǒu"]
+          ```
 
-<span class="c1">// dài-zhe-xī-wàng-qù-lǔ-xíng-bǐ-dào-dá-zhōng-diǎn-gèng-měi-hǎo</span>
-</pre></div>
+          ## 在 Laravel 中使用
 
-<div class="highlight highlight-php"><pre>
-<span class="nv">$setting</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">'delimiter'</span> <span class="o">=&gt;</span> <span class="s1">'-'</span><span class="p">,</span>
-            <span class="s1">'accent'</span> <span class="o">=&gt;</span> <span class="k">false</span><span class="p">,</span>
-           <span class="p">];</span>
+          独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">,</span> <span class="nv">$setting</span><span class="p">);</span><span class="c1">//这里的setting只是临时修改，并非全局设置</span>
+          ## Contribution
+          欢迎提意见及完善补充词库 [`tools/patches/`](https://github.com/overtrue/pinyin/tree/master/tools/patches) :kiss:
 
-<span class="c1">// dai-zhe-xi-wang-qu-lu-xing-bi-dao-da-zhong-dian-geng-mei-hao</span>
-</pre></div>
+          ## 参考
 
-<div class="highlight highlight-php"><pre><span class="nx">Pinyin</span><span class="o">::</span><span class="na">set</span><span class="p">(</span><span class="s1">'accent'</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-<span class="k">echo</span> <span class="nx">Pinyin</span><span class="o">::</span><span class="na">trans</span><span class="p">(</span><span class="s1">'带着希望去旅行，比到达终点更美好'</span><span class="p">);</span>
+          - [详细参考资料](https://github.com/overtrue/pinyin-resources)
 
-<span class="c1">// dai zhe xi wang qu lu xing bi dao da zhong dian geng mei hao</span>
-</pre></div>
+          # License
 
-<h1>
-<a name="contribution" class="anchor" href="#contribution"><span class="octicon octicon-link"></span></a>Contribution</h1>
+          MIT
+        </script>
 
-<p>欢迎提意见及完善补充词库 <code>src/Pinyin/data/additional.php</code>! <img class="emoji" title=":kiss:" alt=":kiss:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f48b.png" height="20" width="20" align="absmiddle"></p>
 
-<h1>
-<a name="%E5%8F%82%E8%80%83" class="anchor" href="#%E5%8F%82%E8%80%83"><span class="octicon octicon-link"></span></a>参考</h1>
-
-<ul>
-<li><a href="http://cc-cedict.org/wiki/">CC-CEDICT</a></li>
-<li><a href="http://mmc.sinica.edu.tw/intro_c_01.html">現代漢語語音語料庫</a></li>
-<li><a href="http://www.zdic.net/">汉典</a></li>
-</ul><h1>
-<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h1>
-
-<p>MIT</p>
-
-    <div class="sns-share">
-      <i data-id="sina" class="icon">
-          <svg><use xlink:href="images/sns.svg#icon-iconfont-sina" transform="translate(0 0)"></use></svg>
-      </i>
-      <i data-id="qzone" class="icon">
-          <svg><use xlink:href="images/sns.svg#icon-iconfont-qzone" transform="translate(0 0)"></use></svg>
-      </i>
-      <i data-id="qq" class="icon">
-          <svg><use xlink:href="images/sns.svg#icon-iconfont-qq" transform="translate(0 0)"></use></svg>
-      </i>
-      <i data-id="renren" class="icon">
-          <svg><use xlink:href="images/sns.svg#icon-iconfont-renren" transform="translate(0 0)"></use></svg>
-      </i>
-      <i data-id="douban" class="icon">
-          <svg><use xlink:href="images/sns.svg#icon-iconfont-douban" transform="translate(0 0)"></use></svg>
-      </i>
-</div>
+        <!-- /doc -->
+        <div class="sns-share">
+              <i data-id="sina" class="icon">
+                  <svg><use xlink:href="images/sns.svg#icon-iconfont-sina" transform="translate(0 0)"></use></svg>
+              </i>
+              <i data-id="qzone" class="icon">
+                  <svg><use xlink:href="images/sns.svg#icon-iconfont-qzone" transform="translate(0 0)"></use></svg>
+              </i>
+              <i data-id="qq" class="icon">
+                  <svg><use xlink:href="images/sns.svg#icon-iconfont-qq" transform="translate(0 0)"></use></svg>
+              </i>
+              <i data-id="renren" class="icon">
+                  <svg><use xlink:href="images/sns.svg#icon-iconfont-renren" transform="translate(0 0)"></use></svg>
+              </i>
+              <i data-id="douban" class="icon">
+                  <svg><use xlink:href="images/sns.svg#icon-iconfont-douban" transform="translate(0 0)"></use></svg>
+              </i>
+        </div>
       </section>
     </div>
     <footer>
@@ -213,16 +170,20 @@
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
           <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
           <script src="javascripts/sns.js"></script>
+          <script src="javascripts/marked.min.js"></script>
+          <script src="javascripts/prism.js"></script>
           <script type="text/javascript">
               $(document).ready(function(){
                   var config = {
                     site   : 'overtrue at GitHub',//来源
-                    pic    : 'http://overtrue.me/pinyin/images/pinyin.jpg',
+                    pic    : 'http://overtrue.me/pinyin/images/pinyin.png',
                   }; /* 配置 */
                   SNS.init(config);
                   $('.sns-share i').click(function(){
                       SNS.share($(this).data('id'));
                   });
+
+                  $('#content').html(marked($('#doc-markdown').text().trim().replace(/\n {2,}/g, '\n')));
               });
           </script>
           <script type="text/javascript">
