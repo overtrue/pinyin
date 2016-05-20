@@ -30,6 +30,13 @@ class FileDictLoader implements DictLoaderInterface
     protected $path;
 
     /**
+     * Cache for dict.
+     *
+     * @var array
+     */
+    protected $dictCache = [];
+
+    /**
      * Constructor.
      *
      * @param string $path
@@ -49,8 +56,11 @@ class FileDictLoader implements DictLoaderInterface
         for ($i = 0; $i < 100; ++$i) {
             $segment = $this->path.'/'.sprintf($this->segmentName, $i);
 
-            if (file_exists($segment)) {
-                $dictionary = (array) include $segment;
+            if (isset($this->dictCache[$segment])) {
+                $callback($this->dictCache[$segment]);
+            } else if (file_exists($segment)) {
+                $dictionary = (array)include $segment;
+                $this->dictCache[$segment] = $dictionary;
                 $callback($dictionary);
             }
         }
