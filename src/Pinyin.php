@@ -243,7 +243,7 @@ class Pinyin
      */
     public function splitWords($pinyin, $option)
     {
-        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z]+/iu', $pinyin));
+        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z\d]+/iu', $pinyin));
 
         if ($option !== self::UNICODE) {
             foreach ($split as $index => $pinyin) {
