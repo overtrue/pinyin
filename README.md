@@ -27,7 +27,7 @@ use Overtrue\Pinyin\Pinyin;
 $pinyin = new Pinyin();
 
 $pinyin->convert('带着希望去旅行，比到达终点更美好');
-// ["dai", "zhe", "xi", "wang", "qu", "lu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
+// ["dai", "zhe", "xi", "wang", "qu", "lv", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
 
 $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_UNICODE);
 // ["dài","zhe","xī","wàng","qù","lǚ","xíng","bǐ","dào","dá","zhōng","diǎn","gèng","měi","hǎo"]
@@ -47,8 +47,8 @@ $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCI
 ### 生成用于链接的拼音字符串
 
 ```php
-$pinyin->permlink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lu-xing
-$pinyin->permlink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lu.xing
+$pinyin->permlink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lv-xing
+$pinyin->permlink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lv.xing
 ```
 
 ### 获取首字符字符串

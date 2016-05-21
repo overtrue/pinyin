@@ -30,6 +30,9 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         $this->assertSame('dai.zhe.xi.wang.qu.lv.xing', $pinyin->permlink('带着希望去旅行', '.'));
         $this->assertSame('daizhexiwangqulvxing', $pinyin->permlink('带着希望去旅行', ''));
 
+        // with number.
+        $this->assertSame('1-dai-23-zhe-5-6-xi-wang-qu-abc-lv-xing-568', $pinyin->permlink('1带23着。！5_6.=希望去abc旅行568'));
+
         $this->setExpectedException('InvalidArgumentException', "Delimiter must be one of: '_', '-', '', '.'.");
 
         $this->assertSame('daizhexiwangqulvxing', $pinyin->permlink('带着希望去旅行', '='));
