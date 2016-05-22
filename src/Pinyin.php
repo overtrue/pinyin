@@ -94,14 +94,14 @@ class Pinyin
     }
 
     /**
-     * Return a pinyin permlink from string.
+     * Return a pinyin permalink from string.
      *
      * @param string $string
      * @param string $delimiter
      *
      * @return string
      */
-    public function permlink($string, $delimiter = '-')
+    public function permalink($string, $delimiter = '-')
     {
         if (!in_array($delimiter, array('_', '-', '.', ''), true)) {
             throw new InvalidArgumentException("Delimiter must be one of: '_', '-', '', '.'.");
