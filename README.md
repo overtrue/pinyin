@@ -47,8 +47,8 @@ $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCI
 ### 生成用于链接的拼音字符串
 
 ```php
-$pinyin->permlink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lv-xing
-$pinyin->permlink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lv.xing
+$pinyin->permalink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lv-xing
+$pinyin->permalink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lv.xing
 ```
 
 ### 获取首字符字符串
