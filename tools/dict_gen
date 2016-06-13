@@ -13,7 +13,17 @@ echo "\nbuild combine ...";
 exec('cat '.__DIR__.'/chars.dat >> '.__DIR__.'/words.dat');
 echo "Done.";
 $words = [];
-$lines = array_merge(file(__DIR__.'/words.dat'), file(__DIR__.'/patches/words.txt'));
+
+//这里对patches words.txt中拼音可能的空格转化为换行符
+$patch_words = file(__DIR__.'/patches/words.txt');
+foreach($patch_words as &$patch_word) {
+    list($word, $pinyin) = explode(",", trim($patch_word));
+    $pinyin = preg_replace("/\s+/", "\t", $pinyin);
+    $patch_word = $word . "," . $pinyin;
+}
+unset($patch_word);
+
+$lines = array_merge(file(__DIR__.'/words.dat'), $patch_words);
 
 foreach ($lines as $line) {
     list($word, $pinyin) = explode(",", trim($line));
