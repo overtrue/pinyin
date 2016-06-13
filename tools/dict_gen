@@ -18,7 +18,7 @@ $words = [];
 $patch_words = file(__DIR__.'/patches/words.txt');
 foreach($patch_words as &$patch_word) {
     list($word, $pinyin) = explode(",", trim($patch_word));
-    $pinyin = preg_replace("/ /", "\t", $pinyin);
+    $pinyin = preg_replace("/\s+/", "\t", $pinyin);
     $patch_word = $word . "," . $pinyin;
 }
 unset($patch_word);
