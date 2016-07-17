@@ -163,6 +163,14 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         // 曾
         $this->assertEquals(array('céng', 'jīng'), $pinyin->convert('曾经', Pinyin::UNICODE));
         $this->assertEquals(array('xìng', 'zēng'), $pinyin->convert('姓曾', Pinyin::UNICODE));
+
+        // 奇
+        $this->assertEquals(array('qí', 'guài'), $pinyin->convert('奇怪', Pinyin::UNICODE));
+        $this->assertEquals(array('jī', 'ǒu', 'jiào', 'yàn'), $pinyin->convert('奇偶校验', Pinyin::UNICODE));
+
+        // 其它多音词
+        $this->assertEquals(array('náo', 'zhí', 'wéi', 'qū'), $pinyin->convert('挠直为曲', Pinyin::UNICODE));
+        $this->assertEquals(array('pī', 'fēng', 'mò', 'yuè'), $pinyin->convert('批风抹月', Pinyin::UNICODE));
     }
 
     /**
@@ -219,6 +227,9 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         #35
         $this->assertEquals('ji xiao', $pinyin->sentence('技校'));
         $this->assertEquals('jiao zheng', $pinyin->sentence('校正'));
+
+        #45
+        $this->assertEquals('luó', $pinyin->sentence('罗', Pinyin::UNICODE));
     }
 }
 
