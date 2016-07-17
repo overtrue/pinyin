@@ -163,6 +163,7 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         // 曾
         $this->assertEquals(array('céng', 'jīng'), $pinyin->convert('曾经', Pinyin::UNICODE));
         $this->assertEquals(array('xìng', 'zēng'), $pinyin->convert('姓曾', Pinyin::UNICODE));
+        $this->assertEquals(array('zēng', 'xìng'), $pinyin->convert('曾姓', Pinyin::UNICODE));
 
         // 奇
         $this->assertEquals(array('qí', 'guài'), $pinyin->convert('奇怪', Pinyin::UNICODE));
