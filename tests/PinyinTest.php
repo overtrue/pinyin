@@ -218,21 +218,21 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('hé', $pinyin->sentence('和', Pinyin::UNICODE));
         $this->assertEquals('gěi', $pinyin->sentence('给', Pinyin::UNICODE));
         $this->assertEquals('là', $pinyin->sentence('腊', Pinyin::UNICODE));
-        # 28 词库不全
+        // # 28 词库不全
         $this->assertEquals('kun', $pinyin->sentence('堃'));
 
-        #29
+        // #29
         $this->assertEquals('dì', $pinyin->sentence('地', Pinyin::UNICODE));
         $this->assertEquals('zhi yu si di', $pinyin->sentence('置于死地'));
 
-        #35
+        // #35
         $this->assertEquals('ji xiao', $pinyin->sentence('技校'));
         $this->assertEquals('jiao zheng', $pinyin->sentence('校正'));
 
-        #45
+        // #45
         $this->assertEquals('luó', $pinyin->sentence('罗', Pinyin::UNICODE));
 
-        #58
+        // #58
         $this->assertEquals('fēi', $pinyin->sentence('飞', Pinyin::UNICODE));
         $this->assertEquals('jiāng', $pinyin->sentence('将', Pinyin::UNICODE));
         $this->assertEquals('míng jiàng', $pinyin->sentence('名将', Pinyin::UNICODE));
