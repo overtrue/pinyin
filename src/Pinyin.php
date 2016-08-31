@@ -168,7 +168,7 @@ class Pinyin
      */
     public function getLoader()
     {
-        if (! ($this->loader instanceof DictLoaderInterface)) {
+        if (!($this->loader instanceof DictLoaderInterface)) {
             $this->loader = new FileDictLoader(dirname(__DIR__).'/data/');
         }
 
