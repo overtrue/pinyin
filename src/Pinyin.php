@@ -168,7 +168,7 @@ class Pinyin
      */
     public function getLoader()
     {
-        return $this->loader ?: new FileDictLoader(__DIR__.'/../data/');
+        return $this->loader ?: ($this->loader = new FileDictLoader(__DIR__.'/../data/'));
     }
 
     /**
