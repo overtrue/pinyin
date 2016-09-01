@@ -168,7 +168,11 @@ class Pinyin
      */
     public function getLoader()
     {
-        return $this->loader ?: ($this->loader = new FileDictLoader(__DIR__.'/../data/'));
+        if (!($this->loader instanceof DictLoaderInterface)) {
+            $this->loader = new FileDictLoader(dirname(__DIR__).'/data/');
+        }
+
+        return $this->loader;
     }
 
     /**
@@ -220,11 +224,12 @@ class Pinyin
      *
      * @return string
      */
-    protected function convertSurname($string, $dictLoader) {
+    protected function convertSurname($string, $dictLoader)
+    {
         $dictLoader->mapSurname(function ($dictionary) use (&$string) {
             foreach ($dictionary as $surname => $pinyin) {
                 if (strpos($string, $surname) === 0) {
-                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'), mb_strlen($string, 'UTF-8') - 1, 'UTF-8');
+                    $string = $pinyin.mb_substr($string, mb_strlen($surname, 'UTF-8'), mb_strlen($string, 'UTF-8') - 1, 'UTF-8');
                     break;
                 }
             }

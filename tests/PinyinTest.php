@@ -87,10 +87,10 @@ class PinyinTest extends PHPUnit_Framework_TestCase
         $this->assertSame(array('yu', 'chi', 'pu'), $pinyin->name('尉迟朴'));
         $this->assertSame(array('wei', 'mou', 'mou'), $pinyin->name('尉某某'));
         $this->assertSame(array('yu', 'chi', 'mou', 'mou'), $pinyin->name('尉迟某某'));
-        $this->assertSame(array('zhai', 'di', 'di',), $pinyin->name('翟翟翟'));
+        $this->assertSame(array('zhai', 'di', 'di'), $pinyin->name('翟翟翟'));
 
         // 以下两词在任何位置都不变
-        $this->assertSame(array('mou', 'mou', 'yu', 'chi',), $pinyin->name('某某尉迟'));
+        $this->assertSame(array('mou', 'mou', 'yu', 'chi'), $pinyin->name('某某尉迟'));
         $this->assertSame(array('shan', 'chan', 'yu', 'dan'), $pinyin->name('单单于单'));
     }
 
@@ -263,11 +263,10 @@ class MockLoader implements DictLoaderInterface
     public function mapSurname(Closure $callback)
     {
         $dictionary = array(
-                '单' => "shan",
+                '单' => 'shan',
                 '朴' => 'piao',
                 '尉迟' => 'yu chi',
             );
         $callback($dictionary);
     }
-
 }
