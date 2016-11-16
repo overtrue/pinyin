@@ -6,7 +6,7 @@ Pinyin
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 
-基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的支持多音字的汉字转拼音解决方案。
+:cn: 基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的支持多音字的汉字转拼音解决方案。
 
 
 ## 安装
@@ -84,7 +84,7 @@ $pinyin->name('单某某', PINYIN_UNICODE); // ["shàn","mǒu","mǒu"]
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 ## Contribution
-欢迎提意见及完善补充词库 [`tools/patches/`](https://github.com/overtrue/pinyin/tree/master/tools/patches) :kiss:
+欢迎提意见及完善补充词库 [`overtrue/pinyin-dictionary-maker`](https://github.com/overtrue/pinyin-dictionary-maker/tree/master/patches) :kiss:
 
 ## 参考
 
