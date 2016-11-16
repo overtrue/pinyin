@@ -56,9 +56,9 @@ class Pinyin
     /**
      * Constructor.
      *
-     * @param \Overtrue\Pinyin\DictLoaderInterface $loader
+     * @param mixed $loader
      */
-    public function __construct(DictLoaderInterface $loader = null)
+    public function __construct($loader = null)
     {
         $this->loader = $loader;
     }
@@ -168,8 +168,15 @@ class Pinyin
      */
     public function getLoader()
     {
+
         if (!($this->loader instanceof DictLoaderInterface)) {
-            $this->loader = new FileDictLoader(dirname(__DIR__).'/data/');
+            $dataDir = dirname(__DIR__).'/data/';
+            if(is_string($this->loader)) {
+                $loaderName = $this->loader;
+                $this->loader = new $loaderName($dataDir);
+            } else {
+                $this->loader = new FileDictLoader($dataDir);
+            }
         }
 
         return $this->loader;
