@@ -16,6 +16,13 @@ use Closure;
 class MemoryFileDictLoader implements DictLoaderInterface
 {
     /**
+     * Data directory.
+     *
+     * @var string
+     */
+    protected $path;
+
+    /**
      * Words segment name.
      *
      * @var string
