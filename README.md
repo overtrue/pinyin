@@ -19,12 +19,19 @@ composer require "overtrue/pinyin:~3.0"
 
 ## 使用
 
+可选两种转换方案：
+
+    - 内存型，适用于服务器内存空间较富余，优点：转换快
+    - 小内存型(默认)，适用于内存比较紧张的环境，优点：占用内存小，转换不如内存型快
+
 ### 拼音数组
 
 ```php
 use Overtrue\Pinyin\Pinyin;
 
-$pinyin = new Pinyin();
+$pinyin = new Pinyin();  // 小内存型(默认)
+// 或者
+$pinyin = new Pinyin('Overtrue\Pinyin\MemoryFileDictLoader'); // 内存型
 
 $pinyin->convert('带着希望去旅行，比到达终点更美好');
 // ["dai", "zhe", "xi", "wang", "qu", "lv", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]

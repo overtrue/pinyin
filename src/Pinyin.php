@@ -56,11 +56,11 @@ class Pinyin
     /**
      * Constructor.
      *
-     * @param mixed $loader
+     * @param string $loaderName
      */
-    public function __construct($loader = null)
+    public function __construct($loaderName = null)
     {
-        $this->loader = $loader;
+        $this->loader = $loaderName ?: 'Overtrue\\Pinyin\\FileDictLoader';
     }
 
     /**
@@ -168,15 +168,11 @@ class Pinyin
      */
     public function getLoader()
     {
-
         if (!($this->loader instanceof DictLoaderInterface)) {
             $dataDir = dirname(__DIR__).'/data/';
-            if(is_string($this->loader)) {
-                $loaderName = $this->loader;
-                $this->loader = new $loaderName($dataDir);
-            } else {
-                $this->loader = new FileDictLoader($dataDir);
-            }
+
+            $loaderName = $this->loader;
+            $this->loader = new $loaderName($dataDir);
         }
 
         return $this->loader;
