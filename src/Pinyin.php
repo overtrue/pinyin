@@ -10,10 +10,6 @@ namespace Overtrue\Pinyin;
 
 use InvalidArgumentException;
 
-define('PINYIN_NONE', 'none');
-define('PINYIN_ASCII', 'ascii');
-define('PINYIN_UNICODE', 'unicode');
-
 /**
  * Chinese to pinyin translator.
  *
