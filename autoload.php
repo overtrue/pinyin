@@ -24,10 +24,11 @@ if (!class_exists('Overtrue\\Pinyin\\Pinyin')) {
      * @var array
      */
     $classmaps = array(
-        'Overtrue\\Pinyin\\Pinyin'               => $baseDir.'/src/Pinyin.php',
-        'Overtrue\\Pinyin\\DictLoaderInterface'  => $baseDir.'/src/DictLoaderInterface.php',
-        'Overtrue\\Pinyin\\FileDictLoader'       => $baseDir.'/src/FileDictLoader.php',
-        'Overtrue\\Pinyin\\MemoryFileDictLoader' => $baseDir.'/src/MemoryFileDictLoader.php',
+        'Overtrue\\Pinyin\\Pinyin'                  => $baseDir.'/src/Pinyin.php',
+        'Overtrue\\Pinyin\\DictLoaderInterface'     => $baseDir.'/src/DictLoaderInterface.php',
+        'Overtrue\\Pinyin\\FileDictLoader'          => $baseDir.'/src/FileDictLoader.php',
+        'Overtrue\\Pinyin\\MemoryFileDictLoader'    => $baseDir.'/src/MemoryFileDictLoader.php',
+        'Overtrue\\Pinyin\\GeneratorFileDictLoader' => $baseDir.'/src/GeneratorFileDictLoader.php',
     );
 
     if (function_exists('spl_autoload_register')) {
