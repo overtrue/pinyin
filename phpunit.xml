@@ -10,8 +10,13 @@
          stopOnFailure="false"
          syntaxCheck="false">
     <testsuites>
-        <testsuite name="Application Test Suite">
+        <testsuite name="overtrue/pinyin Test Suite (All PHP version)">
             <directory>./tests/</directory>
+            <exclude>./tests/GeneratorFileDictLoaderTest.php</exclude>
+        </testsuite>
+        <testsuite name="overtrue/pinyin GeneratorFileDictLoaderTest Test Suite (PHP >= 5.5)">
+            <file>./tests/AbstractDictLoaderTest.php</file>
+            <file phpVersion="5.5.0" phpVersionOperator=">=">./tests/GeneratorFileDictLoaderTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
