@@ -19,6 +19,11 @@ use InvalidArgumentException;
  * @link      https://github.com/overtrue/pinyin
  * @link      http://overtrue.me
  */
+
+define('PINYIN_NONE', 'none');
+define('PINYIN_ASCII', 'ascii');
+define('PINYIN_UNICODE', 'unicode');
+
 class Pinyin
 {
     const NONE = 'none';

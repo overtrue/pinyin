@@ -15,9 +15,6 @@
         }
     ],
     "autoload": {
-        "files": [
-            "helpers.php"
-        ],
         "psr-4": {
             "Overtrue\\Pinyin\\": "src/"
         }
