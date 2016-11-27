@@ -6,10 +6,11 @@
  * @author Garveen <acabin@live.com>
  */
 
-use Overtrue\Pinyin\FileDictLoader;
+namespace Overtrue\Pinyin\Test;
+
 use Overtrue\Pinyin\Pinyin;
 
-class FileDictLoaderTest extends AbstractDictLoaderTest
+class FileDictLoaderTest extends AbstractDictLoaderTestCase
 {
     protected function setUp()
     {
