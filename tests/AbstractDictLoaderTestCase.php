@@ -6,10 +6,12 @@
  * (c) 2016 overtrue <i@overtrue.me>
  */
 
-use Overtrue\Pinyin\DictLoaderInterface;
-use Overtrue\Pinyin\Pinyin;
+namespace Overtrue\Pinyin\Test;
 
-abstract class AbstractDictLoaderTest extends PHPUnit_Framework_TestCase
+use Overtrue\Pinyin\Pinyin;
+use PHPUnit_Framework_TestCase;
+
+abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
 {
     protected $pinyin;
 

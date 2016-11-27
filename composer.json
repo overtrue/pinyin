@@ -19,6 +19,11 @@
             "Overtrue\\Pinyin\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Overtrue\\Pinyin\\Test\\": "tests/"
+        }
+    },
     "require": {
         "php":">=5.3"
     },

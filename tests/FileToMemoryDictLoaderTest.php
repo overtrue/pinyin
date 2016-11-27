@@ -6,10 +6,11 @@
  * @author Garveen <acabin@live.com>
  */
 
-use Overtrue\Pinyin\MemoryFileDictLoader;
+namespace Overtrue\Pinyin\Test;
+
 use Overtrue\Pinyin\Pinyin;
 
-class FileToMemoryDictLoaderTest extends AbstractDictLoaderTest
+class FileToMemoryDictLoaderTest extends AbstractDictLoaderTestCase
 {
     protected function setUp()
     {
