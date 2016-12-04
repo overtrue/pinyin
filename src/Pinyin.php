@@ -130,7 +130,7 @@ class Pinyin
      * Chinese to pinyin sentense.
      *
      * @param string $sentence
-     * @param string $option
+     * @param string $withTone
      *
      * @return string
      */
