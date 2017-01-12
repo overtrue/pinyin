@@ -130,8 +130,7 @@ class GeneratorFileDictLoader implements DictLoaderInterface
     public function mapSurname(Closure $callback)
     {
         if (!static::$surnamesHandle instanceof SplFileObject) {
-            $surnameFilename = $this->path.'/surnames';
-            static::$surnamesHandle = $this->openFile($surnameFilename);
+            static::$surnamesHandle = $this->openFile($this->path.'/surnames');
         }
 
         $this->traversing($this->getGenerator([static::$surnamesHandle]), $callback);
