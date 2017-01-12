@@ -11,6 +11,7 @@ namespace Overtrue\Pinyin;
 use Closure;
 use Exception;
 use SplFileObject;
+use Generator;
 
 /**
  * Generator syntax(yield) Dict File loader.
@@ -36,7 +37,14 @@ class GeneratorFileDictLoader implements DictLoaderInterface
      *
      * @var array
      */
-    protected $handles = [];
+    protected static $handles = [];
+
+    /**
+     * surnames.
+     *
+     * @var SplFileObject
+     */
+    protected static $surnamesHandle;
 
     /**
      * Constructor.
@@ -51,7 +59,7 @@ class GeneratorFileDictLoader implements DictLoaderInterface
             $segment = $this->path.'/'.sprintf($this->segmentName, $i);
 
             if (file_exists($segment) && is_file($segment)) {
-                array_push($this->handles, $this->openFile($segment));
+                array_push(static::$handles, $this->openFile($segment));
             }
         }
     }
@@ -91,15 +99,27 @@ class GeneratorFileDictLoader implements DictLoaderInterface
     }
 
     /**
+     * Traverse the stream.
+     *
+     * @param Generator $generator
+     * @param Closure $callback
+     * @author Seven Du <shiweidu@outlook.com>
+     */
+    protected function traversing(Generator $generator, Closure $callback)
+    {
+        foreach ($generator as $string => $pinyin) {
+            $callback([$string => $pinyin]);
+        }
+    }
+
+    /**
      * Load dict.
      *
      * @param Closure $callback
      */
     public function map(Closure $callback)
     {
-        foreach ($this->getGenerator($this->handles) as $string => $pinyin) {
-            $callback([$string => $pinyin]);
-        }
+        $this->traversing($this->getGenerator(static::$handles), $callback);
     }
 
     /**
@@ -109,10 +129,10 @@ class GeneratorFileDictLoader implements DictLoaderInterface
      */
     public function mapSurname(Closure $callback)
     {
-        $surnames = $this->path.'/surnames';
-            
-        foreach ($this->getGenerator([ $this->openFile($surnames) ]) as $string => $pinyin) {
-            $callback([$string => $pinyin]);
+        if (!static::$surnamesHandle instanceof SplFileObject) {
+            static::$surnamesHandle = $this->openFile($this->path.'/surnames');
         }
+
+        $this->traversing($this->getGenerator([static::$surnamesHandle]), $callback);
     }
 }
