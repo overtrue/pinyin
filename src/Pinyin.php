@@ -127,6 +127,21 @@ class Pinyin
     }
 
     /**
+     * Chinese phrase to pinyin.
+     *
+     * @param string $string
+     * @param string $delimiter
+     * @param string $option
+     *
+     * @return string
+     */
+    public function phrase($string, $delimiter = ' ', $option = self::NONE) {
+        return implode($delimiter, array_map(function ($pinyin) {
+            return $pinyin;
+        }, $this->convert($string, $option)));
+    }
+    
+    /**
      * Chinese to pinyin sentense.
      *
      * @param string $sentence
