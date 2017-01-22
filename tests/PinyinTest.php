@@ -25,6 +25,7 @@ class PinyinTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($loader, $pinyin->getLoader());
         $this->assertSame('foo bar', $pinyin->sentence('你好'));
+        $this->assertSame('foo bar', $pinyin->phrase('北京', '-', PINYIN_ASCII));
     }
 
 }
