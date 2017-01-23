@@ -135,12 +135,11 @@ class Pinyin
      *
      * @return string
      */
-    public function phrase($string, $delimiter = ' ', $option = self::NONE) {
-        return implode($delimiter, array_map(function ($pinyin) {
-            return $pinyin;
-        }, $this->convert($string, $option)));
+    public function phrase($string, $delimiter = ' ', $option = self::NONE)
+    {
+        return implode($delimiter, $this->convert($string, $option));
     }
-    
+
     /**
      * Chinese to pinyin sentense.
      *
