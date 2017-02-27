@@ -197,6 +197,7 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
      * bug: #24
      * bug: #29
      * bug: #235
+     * bug: #81
      */
     public function testSingleAccent()
     {
@@ -236,6 +237,11 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('shěn', $pinyin->sentence('沈', Pinyin::UNICODE));
         $this->assertEquals('shěn yáng', $pinyin->sentence('沈阳', Pinyin::UNICODE));
         $this->assertEquals('chén yú luò yàn', $pinyin->sentence('沈鱼落雁', Pinyin::UNICODE));
+
+        // #81
+        $this->assertEquals('yuán yùn', $pinyin->sentence('圆晕', Pinyin::UNICODE));
+        $this->assertEquals('guāng yùn', $pinyin->sentence('光晕', Pinyin::UNICODE));
+        $this->assertEquals('yūn jué', $pinyin->sentence('晕厥', Pinyin::UNICODE));
     }
 
     public function testPhrase()
