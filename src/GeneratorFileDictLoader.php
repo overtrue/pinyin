@@ -3,13 +3,15 @@
 /*
  * This file is part of the overtrue/pinyin.
  *
- * (c) 2016 Seven Du <shiweidu@outlook.com>
+ * (c) overtrue <i@overtrue.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Overtrue\Pinyin;
 
 use Closure;
-use Exception;
 use SplFileObject;
 use Generator;
 
@@ -68,6 +70,7 @@ class GeneratorFileDictLoader implements DictLoaderInterface
      * Construct a new file object.
      *
      * @param string $filename file path
+     *
      * @return SplFileObject
      */
     protected function openFile($filename, $mode = 'r')
@@ -102,7 +105,8 @@ class GeneratorFileDictLoader implements DictLoaderInterface
      * Traverse the stream.
      *
      * @param Generator $generator
-     * @param Closure $callback
+     * @param Closure   $callback
+     *
      * @author Seven Du <shiweidu@outlook.com>
      */
     protected function traversing(Generator $generator, Closure $callback)
