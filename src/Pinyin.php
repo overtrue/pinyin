@@ -298,9 +298,9 @@ class Pinyin
             'à' => array('a', 4), 'è' => array('e', 4), 'ì' => array('i', 4), 'ò' => array('o', 4), 'ù' => array('u', 4), 'ǜ' => array('v', 4),
         );
 
-        foreach ($replacements as $unicde => $replacements) {
+        foreach ($replacements as $unicde => $replacement) {
             if (false !== strpos($pinyin, $unicde)) {
-                $pinyin = str_replace($unicde, $replacements[0], $pinyin).($tone ? $replacements[1] : '');
+                $pinyin = str_replace($unicde, $replacement[0], $pinyin).($tone ? $replacement[1] : '');
             }
         }
 
