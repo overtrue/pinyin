@@ -1,4 +1,4 @@
-Pinyin
+<h1 align="center">Pinyin</h1>
 ======
 
 [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
