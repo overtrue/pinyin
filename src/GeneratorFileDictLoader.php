@@ -87,10 +87,10 @@ class GeneratorFileDictLoader implements DictLoaderInterface
     {
         foreach ($handles as $handle) {
             $handle->seek(0);
-            while ($handle->eof() === false) {
+            while (false === $handle->eof()) {
                 $string = str_replace(['\'', ' ', PHP_EOL, ','], '', $handle->fgets());
 
-                if (strpos($string, '=>') === false) {
+                if (false === strpos($string, '=>')) {
                     continue;
                 }
 
