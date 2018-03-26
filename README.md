@@ -6,6 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/overtrue/pinyin/v/stable.svg)](https://packagist.org/packages/overtrue/pinyin) [![Total Downloads](https://poser.pugx.org/overtrue/pinyin/downloads.svg)](https://packagist.org/packages/overtrue/pinyin) [![Latest Unstable Version](https://poser.pugx.org/overtrue/pinyin/v/unstable.svg)](https://packagist.org/packages/overtrue/pinyin) [![License](https://poser.pugx.org/overtrue/pinyin/license.svg)](https://packagist.org/packages/overtrue/pinyin)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/overtrue/pinyin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/overtrue/pinyin/?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin?ref=badge_shield)
 
 </p>
 
@@ -121,3 +122,6 @@ $pinyin->name('单某某', PINYIN_UNICODE); // ["shàn","mǒu","mǒu"]
 # License
 
 MIT
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin?ref=badge_large)
