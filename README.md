@@ -121,7 +121,4 @@ $pinyin->name('单某某', PINYIN_UNICODE); // ["shàn","mǒu","mǒu"]
 
 # License
 
-MIT
-
-
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin?ref=badge_large)
