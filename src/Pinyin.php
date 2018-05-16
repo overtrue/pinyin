@@ -157,7 +157,7 @@ class Pinyin
     {
         $marks = array_keys($this->punctuations);
         $punctuationsRegex = preg_quote(implode(array_merge($marks, $this->punctuations)), '/');
-        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z0-9'.$punctuationsRegex.'\s_]+/iu';
+        $regex = '/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜɑa-z0-9'.$punctuationsRegex.'\s_]+/iu';
 
         $pinyin = preg_replace($regex, '', $this->romanize($sentence));
 
@@ -272,7 +272,7 @@ class Pinyin
      */
     public function splitWords($pinyin, $option)
     {
-        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜa-z\d]+/iu', $pinyin));
+        $split = array_filter(preg_split('/[^üāēīōūǖáéíóúǘǎěǐǒǔǚàèìòùǜɑa-z\d]+/iu', $pinyin));
 
         if (self::UNICODE !== $option) {
             foreach ($split as $index => $pinyin) {
