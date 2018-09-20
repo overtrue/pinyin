@@ -252,6 +252,17 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
         // #96
         $this->assertEquals('shén me', $pinyin->sentence('什么', Pinyin::UNICODE));
         $this->assertEquals('hái shuō shén me ne? huán gěi nǐ. hái gè pì!', $pinyin->sentence('还说什么呢？还给你。还个屁！', Pinyin::UNICODE));
+
+        // #82
+        $this->assertEquals('wū lā tè qián qí', $pinyin->sentence('乌拉特前旗', Pinyin::UNICODE));
+        $this->assertEquals('cháo yáng qū', $pinyin->sentence('朝阳区', Pinyin::UNICODE));
+        $this->assertEquals('jì xī xiàn', $pinyin->sentence('绩溪县', Pinyin::UNICODE));
+        $this->assertEquals('bǎi sè xiàn', $pinyin->sentence('百色县', Pinyin::UNICODE));
+        $this->assertEquals('dū ān yáo zú zì zhì xiàn', $pinyin->sentence('都安瑶族自治县', Pinyin::UNICODE));
+        $this->assertEquals('tǎ shí kù ěr gān', $pinyin->sentence('塔什库尔干', Pinyin::UNICODE));
+        $this->assertEquals('cháng yáng tǔ jiā zú zì zhì xiàn', $pinyin->sentence('长阳土家族自治县', Pinyin::UNICODE));
+        $this->assertEquals('mǎ wěi qū', $pinyin->sentence('马尾区', Pinyin::UNICODE));
+        $this->assertEquals('sān dū shuǐ zú zì zhì xiàn', $pinyin->sentence('三都水族自治县', Pinyin::UNICODE));
     }
 
     public function testPhrase()
