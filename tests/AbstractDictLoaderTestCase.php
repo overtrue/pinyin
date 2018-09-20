@@ -246,8 +246,12 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('guāng yùn', $pinyin->sentence('光晕', Pinyin::UNICODE));
         $this->assertEquals('yūn jué', $pinyin->sentence('晕厥', Pinyin::UNICODE));
 
-        // # 105 #112 嗯
+        // #105 #112
         $this->assertEquals('èn', $pinyin->sentence('嗯', Pinyin::UNICODE));
+
+        // #96
+        $this->assertEquals('shén me', $pinyin->sentence('什么', Pinyin::UNICODE));
+        $this->assertEquals('hái shuō shén me ne? huán gěi nǐ. hái gè pì!', $pinyin->sentence('还说什么呢？还给你。还个屁！', Pinyin::UNICODE));
     }
 
     public function testPhrase()
