@@ -30,7 +30,8 @@ define('PINYIN_ASCII_TONE', 8);
 define('PINYIN_NAME', 16);
 define('PINYIN_KEEP_NUMBER', 32);
 define('PINYIN_KEEP_ENGLISH', 64);
-define('PINYIN_KEEP_PUNCTUATION', 128);
+define('PINYIN_UMLAUT_V', 128);
+define('PINYIN_KEEP_PUNCTUATION', 256);
 
 /**
  * Class Pinyin
@@ -339,15 +340,22 @@ class Pinyin
     {
         $replacements = array(
             'üē' => array('ue', 1), 'üé' => array('ue', 2), 'üě' => array('ue', 3), 'üè' => array('ue', 4),
-            'ā' => array('a', 1), 'ē' => array('e', 1), 'ī' => array('i', 1), 'ō' => array('o', 1), 'ū' => array('u', 1), 'ǖ' => array('v', 1),
-            'á' => array('a', 2), 'é' => array('e', 2), 'í' => array('i', 2), 'ó' => array('o', 2), 'ú' => array('u', 2), 'ǘ' => array('v', 2),
-            'ǎ' => array('a', 3), 'ě' => array('e', 3), 'ǐ' => array('i', 3), 'ǒ' => array('o', 3), 'ǔ' => array('u', 3), 'ǚ' => array('v', 3),
-            'à' => array('a', 4), 'è' => array('e', 4), 'ì' => array('i', 4), 'ò' => array('o', 4), 'ù' => array('u', 4), 'ǜ' => array('v', 4),
+            'ā' => array('a', 1), 'ē' => array('e', 1), 'ī' => array('i', 1), 'ō' => array('o', 1), 'ū' => array('u', 1), 'ǖ' => array('yu', 1),
+            'á' => array('a', 2), 'é' => array('e', 2), 'í' => array('i', 2), 'ó' => array('o', 2), 'ú' => array('u', 2), 'ǘ' => array('yu', 2),
+            'ǎ' => array('a', 3), 'ě' => array('e', 3), 'ǐ' => array('i', 3), 'ǒ' => array('o', 3), 'ǔ' => array('u', 3), 'ǚ' => array('yu', 3),
+            'à' => array('a', 4), 'è' => array('e', 4), 'ì' => array('i', 4), 'ò' => array('o', 4), 'ù' => array('u', 4), 'ǜ' => array('yu', 4),
         );
 
         foreach ($replacements as $unicode => $replacement) {
             if (false !== strpos($pinyin, $unicode)) {
-                $pinyin = str_replace($unicode, $replacement[0], $pinyin).($this->hasOption($option, PINYIN_ASCII_TONE) ? $replacement[1] : '');
+                $umlaut = $replacement[0];
+
+                // https://zh.wikipedia.org/wiki/%C3%9C
+                if ($this->hasOption($option, \PINYIN_UMLAUT_V) && $umlaut == 'yu') {
+                    $umlaut = 'v';
+                }
+
+                $pinyin = str_replace($unicode, $umlaut, $pinyin).($this->hasOption($option, PINYIN_ASCII_TONE) ? $replacement[1] : '');
             }
         }
 
