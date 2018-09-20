@@ -34,7 +34,7 @@ define('PINYIN_UMLAUT_V', 128);
 define('PINYIN_KEEP_PUNCTUATION', 256);
 
 /**
- * Class Pinyin
+ * Class Pinyin.
  *
  * @author overtrue <i@overtrue.me>
  */
@@ -62,7 +62,7 @@ class Pinyin
         '”' => '"',
         '‘' => "'",
         '’' => "'",
-        '_' => "_",
+        '_' => '_',
     );
 
     /**
@@ -180,7 +180,7 @@ class Pinyin
             list($option, $delimiter) = array($delimiter, ' ');
         }
 
-        return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));;
+        return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));
     }
 
     /**
@@ -325,7 +325,7 @@ class Pinyin
             \array_push($regex, preg_quote(implode(array_merge(array_keys($this->punctuations), $this->punctuations)), '~'));
         }
 
-        return preg_replace(\sprintf("~[^%s]~u", join($regex)), '', $string);
+        return preg_replace(\sprintf('~[^%s]~u', implode($regex)), '', $string);
     }
 
     /**
@@ -351,7 +351,7 @@ class Pinyin
                 $umlaut = $replacement[0];
 
                 // https://zh.wikipedia.org/wiki/%C3%9C
-                if ($this->hasOption($option, \PINYIN_UMLAUT_V) && $umlaut == 'yu') {
+                if ($this->hasOption($option, \PINYIN_UMLAUT_V) && 'yu' == $umlaut) {
                     $umlaut = 'v';
                 }
 
