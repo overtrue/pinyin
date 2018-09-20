@@ -21,7 +21,7 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
     {
         $pinyin = $this->pinyin;
 
-        $this->assertSame(array('nin', 'hao', '2018i', 'New', 'Year'), $pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_NUMBER|\PINYIN_KEEP_ENGLISH));
+        $this->assertSame(array('nin', 'hao', '2018i', 'New', 'Year'), $pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
         $this->assertSame(array('nin', 'hao', 'i', 'New', 'Year'), $pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_ENGLISH));
         $this->assertSame(array('nin', 'hao', '2018'), $pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_NUMBER));
 
