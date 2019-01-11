@@ -11,10 +11,14 @@
 
 namespace Overtrue\Pinyin\Test;
 
+use Overtrue\Pinyin\Pinyin;
 use PHPUnit_Framework_TestCase;
 
 abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Pinyin
+     */
     protected $pinyin;
 
     public function testConvert()
@@ -109,6 +113,13 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('C pán', $pinyin->sentence('C盘', \PINYIN_TONE));
         $this->assertEquals('G diǎn', $pinyin->sentence('G点', \PINYIN_TONE));
         $this->assertEquals('zhōng dù xìng fèi shuǐ zhǒng', $pinyin->sentence('中度性肺水肿', \PINYIN_TONE));
+    }
+
+    // test multibyte non-Chinese character
+    public function testSpecialWordsUsingAbbr()
+    {
+        $pinyin = $this->pinyin;
+        $this->assertEquals('Ⅲdfscdzz', $pinyin->abbr('Ⅲ度房室传导阻滞', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
     }
 
     // test Polyphone
