@@ -116,9 +116,10 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
     }
 
     // test multibyte non-Chinese character
-    public function testSpecialWordsUsingAbbr() {
+    public function testSpecialWordsUsingAbbr()
+    {
         $pinyin = $this->pinyin;
-        $this->assertEquals('Ⅲdfscdzz', $pinyin->abbr('Ⅲ度房室传导阻滞', PINYIN_KEEP_ENGLISH|PINYIN_KEEP_NUMBER));
+        $this->assertEquals('Ⅲdfscdzz', $pinyin->abbr('Ⅲ度房室传导阻滞', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
     }
 
     // test Polyphone
