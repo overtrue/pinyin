@@ -143,7 +143,7 @@ class Pinyin
         }
 
         return implode($delimiter, array_map(function ($pinyin) {
-            return \is_numeric($pinyin) ? $pinyin : $pinyin[0];
+            return \is_numeric($pinyin) ? $pinyin : mb_substr($pinyin, 0, 1);
         }, $this->convert($string, $option)));
     }
 
