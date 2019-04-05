@@ -119,6 +119,12 @@ $pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
 
 - [详细参考资料](https://github.com/overtrue/pinyin-resources)
 
+## PHP 扩展包开发
+
+> 想知道如何从零开始构建 PHP 扩展包？
+>
+> 请关注我的实战课程，我会在此课程中分享一些扩展开发经验 —— [《PHP 扩展包实战教程 - 从入门到发布》](https://learnku.com/courses/creating-package)
+
 # License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fovertrue%2Fpinyin?ref=badge_large)
