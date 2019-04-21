@@ -17,7 +17,8 @@
     "autoload": {
         "psr-4": {
             "Overtrue\\Pinyin\\": "src/"
-        }
+        },
+        "files": "src/const.php"
     },
     "autoload-dev": {
         "psr-4": {
