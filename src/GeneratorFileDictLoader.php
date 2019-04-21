@@ -72,7 +72,7 @@ class GeneratorFileDictLoader implements DictLoaderInterface
      * Construct a new file object.
      *
      * @param string $filename file path
-     * @param string $mode file open mode
+     * @param string $mode     file open mode
      *
      * @return SplFileObject
      */
