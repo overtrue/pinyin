@@ -1,5 +1,5 @@
 <?php
-/** 选项常量 */
+
 define('PINYIN_DEFAULT', 4096);
 define('PINYIN_TONE', 2);
 define('PINYIN_NO_TONE', 4);
