@@ -55,9 +55,7 @@ class MemoryFileDictLoader implements DictLoaderInterface
     {
         $this->path = $path;
 
-        $dirs = scandir($this->path);
-        $size = count($dirs) - 2;
-        for ($i = 0; $i < $size; ++$i) {
+        for ($i = 0; $i < 100; ++$i) {
             $segment = $path.'/'.sprintf($this->segmentName, $i);
 
             if (file_exists($segment)) {
