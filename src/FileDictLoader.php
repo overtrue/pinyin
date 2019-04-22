@@ -49,7 +49,9 @@ class FileDictLoader implements DictLoaderInterface
      */
     public function map(Closure $callback)
     {
-        for ($i = 0; $i < 100; ++$i) {
+        $dirs = scandir($this->path);
+        $size = count($dirs) - 2;
+        for ($i = 0; $i < $size; ++$i) {
             $segment = $this->path.'/'.sprintf($this->segmentName, $i);
 
             if (file_exists($segment)) {
