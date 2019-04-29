@@ -57,9 +57,7 @@ class GeneratorFileDictLoader implements DictLoaderInterface
     {
         $this->path = $path;
 
-        $dirs = scandir($this->path);
-        $size = count($dirs) - 2;
-        for ($i = 0; $i < $size; ++$i) {
+        for ($i = 0; $i < 100; ++$i) {
             $segment = $this->path.'/'.sprintf($this->segmentName, $i);
 
             if (file_exists($segment) && is_file($segment)) {
