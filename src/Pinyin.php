@@ -90,6 +90,8 @@ class Pinyin
      */
     public function name($stringName, $option = PINYIN_NAME)
     {
+        $option = $option | PINYIN_NAME;
+
         $pinyin = $this->romanize($stringName, $option);
 
         return $this->splitWords($pinyin, $option);
