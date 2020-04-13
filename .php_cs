@@ -3,6 +3,7 @@
 return PhpCsFixer\Config::create()
     ->setRules([
         '@PSR2' => true,
+        'array_syntax' => ['syntax' => 'short'],
         'blank_line_after_opening_tag' => true,
         'braces' => ['allow_single_line_closure' => true],
         'compact_nullable_typehint' => true,
