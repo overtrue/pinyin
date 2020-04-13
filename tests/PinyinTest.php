@@ -14,9 +14,9 @@ namespace Overtrue\Pinyin\Test;
 use Closure;
 use Overtrue\Pinyin\DictLoaderInterface;
 use Overtrue\Pinyin\Pinyin;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class PinyinTest extends PHPUnit_Framework_TestCase
+class PinyinTest extends TestCase
 {
     public function testLoaderSetter()
     {

@@ -12,9 +12,9 @@
 namespace Overtrue\Pinyin\Test;
 
 use Overtrue\Pinyin\Pinyin;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractDictLoaderTestCase extends TestCase
 {
     /**
      * @var Pinyin
@@ -49,7 +49,7 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
         // with number.
         $this->assertSame('1-dai-23-zhe-56-xi-wang-qu-abc-lyu-xing-568', $pinyin->permalink('1带23着。！5_6.=希望去abc旅行568'));
 
-        $this->setExpectedException('InvalidArgumentException', "Delimiter must be one of: '_', '-', '', '.'.");
+        $this->expectException('InvalidArgumentException', "Delimiter must be one of: '_', '-', '', '.'.");
 
         $this->assertSame('daizhexiwangqulyuxing', $pinyin->permalink('带着希望去旅行', '='));
     }
@@ -119,7 +119,7 @@ abstract class AbstractDictLoaderTestCase extends PHPUnit_Framework_TestCase
     public function testSpecialWordsUsingAbbr()
     {
         $pinyin = $this->pinyin;
-        $this->assertEquals('Ⅲdfscdzz', $pinyin->abbr('Ⅲ度房室传导阻滞', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
+        $this->assertEquals('dfscdzz123r', $pinyin->abbr('Ⅲ度房室传导阻滞123人', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
     }
 
     // test Polyphone

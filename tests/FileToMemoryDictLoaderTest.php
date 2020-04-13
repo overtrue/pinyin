@@ -15,7 +15,7 @@ use Overtrue\Pinyin\Pinyin;
 
 class FileToMemoryDictLoaderTest extends AbstractDictLoaderTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pinyin = new Pinyin('Overtrue\Pinyin\MemoryFileDictLoader');
     }

@@ -20,7 +20,7 @@ use Overtrue\Pinyin\Pinyin;
  */
 class GeneratorFileDictLoaderTest extends AbstractDictLoaderTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pinyin = new Pinyin('Overtrue\\Pinyin\\GeneratorFileDictLoader');
     }
