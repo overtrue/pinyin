@@ -120,8 +120,8 @@ class Pinyin
         }
 
         return implode($delimiter, array_map(function ($pinyin) {
-            return \is_numeric($pinyin) ? $pinyin : mb_substr($pinyin, 0, 1);
-        }, $this->convert($string, $option)));
+            return \is_numeric($pinyin) || preg_match('/\d+/', $pinyin) ? $pinyin : mb_substr($pinyin, 0, 1);
+        }, $this->convert($string, $option | PINYIN_NO_TONE)));
     }
 
     /**
