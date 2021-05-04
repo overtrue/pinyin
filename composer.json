@@ -32,7 +32,7 @@
     "require-dev": {
         "phpunit/phpunit": "~8.0",
         "brainmaestro/composer-git-hooks": "^2.7",
-        "friendsofphp/php-cs-fixer": "^2.16"
+        "friendsofphp/php-cs-fixer": "^3.0"
     },
     "extra": {
         "hooks": {
