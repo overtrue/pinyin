@@ -292,6 +292,13 @@ abstract class AbstractDictLoaderTestCase extends TestCase
         $this->assertEquals(array('lv', 'xiu', 'cai'), $this->pinyin->convert('吕秀才', \PINYIN_UMLAUT_V));
     }
 
+    public function testIssue175()
+    {
+        $this->assertEquals('yùn', $this->pinyin->sentence('貟', PINYIN_TONE));
+        $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('貟秀才'));
+        $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('贠秀才'));
+    }
+
     public function testPhrase()
     {
         $pinyin = $this->pinyin;
