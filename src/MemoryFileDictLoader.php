@@ -53,7 +53,7 @@ class MemoryFileDictLoader implements DictLoaderInterface
         $this->path = $path;
 
         for ($i = 0; $i < 100; ++$i) {
-            $segment = $path.'/'.sprintf($this->segmentName, $i);
+            $segment = $path . '/' . sprintf($this->segmentName, $i);
 
             if (file_exists($segment)) {
                 $this->segments[] = (array) include $segment;
@@ -81,7 +81,7 @@ class MemoryFileDictLoader implements DictLoaderInterface
     public function mapSurname(Closure $callback)
     {
         if (empty($this->surnames)) {
-            $surnames = $this->path.'/surnames';
+            $surnames = $this->path . '/surnames';
 
             if (file_exists($surnames)) {
                 $this->surnames = (array) include $surnames;

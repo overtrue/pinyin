@@ -182,7 +182,7 @@ class Pinyin
     public function getLoader()
     {
         if (!($this->loader instanceof DictLoaderInterface)) {
-            $dataDir = dirname(__DIR__).'/data/';
+            $dataDir = dirname(__DIR__) . '/data/';
 
             $loaderName = $this->loader;
             $this->loader = new $loaderName($dataDir);
@@ -229,7 +229,7 @@ class Pinyin
         $dictLoader->mapSurname(function ($dictionary) use (&$string) {
             foreach ($dictionary as $surname => $pinyin) {
                 if (0 === strpos($string, $surname)) {
-                    $string = $pinyin.mb_substr($string, mb_strlen($surname, 'UTF-8'), mb_strlen($string, 'UTF-8') - 1, 'UTF-8');
+                    $string = $pinyin . mb_substr($string, mb_strlen($surname, 'UTF-8'), mb_strlen($string, 'UTF-8') - 1, 'UTF-8');
 
                     break;
                 }
@@ -282,7 +282,7 @@ class Pinyin
     protected function prepare($string, $option = \PINYIN_DEFAULT)
     {
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
-            return "\t".$matches[0];
+            return "\t" . $matches[0];
         }, $string);
 
         $regex = ['\p{Han}', '\p{Z}', '\p{M}', "\t"];
@@ -332,7 +332,7 @@ class Pinyin
                     $umlaut = 'v';
                 }
 
-                $pinyin = str_replace($unicode, $umlaut, $pinyin).($this->hasOption($option, PINYIN_ASCII_TONE) ? $replacement[1] : '');
+                $pinyin = str_replace($unicode, $umlaut, $pinyin) . ($this->hasOption($option, PINYIN_ASCII_TONE) ? $replacement[1] : '');
             }
         }
 
