@@ -21,7 +21,7 @@ $surnames = [];
 foreach ($surnamesSource as $line) {
     [$surname, $pinyin] = explode(',', trim($line));
 
-    $surnames[trim($surname)] = preg_split('/\s+/', trim($pinyin));
+    $surnames[trim($surname)] = join("\t", ["", ...preg_split('/\s+/', trim($pinyin)), ""]);
 }
 
 

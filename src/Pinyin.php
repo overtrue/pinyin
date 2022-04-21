@@ -37,7 +37,7 @@ class Pinyin
     {
     }
 
-    public function convert(string $string, int $option = null)
+    public function convert(string $string, int $option = null): array
     {
         $option = $option ?? $this->defaultOptions;
         $pinyin = $this->transform($string, $option);
@@ -45,7 +45,7 @@ class Pinyin
         return $this->splitPinyin($pinyin, $option);
     }
 
-    public function name(string $name, int $option = null)
+    public function name(string $name, int $option = null): array
     {
         $option = ($option ?? $this->defaultOptions) | \PINYIN_NAME;
 
@@ -54,7 +54,7 @@ class Pinyin
         return $this->splitPinyin($pinyin, $option);
     }
 
-    public function permalink(string $string, string $delimiter = '-', string $option = null)
+    public function permalink(string $string, string $delimiter = '-', string $option = null): string
     {
         $option = $option ?? $this->defaultOptions;
 
@@ -69,7 +69,7 @@ class Pinyin
         return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
     }
 
-    public function abbr(string $string, string $delimiter = '', int $option = null)
+    public function abbr(string $string, string $delimiter = '', int $option = null): string
     {
         $option = $option ?? $this->defaultOptions;
 
@@ -82,7 +82,7 @@ class Pinyin
         }, $this->convert($string, $option | \PINYIN_NO_TONE)));
     }
 
-    public function phrase(string $string, string $delimiter = ' ', string $option = null)
+    public function phrase(string $string, string|int $delimiter = ' ', int|string $option = null): string
     {
         $option = $option ?? $this->defaultOptions;
 
@@ -93,9 +93,9 @@ class Pinyin
         return implode($delimiter, $this->convert($string, $option));
     }
 
-    public function sentence(string $string, string $delimiter = ' ', string $option = null)
+    public function sentence(string $string, string|int $delimiter = ' ', int|string $option = null): string
     {
-        $option = $option ?? $this->defaultOptions | \PINYIN_NO_TONE;
+        $option = $option ?? $this->defaultOptions;
 
         if (\is_int($delimiter)) {
             list($option, $delimiter) = [$delimiter, ' '];
@@ -104,10 +104,9 @@ class Pinyin
         return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));
     }
 
-    public function transform(string $string, string $option = null)
+    public function transform(string $string, string $option = null): string
     {
         $option = $option ?? $this->defaultOptions;
-
         $string = $this->prepare($string, $option);
 
         if ($this->hasOption($option, \PINYIN_NAME)) {
@@ -121,11 +120,11 @@ class Pinyin
         return $string;
     }
 
-    protected function transformSurname(string $name)
+    protected function transformSurname(string $name): string
     {
         $surnames = require self::SURNAMES_PATH;
 
-        foreach ($dictionary as $surname => $pinyin) {
+        foreach ($surnames as $surname => $pinyin) {
             if (\str_starts_with($name, $surname)) {
                 return $pinyin . \mb_substr($name, \mb_strlen($surname));
             }
@@ -134,7 +133,7 @@ class Pinyin
         return $name;
     }
 
-    protected function splitPinyin(string $pinyin, int $option)
+    protected function splitPinyin(string $pinyin, int $option): array
     {
         $split = array_filter(preg_split('/\s+/i', $pinyin));
 
@@ -147,12 +146,12 @@ class Pinyin
         return array_values($split);
     }
 
-    protected function hasOption(int $option, int $check)
+    protected function hasOption(int $option, int $check): bool
     {
         return ($option & $check) === $check;
     }
 
-    protected function prepare(string $string, int $option)
+    protected function prepare(string $string, int $option): string
     {
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
             return "\t" . $matches[0];
@@ -161,24 +160,23 @@ class Pinyin
         $regex = ['\p{Han}', '\p{Z}', '\p{M}', "\t"];
 
         if ($this->hasOption($option, \PINYIN_KEEP_NUMBER)) {
-            \array_push($regex, '0-9');
+            $regex[] = '0-9';
         }
 
         if ($this->hasOption($option, \PINYIN_KEEP_ENGLISH)) {
-            \array_push($regex, 'a-zA-Z');
+            $regex[] = 'a-zA-Z';
         }
 
         if ($this->hasOption($option, \PINYIN_KEEP_PUNCTUATION)) {
             $punctuations = \array_merge($this->punctuations, ["\t" => ' ', '  ' => ' ']);
             $string = \trim(\str_replace(\array_keys($punctuations), $punctuations, $string));
-
-            \array_push($regex, \preg_quote(\implode(\array_merge(\array_keys($this->punctuations), $this->punctuations)), '~'));
+            $regex[] = \preg_quote(\implode(\array_merge(\array_keys($this->punctuations), $this->punctuations)), '~');
         }
 
         return \preg_replace(\sprintf('~[^%s]~u', \implode($regex)), '', $string);
     }
 
-    protected function formatTone(string $pinyin, int $option = \PINYIN_NO_TONE)
+    protected function formatTone(string $pinyin, int $option = \PINYIN_NO_TONE): string
     {
         $replacements = [
             'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
@@ -189,7 +187,7 @@ class Pinyin
         ];
 
         foreach ($replacements as $unicode => $replacement) {
-            if (false !== \strpos($pinyin, $unicode)) {
+            if (\str_contains($pinyin, $unicode)) {
                 $umlaut = $replacement[0];
 
                 // https://zh.wikipedia.org/wiki/%C3%9C
