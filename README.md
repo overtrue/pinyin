@@ -1,11 +1,11 @@
 # Pinyin
+
 [![Build Status](https://travis-ci.org/overtrue/pinyin.svg?branch=master)](https://travis-ci.org/overtrue/pinyin)
 [![Latest Stable Version](https://poser.pugx.org/overtrue/pinyin/v/stable.svg)](https://packagist.org/packages/overtrue/pinyin) [![Total Downloads](https://poser.pugx.org/overtrue/pinyin/downloads.svg)](https://packagist.org/packages/overtrue/pinyin) [![Latest Unstable Version](https://poser.pugx.org/overtrue/pinyin/v/unstable.svg)](https://packagist.org/packages/overtrue/pinyin) [![License](https://poser.pugx.org/overtrue/pinyin/license.svg)](https://packagist.org/packages/overtrue/pinyin)
 
 :cn: 基于 [CC-CEDICT](http://cc-cedict.org/wiki/) 词典的中文转拼音工具，更准确的支持多音字的汉字转拼音解决方案。
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
-
 
 ## 安装
 
@@ -21,31 +21,26 @@ $ composer require "overtrue/pinyin:~4.0"
 
 - 内存型，适用于服务器内存空间较富余，优点：转换快
 - 小内存型(默认)，适用于内存比较紧张的环境，优点：占用内存小，转换不如内存型快
-- I/O型，适用于虚拟机，内存限制比较严格环境。优点：非常微小内存消耗。缺点：转换慢，不如内存型转换快,php >= 5.5
+- I/O 型，适用于虚拟机，内存限制比较严格环境。优点：非常微小内存消耗。缺点：转换慢，不如内存型转换快,php >= 5.5
 
 ## 可用选项：
 
-|      选项      | 描述                                                |
-| -------------  | ---------------------------------------------------|
-| `PINYIN_TONE`  | UNICODE 式音调：`měi hǎo`                    |
-| `PINYIN_ASCII_TONE`  | 带数字式音调：  `mei3 hao3`                    |
-| `PINYIN_NO_TONE`    |  无音调：`mei hao` | 
-| `PINYIN_KEEP_NUMBER`    | 保留数字  | 
-| `PINYIN_KEEP_ENGLISH`   | 保留英文   | 
-| `PINYIN_KEEP_PUNCTUATION`   |  保留标点  | 
-| `PINYIN_UMLAUT_V` | 使用 `v` 代替 `yu`, 例如：吕 `lyu` 将会转为 `lv` |
+| 选项                      | 描述                                             |
+| ------------------------- | ------------------------------------------------ |
+| `PINYIN_TONE`             | UNICODE 式音调：`měi hǎo`                        |
+| `PINYIN_ASCII_TONE`       | 带数字式音调： `mei3 hao3`                       |
+| `PINYIN_NO_TONE`          | 无音调：`mei hao`                                |
+| `PINYIN_KEEP_NUMBER`      | 保留数字                                         |
+| `PINYIN_KEEP_ENGLISH`     | 保留英文                                         |
+| `PINYIN_KEEP_PUNCTUATION` | 保留标点                                         |
+| `PINYIN_UMLAUT_V`         | 使用 `v` 代替 `yu`, 例如：吕 `lyu` 将会转为 `lv` |
 
 ### 拼音数组
 
 ```php
 use Overtrue\Pinyin\Pinyin;
 
-// 小内存型
 $pinyin = new Pinyin(); // 默认
-// 内存型
-// $pinyin = new Pinyin('\\Overtrue\\Pinyin\\MemoryFileDictLoader');
-// I/O型
-// $pinyin = new Pinyin('\\Overtrue\\Pinyin\\GeneratorFileDictLoader');
 
 $pinyin->convert('带着希望去旅行，比到达终点更美好');
 // ["dai", "zhe", "xi", "wang", "qu", "lyu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
@@ -56,11 +51,6 @@ $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_TONE
 $pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCII_TONE);
 //["dai4","zhe","xi1","wang4","qu4","lyu3","xing2","bi3","dao4","da2","zhong1","dian3","geng4","mei3","hao3"]
 ```
-
-- 小内存型: 将字典分片载入内存
-- 内存型: 将所有字典预先载入内存
-- I/O型: 不载入内存，将字典使用文件流打开逐行遍历并运用php5.5生成器(yield)特性分配单行内存
-
 
 ### 生成用于链接的拼音字符串
 
@@ -107,13 +97,14 @@ $pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
 ## Contribution
+
 欢迎提意见及完善补充词库 [`overtrue/pinyin-dictionary-maker`](https://github.com/overtrue/pinyin-dictionary-maker/tree/master/patches) :kiss:
 
 ## 参考
 
 - [详细参考资料](https://github.com/overtrue/pinyin-resources)
 
-## :heart: Sponsor me 
+## :heart: Sponsor me
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
 
@@ -124,7 +115,6 @@ $pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
 Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects.
 
 [![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/overtrue)
-
 
 ## PHP 扩展包开发
 

@@ -11,11 +11,7 @@
     <testsuites>
         <testsuite name="overtrue/pinyin Test Suite (All PHP version)">
             <directory>./tests/</directory>
-            <exclude>./tests/GeneratorFileDictLoaderTest.php</exclude>
-        </testsuite>
-        <testsuite name="overtrue/pinyin GeneratorFileDictLoaderTest Test Suite (PHP >= 5.5)">
-            <file>./tests/AbstractDictLoaderTestCase.php</file>
-            <file phpVersion="5.5.0" phpVersionOperator=">=">./tests/GeneratorFileDictLoaderTest.php</file>
+            <exclude>./tests/*.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>
