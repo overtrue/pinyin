@@ -11,19 +11,13 @@
 
 使用 Composer 安装:
 
-```
-$ composer require "overtrue/pinyin:~4.0"
+``` bash
+composer require overtrue/pinyin
 ```
 
 ## 使用
 
-可选转换方案：
-
-- 内存型，适用于服务器内存空间较富余，优点：转换快
-- 小内存型(默认)，适用于内存比较紧张的环境，优点：占用内存小，转换不如内存型快
-- I/O 型，适用于虚拟机，内存限制比较严格环境。优点：非常微小内存消耗。缺点：转换慢，不如内存型转换快,php >= 5.5
-
-## 可用选项：
+## 选项
 
 | 选项                      | 描述                                             |
 | ------------------------- | ------------------------------------------------ |
@@ -90,7 +84,7 @@ $pinyin->name('单某某'); // ['shan', 'mou', 'mou']
 $pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
 ```
 
-更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/AbstractDictLoaderTestCase.php)。
+更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/PinyinTest.php)。
 
 ## 在 Laravel 中使用
 
@@ -98,7 +92,9 @@ $pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
 
 ## Contribution
 
-欢迎提意见及完善补充词库 [`overtrue/pinyin-dictionary-maker`](https://github.com/overtrue/pinyin-dictionary-maker/tree/master/patches) :kiss:
+欢迎提意见及完善补充词库：
+- 单字拼音错误请添加到：[sources/pathes/chars.txt](https://github.com/overtrue/pinyin/blob/master/sources/pathes/chars.txt)；
+- 词语错误或补齐，请添加到：[sources/pathes/words.txt](https://github.com/overtrue/pinyin/blob/master/sources/pathes/words.txt)；
 
 ## 参考
 
