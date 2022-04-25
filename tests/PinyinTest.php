@@ -296,5 +296,9 @@ class PinyinTest extends TestCase
         $this->assertEquals('chuán qí', $this->pinyin->sentence('传奇', PINYIN_TONE));
         $this->assertEquals('zhuàn jì', $this->pinyin->sentence('传记', PINYIN_TONE));
         $this->assertEquals('liú mèng qián', $this->pinyin->sentence('刘孟乾', PINYIN_TONE));
+
+        #164
+        $this->assertEquals(['ōu', 'mǒu', 'mǒu'], $this->pinyin->name('区某某', PINYIN_TONE));
+        $this->assertEquals(['yuè', 'mǒu', 'mǒu'], $this->pinyin->name('乐某某', PINYIN_TONE));
     }
 }
