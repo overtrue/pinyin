@@ -102,6 +102,12 @@ class PinyinTest extends TestCase
         $this->assertEquals('dfscdzz123r', $this->pinyin->abbr('Ⅲ度房室传导阻滞123人', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
     }
 
+    // test name to abbr
+    public function testNamesUsingAbbr()
+    {
+        $this->assertEquals('stf', $this->pinyin->abbr('单田芳', \PINYIN_NAME));
+    }
+
     // test Polyphone
     public function testPolyphone()
     {

@@ -77,9 +77,16 @@ class Pinyin
             [$option, $delimiter] = [$delimiter, ''];
         }
 
+        // 用名字转 abbr
+        if ($this->hasOption($option, \PINYIN_NAME)) {
+            $result = $this->name($string, $option);
+        } else {
+            $result = $this->convert($string, $option | \PINYIN_NO_TONE);
+        }
+
         return implode($delimiter, array_map(function ($pinyin) {
             return \is_numeric($pinyin) || preg_match('/\d+/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
-        }, $this->convert($string, $option | \PINYIN_NO_TONE)));
+        }, $result));
     }
 
     public function phrase(string $string, string|int $delimiter = ' ', int|string $option = null): string
