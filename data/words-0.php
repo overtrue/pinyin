@@ -1295,6 +1295,8 @@ return array (
   '非婚生子女' => '	fēi	hūn	shēng	zǐ	nǚ	',
   '非数值应用' => '	fēi	shù	zhí	yìng	yòng	',
   '非道德行为' => '	fēi	dào	dé	xíng	wéi	',
+  '塔什库尔干' => '	tǎ	shí	kù	ěr	gān	',
+  '乌拉特前旗' => '	wū	lā	tè	qián	qí	',
   '一一对应' => '	yī	yī	duì	yìng	',
   '一丁点儿' => '	yī	dīng	diǎn	er	',
   '一不为少' => '	yī	bù	wéi	shǎo	',
@@ -7998,6 +8000,4 @@ return array (
   '重披战袍' => '	chóng	pī	zhàn	páo	',
   '重振旗鼓' => '	chóng	zhèn	qí	gǔ	',
   '重提旧事' => '	chóng	tí	jiù	shì	',
-  '重操旧业' => '	chóng	cāo	jiù	yè	',
-  '重整旗鼓' => '	chóng	zhěng	qí	gǔ	',
 );

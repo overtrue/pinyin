@@ -1,9 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+require __DIR__ . '/utils.php';
+
 $polyphones = explode(',', file_get_contents(__DIR__ . '/../sources/polyphones.txt'));
 $charsSouce = __DIR__ . '/../sources/chars.txt';
+$charsPathes = __DIR__.'/../sources/pathes/chars.txt';
 $wordsSouce = __DIR__ . '/../sources/words.txt';
+$wordsPathes = __DIR__ . '/../sources/pathes/words.txt';
 $surnamesSource = file(__DIR__.'/../sources/surnames.txt');
 
 
@@ -27,47 +31,48 @@ foreach ($surnamesSource as $line) {
 
 // ------------------------------------------------
 
+// 单字，带多音
+$charWithPolyphones = [];
+// 单字，不带多音
 $chars = [];
-foreach (file($charsSouce) as $line) {
-    // U+4E2D: zhōng,zhòng  # 中
-    preg_match('/^U\+(?<code>[0-9A-Z]+):\s+(?<pinyin>\S+)\s+#\s*(?<char>\S+)/', $line, $matched);
 
-    if ($matched && !empty($matched['pinyin'])) {
-        $pinyin = explode(',', $matched['pinyin']);
-        $chars[$matched['char']] = $pinyin;
-    } elseif (!str_starts_with($line, '#')) {
-        throw new Exception("行解析错误：$line");
-    }
+foreach (parse_chars($charsSouce) as $char => $pinyin) {
+    $charWithPolyphones[$char] = $pinyin;
+    $chars[$char] = "\t{$pinyin[0]}\t";
+}
+
+// 补丁部分
+foreach (parse_chars($charsPathes, fn ($p) => "\t{$p[0]}\t") as $char => $pinyin) {
+    $chars[$char] = $pinyin;
 }
 
 // ------------------------------------------------
+
 $words = [];
-foreach (file($wordsSouce) as $line) {
-    // 㞎㞎: bǎ ba # 注释
-    preg_match('/^(?<word>[^#\s]+):\s+(?<pinyin>[\p{L} ]+)#?/u', $line, $matched);
 
-    if ($matched && !empty($matched['pinyin'])) {
-        $pinyin = explode(' ', trim($matched['pinyin']));
+foreach (parse_words($wordsSouce) as $word => $pinyin) {
+    $wordChars = preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY);
 
-        $wordChars = preg_split('//u', $matched['word'], -1, PREG_SPLIT_NO_EMPTY);
+    try {
+        $pinyinSegments = array_combine($wordChars, $pinyin);
+    } catch (Throwable $e) {
+        throw new Exception("行解析错误：$line");
+    }
 
-        try {
-            $pinyinSegments = array_combine($wordChars, $pinyin);
-        } catch (Throwable $e) {
-            throw new Exception("行解析错误：$line");
-        }
+    // 多音字处理
+    $polyphoneChars = array_intersect_key($wordChars, $polyphones);
 
-        // 多音字处理
-        $polyphoneChars = array_intersect_key($wordChars, $polyphones);
-
-        foreach ($polyphoneChars as $char) {
-            // 如果词里的任何一个多音字在词里的读音和常用读音不一致，则需要加入词典，否则抛弃该词
-            if (isset($chars[$char]) && $pinyinSegments[$char] != $chars[$char][0]) {
-                $words[$matched['word']] = join("\t", ["", ...$pinyin, ""]);
-                break;
-            }
+    foreach ($polyphoneChars as $char) {
+        // 如果词里的任何一个多音字在词里的读音和常用读音不一致，则需要加入词典，否则抛弃该词
+        if (isset($charWithPolyphones[$char]) && $pinyinSegments[$char] != $charWithPolyphones[$char][0]) {
+            $words[$word] = join("\t", ["", ...$pinyin, ""]);
+            break;
         }
     }
+}
+
+foreach (parse_words($wordsPathes) as $word => $pinyin) {
+    $words[$word] = join("\t", ["", ...$pinyin, ""]);
 }
 
 // 清理
@@ -78,20 +83,14 @@ file_put_contents(__DIR__ . '/../data/surnames.php', "<?php\nreturn ".var_export
 echo count($surnames)." surnames saved.\n";
 
 // 单字：带多音
-file_put_contents(__DIR__ . '/../data/char-with-polyphones.php', "<?php\nreturn ".var_export($chars, true).";\n");
-echo count($chars)." chars with polyphones saved.\n";
+file_put_contents(__DIR__ . '/../data/char-with-polyphones.php', "<?php\nreturn ".var_export($charWithPolyphones, true).";\n");
+echo count($charWithPolyphones)." chars with polyphones saved.\n";
 
-// 单字：不带多音
-$charsNoPolyphones = [];
-foreach ($chars as $char => $pinyin) {
-    $charsNoPolyphones[$char] = "\t{$pinyin[0]}\t";
-}
-
-file_put_contents(__DIR__ . '/../data/chars.php', "<?php\nreturn ".var_export($charsNoPolyphones, true).";\n");
-echo count($charsNoPolyphones)." chars saved.\n";
+file_put_contents(__DIR__ . '/../data/chars.php', "<?php\nreturn ".var_export($chars, true).";\n");
+echo count($chars)." chars saved.\n";
 
 // 词：从长到短 + 单字
-$words = array_merge($words, $charsNoPolyphones);
+$words = array_merge($words, $chars);
 uksort($words, fn ($a, $b) => strlen($b) <=> strlen($a));
 
 foreach (array_chunk($words, 8000, true) as $index => $group) {

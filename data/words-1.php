@@ -1,5 +1,7 @@
 <?php
 return array (
+  '重操旧业' => '	chóng	cāo	jiù	yè	',
+  '重整旗鼓' => '	chóng	zhěng	qí	gǔ	',
   '重新做人' => '	chóng	xīn	zuò	rén	',
   '重新启动' => '	chóng	xīn	qǐ	dòng	',
   '重新审视' => '	chóng	xīn	shěn	shì	',
@@ -6645,6 +6647,7 @@ return array (
   '顶皮儿' => '	dǐng	pí	er	',
   '顶门子' => '	dǐng	mén	zǐ	',
   '顶门杠' => '	dǐng	mén	gàng	',
+  '朝阳区' => '	cháo	yáng	qū	',
   '岭𫶕' => '	líng	yíng	',
   '㞎㞎' => '	bǎ	ba	',
   '㹴犬' => '	gěng	quǎn	',
@@ -7997,7 +8000,4 @@ return array (
   '倍僪' => '	bèi	yù	',
   '倍儿' => '	bèi	er	',
   '倍切' => '	bèi	qiē	',
-  '倍处' => '	bèi	chǔ	',
-  '倍称' => '	bèi	chèn	',
-  '倏歘' => '	shū	xū	',
 );

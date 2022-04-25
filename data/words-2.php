@@ -1,5 +1,8 @@
 <?php
 return array (
+  '倍处' => '	bèi	chǔ	',
+  '倍称' => '	bèi	chèn	',
+  '倏歘' => '	shū	xū	',
   '倒下' => '	dǎo	xià	',
   '倒书' => '	dǎo	shū	',
   '倒乱' => '	dǎo	luàn	',
@@ -7997,7 +8000,4 @@ return array (
   '横话' => '	hèng	huà	',
   '横财' => '	hèng	cái	',
   '横逆' => '	hèng	nì	',
-  '樵子' => '	qiáo	zǐ	',
-  '橡子' => '	xiàng	zǐ	',
-  '檃栝' => '	yǐn	kuò	',
 );

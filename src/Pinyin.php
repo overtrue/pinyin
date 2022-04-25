@@ -59,7 +59,7 @@ class Pinyin
         $option = $option ?? $this->defaultOptions;
 
         if (\is_int($delimiter)) {
-            list($option, $delimiter) = [$delimiter, '-'];
+            [$option, $delimiter] = [$delimiter, '-'];
         }
 
         if (!in_array($delimiter, ['_', '-', '.', ''], true)) {
@@ -69,16 +69,16 @@ class Pinyin
         return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
     }
 
-    public function abbr(string $string, string $delimiter = '', int $option = null): string
+    public function abbr(string $string, int|string $delimiter = '', int $option = null): string
     {
         $option = $option ?? $this->defaultOptions;
 
         if (\is_int($delimiter)) {
-            list($option, $delimiter) = [$delimiter, ''];
+            [$option, $delimiter] = [$delimiter, ''];
         }
 
         return implode($delimiter, array_map(function ($pinyin) {
-            return \is_numeric($pinyin) || preg_match('/\d+/', $pinyin) ? $pinyin : mb_substr($pinyin, 0, 1);
+            return \is_numeric($pinyin) || preg_match('/\d+/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
         }, $this->convert($string, $option | \PINYIN_NO_TONE)));
     }
 
@@ -87,7 +87,7 @@ class Pinyin
         $option = $option ?? $this->defaultOptions;
 
         if (\is_int($delimiter)) {
-            list($option, $delimiter) = [$delimiter, ' '];
+            [$option, $delimiter] = [$delimiter, ' '];
         }
 
         return implode($delimiter, $this->convert($string, $option));
@@ -98,7 +98,7 @@ class Pinyin
         $option = $option ?? $this->defaultOptions;
 
         if (\is_int($delimiter)) {
-            list($option, $delimiter) = [$delimiter, ' '];
+            [$option, $delimiter] = [$delimiter, ' '];
         }
 
         return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));

@@ -62,10 +62,10 @@ class PinyinTest extends TestCase
 
     public function testSentence()
     {
-        $this->assertSame('dai zhe xi wang qu lyu xing, bi dao da zhong dian geng mei hao!', $this->pinyin->sentence('带着希望去旅行，比到达终点更美好！'));
+        $this->assertSame('dai zhe xi wang qu lyu xing , bi dao da zhong dian geng mei hao !', $this->pinyin->sentence('带着希望去旅行，比到达终点更美好！'));
 
-//        $this->assertSame('dai zhe xi 123 wang qu good lyu boy2 xing!.', $this->pinyin->sentence('带^着&*希123望去good旅boy2行！.'));
-//        $this->assertSame('dai zhe xi 123 wang.. qu good lyu boy2 xing!.', $this->pinyin->sentence('--带^着&*希123望.。去good旅boy2行！.'));
+        $this->assertSame('dai zhe xi 123 wang qu good lyu boy2 xing !.', $this->pinyin->sentence('带^着&*希123望去good旅boy2行！.'));
+        $this->assertSame('dai zhe xi 123 wang .. qu good lyu boy2 xing !.', $this->pinyin->sentence('--带^着&*希123望.。去good旅boy2行！.'));
     }
 
     public function testName()
@@ -246,7 +246,7 @@ class PinyinTest extends TestCase
 
         // #96
         $this->assertEquals('shén me', $this->pinyin->sentence('什么', PINYIN_TONE));
-        $this->assertEquals('hái shuō shén me ne? huán gěi nǐ. hái gè pì!', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
+        $this->assertEquals('hái shuō shí mǒ ne ? huán gěi nǐ . hái gè pì !', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
 
         // #82
         $this->assertEquals('wū lā tè qián qí', $this->pinyin->sentence('乌拉特前旗', PINYIN_TONE));
@@ -257,6 +257,7 @@ class PinyinTest extends TestCase
         $this->assertEquals('tǎ shí kù ěr gān', $this->pinyin->sentence('塔什库尔干', PINYIN_TONE));
         $this->assertEquals('cháng yáng tǔ jiā zú zì zhì xiàn', $this->pinyin->sentence('长阳土家族自治县', PINYIN_TONE));
         $this->assertEquals('mǎ wěi qū', $this->pinyin->sentence('马尾区', PINYIN_TONE));
+        $this->assertEquals('wèi shǒu wèi wěi', $this->pinyin->sentence('畏首畏尾', PINYIN_TONE));
         $this->assertEquals('sān dū shuǐ zú zì zhì xiàn', $this->pinyin->sentence('三都水族自治县', PINYIN_TONE));
     }
 
