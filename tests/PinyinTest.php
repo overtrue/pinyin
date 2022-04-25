@@ -194,18 +194,12 @@ class PinyinTest extends TestCase
         $this->assertEquals('java gong cheng shi', $this->pinyin->sentence('java工程师'));
     }
 
-    /**
-     * 测试单个音的字.
-     *
-     * bug: #19
-     * bug: #22
-     * bug: #23
-     * bug: #24
-     * bug: #29
-     * bug: #235
-     * bug: #81
-     */
-    public function testSingleAccent()
+    public function testPhrase()
+    {
+        $this->assertEquals('bei3-jing1', $this->pinyin->phrase('北京', '-', \PINYIN_ASCII_TONE));
+    }
+
+    public function testIssues()
     {
         $this->assertEquals('a le tai', $this->pinyin->sentence('阿勒泰'));
         $this->assertEquals('e er duo si', $this->pinyin->sentence('鄂尔多斯'));
@@ -250,6 +244,15 @@ class PinyinTest extends TestCase
         // #105 #112
         $this->assertEquals('ǹ', $this->pinyin->sentence('嗯', PINYIN_TONE));
 
+        // #167
+        $this->assertEquals('chǔ', $this->pinyin->sentence('褚', PINYIN_TONE));
+
+        // #174
+        $this->assertEquals('tuò', $this->pinyin->sentence('拓', PINYIN_TONE));
+
+        // #146
+        $this->assertEquals('zhōng wén', $this->pinyin->sentence('中、文', PINYIN_TONE));
+
         // #96
         $this->assertEquals('shén me', $this->pinyin->sentence('什么', PINYIN_TONE));
         $this->assertEquals('hái shuō shí mǒ ne ? huán gěi nǐ . hái gè pì !', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
@@ -265,23 +268,33 @@ class PinyinTest extends TestCase
         $this->assertEquals('mǎ wěi qū', $this->pinyin->sentence('马尾区', PINYIN_TONE));
         $this->assertEquals('wèi shǒu wèi wěi', $this->pinyin->sentence('畏首畏尾', PINYIN_TONE));
         $this->assertEquals('sān dū shuǐ zú zì zhì xiàn', $this->pinyin->sentence('三都水族自治县', PINYIN_TONE));
-    }
 
-    public function testYu()
-    {
         $this->assertEquals(['lyu', 'xiu', 'cai'], $this->pinyin->convert('吕秀才'));
         $this->assertEquals(['lv', 'xiu', 'cai'], $this->pinyin->convert('吕秀才', \PINYIN_UMLAUT_V));
-    }
 
-    public function testIssue175()
-    {
+        #175
         $this->assertEquals('yuán', $this->pinyin->sentence('貟', PINYIN_TONE));
         $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('貟秀才'));
         $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('贠秀才'));
-    }
 
-    public function testPhrase()
-    {
-        $this->assertEquals('bei3-jing1', $this->pinyin->phrase('北京', '-', \PINYIN_ASCII_TONE));
+        #183
+        $this->assertEquals('yín háng quàn', $this->pinyin->sentence('银行券', PINYIN_TONE));
+        $this->assertEquals('xún chá', $this->pinyin->sentence('询查', PINYIN_TONE));
+
+        #170
+        $this->assertEquals('ké', $this->pinyin->sentence('咳', PINYIN_TONE));
+        $this->assertEquals('xiǎo ér fèi ké kē lì', $this->pinyin->sentence('小儿肺咳颗粒', PINYIN_TONE));
+
+        #151
+        $this->assertEquals('gǔ tóu', $this->pinyin->sentence('骨头', PINYIN_TONE));
+
+        #116
+        $this->assertEquals(['shan', 'mou', 'mou'], $this->pinyin->name('单某某', \PINYIN_UMLAUT_V));
+
+        #106
+        $this->assertEquals('zhēn huán zhuàn', $this->pinyin->sentence('甄嬛传', PINYIN_TONE));
+        $this->assertEquals('chuán qí', $this->pinyin->sentence('传奇', PINYIN_TONE));
+        $this->assertEquals('zhuàn jì', $this->pinyin->sentence('传记', PINYIN_TONE));
+        $this->assertEquals('liú mèng qián', $this->pinyin->sentence('刘孟乾', PINYIN_TONE));
     }
 }

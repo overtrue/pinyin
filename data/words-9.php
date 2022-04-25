@@ -1,5 +1,6 @@
 <?php
 return array (
+  '騛' => '	fēi	',
   '騜' => '	huáng	',
   '騝' => '	qián	',
   '騞' => '	huō	',

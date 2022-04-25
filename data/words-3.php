@@ -1,5 +1,6 @@
 <?php
 return array (
+  '横逆' => '	hèng	nì	',
   '樵子' => '	qiáo	zǐ	',
   '橡子' => '	xiàng	zǐ	',
   '檃栝' => '	yǐn	kuò	',
@@ -7999,5 +8000,4 @@ return array (
   '顷危' => '	qīng	wēi	',
   '顷宫' => '	qīng	gōng	',
   '首都' => '	shǒu	dū	',
-  '姓曾' => '	xìng	zēng	',
 );

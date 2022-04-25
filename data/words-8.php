@@ -1,5 +1,6 @@
 <?php
 return array (
+  '竛' => '	líng	',
   '竜' => '	lóng	',
   '竝' => '	bìng	',
   '竞' => '	jìng	',
@@ -7999,5 +8000,4 @@ return array (
   '騘' => '	cōng	',
   '騙' => '	piàn	',
   '騚' => '	qián	',
-  '騛' => '	fēi	',
 );

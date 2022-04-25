@@ -6648,6 +6648,7 @@ return array (
   '顶门子' => '	dǐng	mén	zǐ	',
   '顶门杠' => '	dǐng	mén	gàng	',
   '朝阳区' => '	cháo	yáng	qū	',
+  '甄嬛传' => '	zhēn	huán	zhuàn	',
   '岭𫶕' => '	líng	yíng	',
   '㞎㞎' => '	bǎ	ba	',
   '㹴犬' => '	gěng	quǎn	',
@@ -7999,5 +8000,4 @@ return array (
   '倈子' => '	lái	zǐ	',
   '倍僪' => '	bèi	yù	',
   '倍儿' => '	bèi	er	',
-  '倍切' => '	bèi	qiē	',
 );
