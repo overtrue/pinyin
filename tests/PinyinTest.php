@@ -62,10 +62,10 @@ class PinyinTest extends TestCase
 
     public function testSentence()
     {
-        $this->assertSame('dai zhe xi wang qu lyu xing , bi dao da zhong dian geng mei hao !', $this->pinyin->sentence('带着希望去旅行，比到达终点更美好！'));
+        $this->assertSame('dai zhe xi wang qu lyu xing，bi dao da zhong dian geng mei hao！', $this->pinyin->sentence('带着希望去旅行，比到达终点更美好！'));
 
-        $this->assertSame('dai zhe xi 123 wang qu good lyu boy2 xing !.', $this->pinyin->sentence('带^着&*希123望去good旅boy2行！.'));
-        $this->assertSame('dai zhe xi 123 wang .. qu good lyu boy2 xing !.', $this->pinyin->sentence('--带^着&*希123望.。去good旅boy2行！.'));
+        $this->assertSame('dai zhe&*xi 123 wang qu good lyu boy2 xing！.', $this->pinyin->sentence('带^着&*希123望去good旅boy2行！.'));
+        $this->assertSame('--dai zhe&*xi 123 wang.。qu good lyu boy2 xing！.', $this->pinyin->sentence('--带^着&*希123望.。去good旅boy2行！.'));
     }
 
     public function testName()
@@ -88,7 +88,7 @@ class PinyinTest extends TestCase
     // test special words
     public function testSpecialWords()
     {
-        $this->assertEquals('hello, world!', $this->pinyin->sentence('hello, world!'));
+        $this->assertEquals('hello,world!', $this->pinyin->sentence('hello, world!'));
         $this->assertEquals('DNA jiàn dìng', $this->pinyin->sentence('DNA鉴定', \PINYIN_TONE));
         $this->assertEquals('21 sān tǐ zōng hé zhèng', $this->pinyin->sentence('21三体综合症', \PINYIN_TONE));
         $this->assertEquals('C pán', $this->pinyin->sentence('C盘', \PINYIN_TONE));
@@ -146,6 +146,9 @@ class PinyinTest extends TestCase
         // 乐
         $this->assertEquals(['kuài', 'lè'], $this->pinyin->convert('快乐', PINYIN_TONE));
         $this->assertEquals(['yīn', 'yuè'], $this->pinyin->convert('音乐', PINYIN_TONE));
+
+        // ⺁
+        $this->assertEquals(['fǎn'], $this->pinyin->convert('⺁', PINYIN_TONE));
 
         // 长
         $this->assertEquals(['chéng', 'zhǎng'], $this->pinyin->convert('成长', PINYIN_TONE));
@@ -251,11 +254,11 @@ class PinyinTest extends TestCase
         $this->assertEquals('tuò', $this->pinyin->sentence('拓', PINYIN_TONE));
 
         // #146
-        $this->assertEquals('zhōng wén', $this->pinyin->sentence('中、文', PINYIN_TONE));
+        $this->assertEquals('zhōng、wén', $this->pinyin->sentence('中、文', PINYIN_TONE));
 
         // #96
         $this->assertEquals('shén me', $this->pinyin->sentence('什么', PINYIN_TONE));
-        $this->assertEquals('hái shuō shí mǒ ne ? huán gěi nǐ . hái gè pì !', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
+        $this->assertEquals('hái shuō shí mǒ ne？huán gěi nǐ。hái gè pì！', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
 
         // #82
         $this->assertEquals('wū lā tè qián qí', $this->pinyin->sentence('乌拉特前旗', PINYIN_TONE));

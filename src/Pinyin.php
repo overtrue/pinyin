@@ -20,19 +20,6 @@ class Pinyin
     private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
     private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
 
-    protected array $punctuations = [
-        '，' => ',',
-        '。' => '.',
-        '！' => '!',
-        '？' => '?',
-        '：' => ':',
-        '“' => '"',
-        '”' => '"',
-        '‘' => "'",
-        '’' => "'",
-        '_' => '_',
-    ];
-
     public function __construct(protected int $defaultOptions = \PINYIN_DEFAULT)
     {
     }
@@ -108,7 +95,9 @@ class Pinyin
             [$option, $delimiter] = [$delimiter, ' '];
         }
 
-        return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));
+        $result = implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));
+
+        return preg_replace('~\s*(\p{P})\s*~u', '$1', $result);
     }
 
     public function transform(string $string, string $option = null): string
@@ -164,7 +153,10 @@ class Pinyin
             return "\t" . $matches[0];
         }, $string);
 
-        $regex = ['\p{Han}', '\p{Z}', '\p{M}', "\t"];
+        // 中文汉字不含符号
+        $han = '\x{3007}\x{2E80}-\x{2FFF}\x{3100}-\x{312F}\x{31A0}-\x{31EF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}';
+
+        $regex = [$han, '\p{Z}', '\p{M}', "\t"];
 
         if ($this->hasOption($option, \PINYIN_KEEP_NUMBER)) {
             $regex[] = '0-9';
@@ -175,9 +167,7 @@ class Pinyin
         }
 
         if ($this->hasOption($option, \PINYIN_KEEP_PUNCTUATION)) {
-            $punctuations = \array_merge($this->punctuations, ["\t" => ' ', '  ' => ' ']);
-            $string = \trim(\str_replace(\array_keys($punctuations), $punctuations, $string));
-            $regex[] = \preg_quote(\implode(\array_merge(\array_keys($this->punctuations), $this->punctuations)), '~');
+            $regex[] = "\p{P}";
         }
 
         return \preg_replace(\sprintf('~[^%s]~u', \implode($regex)), '', $string);
