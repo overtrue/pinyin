@@ -4,198 +4,76 @@ namespace Overtrue\Pinyin;
 
 use InvalidArgumentException;
 
-defined('PINYIN_DEFAULT') || define('PINYIN_DEFAULT', 4096);
-defined('PINYIN_TONE') || define('PINYIN_TONE', 2);
-defined('PINYIN_NO_TONE') || define('PINYIN_NO_TONE', 4);
-defined('PINYIN_ASCII_TONE') || define('PINYIN_ASCII_TONE', 8);
-defined('PINYIN_NAME') || define('PINYIN_NAME', 16);
-defined('PINYIN_KEEP_NUMBER') || define('PINYIN_KEEP_NUMBER', 32);
-defined('PINYIN_KEEP_ENGLISH') || define('PINYIN_KEEP_ENGLISH', 64);
-defined('PINYIN_UMLAUT_V') || define('PINYIN_UMLAUT_V', 128);
-defined('PINYIN_KEEP_PUNCTUATION') || define('PINYIN_KEEP_PUNCTUATION', 256);
-
+/**
+ * @method static Converter asPolyphonic()
+ * @method static Converter asSurname()
+ * @method static Converter onlyHans()
+ * @method static Converter noAlpha()
+ * @method static Converter noNumber()
+ * @method static Converter noPunctuation()
+ * @method static Converter noTone()
+ * @method static Converter useNumberTone()
+ * @method static Converter yuToV()
+ * @method static Converter yuToU()
+ * @method static Converter withToneStyle(string $toneStyle = 'default')
+ * @method static Collection convert(string $string, callable $beforeSplit = null)
+ */
 class Pinyin
 {
-    private const SEGMENTS_COUNT = 10;
-    private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
-    private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
-
-    public function __construct(protected int $defaultOptions = \PINYIN_DEFAULT)
+    public static function name(string $name): Collection
     {
+        return self::asSurname()->convert($name);
     }
 
-    public function convert(string $string, int $option = null): array
+    public static function phrase(string $string): Collection
     {
-        $option = $option ?? $this->defaultOptions;
-        $pinyin = $this->transform($string, $option);
-
-        return $this->splitPinyin($pinyin, $option);
+        return self::noPunctuation()->convert($string);
     }
 
-    public function name(string $name, int $option = null): array
+    public static function permalink(string $string, string $delimiter = '-'): string
     {
-        $option = ($option ?? $this->defaultOptions) | \PINYIN_NAME;
-
-        $pinyin = $this->transform($name, $option);
-
-        return $this->splitPinyin($pinyin, $option);
-    }
-
-    public function permalink(string $string, string $delimiter = '-', string $option = null): string
-    {
-        $option = $option ?? $this->defaultOptions;
-
-        if (\is_int($delimiter)) {
-            [$option, $delimiter] = [$delimiter, '-'];
-        }
-
         if (!in_array($delimiter, ['_', '-', '.', ''], true)) {
             throw new InvalidArgumentException("Delimiter must be one of: '_', '-', '', '.'.");
         }
 
-        return implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
+        return self::noPunctuation()->noTone()->convert($string)->join($delimiter);
     }
 
-    public function abbr(string $string, int|string $delimiter = '', int $option = null): string
+    public static function polyphones(string $string): Collection
     {
-        $option = $option ?? $this->defaultOptions;
-
-        if (\is_int($delimiter)) {
-            [$option, $delimiter] = [$delimiter, ''];
-        }
-
-        // 用名字转 abbr
-        if ($this->hasOption($option, \PINYIN_NAME)) {
-            $result = $this->name($string, $option);
-        } else {
-            $result = $this->convert($string, $option | \PINYIN_NO_TONE);
-        }
-
-        return implode($delimiter, array_map(function ($pinyin) {
-            return \is_numeric($pinyin) || preg_match('/\d+/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
-        }, $result));
+        return self::asPolyphonic()->convert($string);
     }
 
-    public function phrase(string $string, string|int $delimiter = ' ', int|string $option = null): string
+    public static function nameAbbr(string $string): Collection
     {
-        $option = $option ?? $this->defaultOptions;
-
-        if (\is_int($delimiter)) {
-            [$option, $delimiter] = [$delimiter, ' '];
-        }
-
-        return implode($delimiter, $this->convert($string, $option));
+        return self::abbr($string, true);
     }
 
-    public function sentence(string $string, string|int $delimiter = ' ', int|string $option = null): string
+    public static function abbr(string $string, bool $asName = false): Collection
     {
-        $option = $option ?? $this->defaultOptions;
-
-        if (\is_int($delimiter)) {
-            [$option, $delimiter] = [$delimiter, ' '];
-        }
-
-        $result = implode($delimiter, $this->convert($string, $option | \PINYIN_KEEP_PUNCTUATION | \PINYIN_KEEP_ENGLISH | \PINYIN_KEEP_NUMBER));
-
-        return preg_replace('~\s*(\p{P})\s*~u', '$1', $result);
+        return self::noTone()
+            ->noPunctuation()
+            ->when($asName, fn ($c) => $c->asSurname())
+            ->convert($string)
+            ->map(function ($pinyin) {
+                // 常用于电影名称入库索引处理，例如：《晚娘2012》-> WN2012
+                return \is_numeric($pinyin) || preg_match('/\d{2,}/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
+            });
     }
 
-    public function transform(string $string, string $option = null): string
+    public static function sentence(string $string, string $toneStyle = 'default'): Collection
     {
-        $option = $option ?? $this->defaultOptions;
-        $string = $this->prepare($string, $option);
-
-        if ($this->hasOption($option, \PINYIN_NAME)) {
-            $string = $this->transformSurname($string);
-        }
-
-        for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
-            $string = strtr($string, require sprintf(self::WORDS_PATH, $i));
-        }
-
-        return $string;
+        return self::withToneStyle($toneStyle)->convert($string);
     }
 
-    protected function transformSurname(string $name): string
+    public static function __callStatic(string $name, array $arguments)
     {
-        $surnames = require self::SURNAMES_PATH;
+        $converter = Converter::make();
 
-        foreach ($surnames as $surname => $pinyin) {
-            if (\str_starts_with($name, $surname)) {
-                return $pinyin . \mb_substr($name, \mb_strlen($surname));
-            }
+        if (\method_exists($converter, $name)) {
+            return $converter->$name(...$arguments);
         }
 
-        return $name;
-    }
-
-    protected function splitPinyin(string $pinyin, int $option): array
-    {
-        $split = array_filter(preg_split('/\s+/i', $pinyin));
-
-        if (!$this->hasOption($option, \PINYIN_TONE)) {
-            foreach ($split as $index => $pinyin) {
-                $split[$index] = $this->formatTone($pinyin, $option);
-            }
-        }
-
-        return array_values($split);
-    }
-
-    protected function hasOption(int $option, int $check): bool
-    {
-        return ($option & $check) === $check;
-    }
-
-    protected function prepare(string $string, int $option): string
-    {
-        $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
-            return "\t" . $matches[0];
-        }, $string);
-
-        // 中文汉字不含符号
-        $han = '\x{3007}\x{2E80}-\x{2FFF}\x{3100}-\x{312F}\x{31A0}-\x{31EF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}';
-
-        $regex = [$han, '\p{Z}', '\p{M}', "\t"];
-
-        if ($this->hasOption($option, \PINYIN_KEEP_NUMBER)) {
-            $regex[] = '0-9';
-        }
-
-        if ($this->hasOption($option, \PINYIN_KEEP_ENGLISH)) {
-            $regex[] = 'a-zA-Z';
-        }
-
-        if ($this->hasOption($option, \PINYIN_KEEP_PUNCTUATION)) {
-            $regex[] = "\p{P}";
-        }
-
-        return \preg_replace(\sprintf('~[^%s]~u', \implode($regex)), '', $string);
-    }
-
-    protected function formatTone(string $pinyin, int $option = \PINYIN_NO_TONE): string
-    {
-        $replacements = [
-            'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
-            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['yu', 1],
-            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['yu', 2],
-            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['yu', 3],
-            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['yu', 4],
-        ];
-
-        foreach ($replacements as $unicode => $replacement) {
-            if (\str_contains($pinyin, $unicode)) {
-                $umlaut = $replacement[0];
-
-                // https://zh.wikipedia.org/wiki/%C3%9C
-                if ($this->hasOption($option, \PINYIN_UMLAUT_V) && 'yu' == $umlaut) {
-                    $umlaut = 'v';
-                }
-
-                $pinyin = \str_replace($unicode, $umlaut, $pinyin) . ($this->hasOption($option, PINYIN_ASCII_TONE) ? $replacement[1] : '');
-            }
-        }
-
-        return $pinyin;
+        throw new InvalidArgumentException("Method {$name} does not exist.");
     }
 }

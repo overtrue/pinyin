@@ -2,306 +2,309 @@
 
 namespace Overtrue\Pinyin\Tests;
 
+use Overtrue\Pinyin\Collection;
 use PHPUnit\Framework\TestCase;
 use Overtrue\Pinyin\Pinyin;
 
 class PinyinTest extends TestCase
 {
-    protected Pinyin $pinyin;
-
-    public function setUp(): void
+    public function assertPinyin(array|string $expected, Collection $collection)
     {
-        $this->pinyin = new Pinyin();
+        $this->assertEquals($expected, \is_array($expected) ? $collection->toArray() : $collection->join());
     }
 
-    public function testConvert()
+    public function test_name()
     {
-        $this->assertSame(['nin', 'hao', '2018i', 'New', 'Year'], $this->pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
-        $this->assertSame(['nin', 'hao', 'i', 'New', 'Year'], $this->pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_ENGLISH));
-        $this->assertSame(['nin', 'hao', '2018'], $this->pinyin->convert('您好&^2018i New Year!√ç', \PINYIN_KEEP_NUMBER));
+        $this->assertPinyin(['ōu', 'yáng'], Pinyin::name('欧阳'));
+        $this->assertPinyin(['chóng', 'qìng'], Pinyin::name('重庆'));
+        $this->assertPinyin(['shàn'], Pinyin::name('单'));
+        $this->assertPinyin(['shàn', 'dān', 'dān'], Pinyin::name('单单单'));
+        $this->assertPinyin(['chán', 'yú', 'dān'], Pinyin::name('单于单'));
+        $this->assertPinyin(['piáo', 'dān', 'pǔ'], Pinyin::name('朴单朴'));
+        $this->assertPinyin(['yù', 'chí', 'pǔ'], Pinyin::name('尉迟朴'));
+        $this->assertPinyin(['wèi', 'mǒu', 'mǒu'], Pinyin::name('尉某某'));
+        $this->assertPinyin(['yù', 'chí', 'mǒu', 'mǒu'], Pinyin::name('尉迟某某'));
+        $this->assertPinyin(['zhái', 'dí', 'dí'], Pinyin::name('翟翟翟'));
 
-        $this->assertSame(['nin', 'hao'], $this->pinyin->convert('您好!'));
-        $this->assertSame(['nin', 'hao'], $this->pinyin->convert('您好!', PINYIN_DEFAULT));
-        $this->assertSame(['nin2', 'hao3'], $this->pinyin->convert('您好!', PINYIN_ASCII_TONE));
-        $this->assertSame(['nín', 'hǎo'], $this->pinyin->convert('您好!', PINYIN_TONE));
-        $this->assertSame(['nín', 'hǎo', '2018'], $this->pinyin->convert('您好2018!', PINYIN_KEEP_NUMBER | PINYIN_TONE));
-        $this->assertSame(['nín', 'hǎo'], $this->pinyin->convert('您好 New Year!', PINYIN_KEEP_NUMBER | PINYIN_TONE));
+        // 只有首字算姓氏
+        $this->assertPinyin(['gū', 'dān'], Pinyin::name('孤单'));
+
+        // 以下两词在任何位置都不变
+        $this->assertPinyin(['mǒu', 'mǒu', 'yù', 'chí'], Pinyin::name('某某尉迟'));
+        $this->assertPinyin(['shàn', 'chán', 'yú', 'dān'], Pinyin::name('单单于单'));
     }
 
-    public function testPermalink()
+    public function test_phrase()
     {
-        $this->assertSame('dai-zhe-xi-wang-qu-lyu-xing', $this->pinyin->permalink('带着希望去旅行'));
-        $this->assertSame('dai_zhe_xi_wang_qu_lyu_xing', $this->pinyin->permalink('带着希望去旅行', '_'));
-        $this->assertSame('dai.zhe.xi.wang.qu.lyu.xing', $this->pinyin->permalink('带着希望去旅行', '.'));
-        $this->assertSame('daizhexiwangqulyuxing', $this->pinyin->permalink('带着希望去旅行', ''));
+        $this->assertPinyin(['nín', 'hǎo'], Pinyin::phrase('您好!'));
+        $this->assertPinyin(['nín', 'hǎo', '2018i', 'New', 'Year'], Pinyin::phrase('您好&^2018i New Year!√ç'));
+        $this->assertPinyin('dài zhe xī wàng qù lyu xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Pinyin::phrase('带着希望去旅行，比到达终点更美好！'));
+    }
+
+    public function test_permalink()
+    {
+        $this->assertSame('dai-zhe-xi-wang-qu-lyu-xing', Pinyin::permalink('带着希望去旅行'));
+        $this->assertSame('dai_zhe_xi_wang_qu_lyu_xing', Pinyin::permalink('带着希望去旅行', '_'));
+        $this->assertSame('dai.zhe.xi.wang.qu.lyu.xing', Pinyin::permalink('带着希望去旅行', '.'));
+        $this->assertSame('daizhexiwangqulyuxing', Pinyin::permalink('带着希望去旅行', ''));
 
         // with number.
-        $this->assertSame('1-dai-23-zhe-56-xi-wang-qu-abc-lyu-xing-568', $this->pinyin->permalink('1带23着。！5_6.=希望去abc旅行568'));
+        $this->assertSame('1-dai-23-zhe-56-xi-wang-qu-abc-lyu-xing-568', Pinyin::permalink('1带23着。！5_6.=希望去abc旅行568'));
 
         $this->expectException('InvalidArgumentException', "Delimiter must be one of: '_', '-', '', '.'.");
 
-        $this->assertSame('daizhexiwangqulyuxing', $this->pinyin->permalink('带着希望去旅行', '='));
+        $this->assertSame('daizhexiwangqulyuxing', Pinyin::permalink('带着希望去旅行', '='));
     }
 
-    public function testAbbr()
+    public function test_abbr()
     {
-        $this->assertSame('dzxwqlx', $this->pinyin->abbr('带着希望去旅行'));
-        $this->assertSame('d z x w q l x', $this->pinyin->abbr('带着希望去旅行', ' '));
-        $this->assertSame('d*z*x*w*q*l*x', $this->pinyin->abbr('带着希望去旅行', '*'));
-        $this->assertSame('d--z--x--w--q--l--x', $this->pinyin->abbr('带着希望去旅行', '--'));
+        $this->assertPinyin(['d', 'z', 'x', 'w', 'q', 'l', 'x'], Pinyin::abbr('带着希望去旅行'));
 
         // issue #27
-        $this->assertEquals('dldnr', $this->pinyin->abbr('独立的女人'));
-        $this->assertEquals('n', $this->pinyin->abbr('女'));
-        $this->assertEquals('nr', $this->pinyin->abbr('女人'));
+        $this->assertPinyin(['d', 'l', 'd', 'n', 'r'], Pinyin::abbr('独立的女人'));
+        $this->assertPinyin(['n'], Pinyin::abbr('女'));
+        $this->assertPinyin(['n', 'r'], Pinyin::abbr('女人'));
 
         // #91 #101
-        $this->assertEquals('nh2017', $this->pinyin->abbr('你好2017！', \PINYIN_KEEP_NUMBER));
-        $this->assertEquals('HNY2018', $this->pinyin->abbr('Happy New Year! 2018！', \PINYIN_KEEP_NUMBER | \PINYIN_KEEP_ENGLISH));
+        $this->assertPinyin(['n', 'h', '2017'], Pinyin::abbr('你好2017！'));
+        $this->assertPinyin(['H', 'N', 'Y', '2018'], Pinyin::abbr('Happy New Year! 2018！'));
+
+        $this->assertPinyin(['d', 'f', 's', 'c', 'd', 'z', 'z', '123', 'r'], Pinyin::abbr('Ⅲ度房室传导阻滞123人'));
+        $this->assertPinyin(['d', 't', 'f'], Pinyin::abbr('单田芳'));
     }
 
-    public function testSentence()
+    public function test_name_abbr()
     {
-        $this->assertSame('dai zhe xi wang qu lyu xing，bi dao da zhong dian geng mei hao！', $this->pinyin->sentence('带着希望去旅行，比到达终点更美好！'));
+        $this->assertPinyin(['o', 'y'], Pinyin::nameAbbr('欧阳'));
+        $this->assertPinyin(['c', 'q'], Pinyin::nameAbbr('重庆'));
+        $this->assertPinyin(['s'], Pinyin::nameAbbr('单'));
+        $this->assertPinyin(['s', 'd', 'd'], Pinyin::nameAbbr('单单单'));
+        $this->assertPinyin(['c', 'y', 'd'], Pinyin::nameAbbr('单于单'));
+        $this->assertPinyin(['p', 'd', 'p'], Pinyin::nameAbbr('朴单朴'));
+        $this->assertPinyin(['y', 'c', 'p'], Pinyin::nameAbbr('尉迟朴'));
+        $this->assertPinyin(['w', 'm', 'm'], Pinyin::nameAbbr('尉某某'));
+        $this->assertPinyin(['y', 'c', 'm', 'm'], Pinyin::nameAbbr('尉迟某某'));
+        $this->assertPinyin(['z', 'd', 'd'], Pinyin::nameAbbr('翟翟翟'));
 
-        $this->assertSame('dai zhe&*xi 123 wang qu good lyu boy2 xing！.', $this->pinyin->sentence('带^着&*希123望去good旅boy2行！.'));
-        $this->assertSame('--dai zhe&*xi 123 wang.。qu good lyu boy2 xing！.', $this->pinyin->sentence('--带^着&*希123望.。去good旅boy2行！.'));
-    }
-
-    public function testName()
-    {
-        $this->assertSame(['shan'], $this->pinyin->name('单'));
-        $this->assertSame(['gu', 'dan'], $this->pinyin->name('孤单'));
-        $this->assertSame(['shan', 'dan', 'dan'], $this->pinyin->name('单单单'));
-        $this->assertSame(['chan', 'yu', 'dan'], $this->pinyin->name('单于单'));
-        $this->assertSame(['piao', 'dan', 'pu'], $this->pinyin->name('朴单朴'));
-        $this->assertSame(['yu', 'chi', 'pu'], $this->pinyin->name('尉迟朴'));
-        $this->assertSame(['wei', 'mou', 'mou'], $this->pinyin->name('尉某某'));
-        $this->assertSame(['yu', 'chi', 'mou','mou'], $this->pinyin->name('尉迟某某'));
-        $this->assertSame(['zhai', 'di', 'di'], $this->pinyin->name('翟翟翟'));
+        // 只有首字算姓氏
+        $this->assertPinyin(['g', 'd'], Pinyin::nameAbbr('孤单'));
 
         // 以下两词在任何位置都不变
-        $this->assertSame(['mou', 'mou', 'yu', 'chi'], $this->pinyin->name('某某尉迟'));
-        $this->assertSame(['shan', 'chan', 'yu', 'dan'], $this->pinyin->name('单单于单'));
+        $this->assertPinyin(['m', 'm', 'y', 'c'], Pinyin::nameAbbr('某某尉迟'));
+        $this->assertPinyin(['s', 'c', 'y', 'd'], Pinyin::nameAbbr('单单于单'));
     }
 
-    // test special words
-    public function testSpecialWords()
+    public function test_sentence()
     {
-        $this->assertEquals('hello,world!', $this->pinyin->sentence('hello, world!'));
-        $this->assertEquals('DNA jiàn dìng', $this->pinyin->sentence('DNA鉴定', \PINYIN_TONE));
-        $this->assertEquals('21 sān tǐ zōng hé zhèng', $this->pinyin->sentence('21三体综合症', \PINYIN_TONE));
-        $this->assertEquals('C pán', $this->pinyin->sentence('C盘', \PINYIN_TONE));
-        $this->assertEquals('G diǎn', $this->pinyin->sentence('G点', \PINYIN_TONE));
-        $this->assertEquals('zhōng dù xìng fèi shuǐ zhǒng', $this->pinyin->sentence('中度性肺水肿', \PINYIN_TONE));
-    }
+        $this->assertPinyin(
+            'dài zhe xī wàng qù lyu xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo ！',
+            Pinyin::sentence('带着希望去旅行，比到达终点更美好！')
+        );
 
-    // test multibyte non-Chinese character
-    public function testSpecialWordsUsingAbbr()
-    {
-        $this->assertEquals('dfscdzz123r', $this->pinyin->abbr('Ⅲ度房室传导阻滞123人', PINYIN_KEEP_ENGLISH | PINYIN_KEEP_NUMBER));
-    }
+        $this->assertPinyin(
+            'dài zhe &* xī 123 wàng qù good lyu boy2 xíng ！.',
+            Pinyin::sentence('带^着&*希123望去good旅boy2行！.')
+        );
+        $this->assertPinyin(
+            '-- dài zhe &* xī 123 wàng .。 qù good lyu boy2 xíng ！.',
+            Pinyin::sentence('--带^着&*希123望.。去good旅boy2行！.')
+        );
 
-    // test name to abbr
-    public function testNamesUsingAbbr()
-    {
-        $this->assertEquals('stf', $this->pinyin->abbr('单田芳', \PINYIN_NAME));
-    }
+        // 特殊字符
+        $this->assertPinyin('hello, world!', Pinyin::sentence('hello, world!'));
+        $this->assertPinyin('DNA jiàn dìng', Pinyin::sentence('DNA鉴定'));
+        $this->assertPinyin('21 sān tǐ zōng hé zhèng', Pinyin::sentence('21三体综合症'));
+        $this->assertPinyin('C pán', Pinyin::sentence('C盘'));
+        $this->assertPinyin('zhōng dù xìng fèi shuǐ zhǒng', Pinyin::sentence('中度性肺水肿'));
 
-    // test Polyphone
-    public function testPolyphone()
-    {
         // 了
-        $this->assertEquals(['liǎo', 'rán'], $this->pinyin->convert('了然', PINYIN_TONE));
-        $this->assertEquals(['lái', 'le'], $this->pinyin->convert('来了', PINYIN_TONE));
+        $this->assertPinyin(['liǎo', 'rán'], Pinyin::sentence('了然'));
+        $this->assertPinyin(['lái', 'le'], Pinyin::sentence('来了'));
 
         // 还
-        $this->assertEquals(['hái', 'yǒu'], $this->pinyin->convert('还有', PINYIN_TONE));
-        $this->assertEquals(['jiāo', 'huán'], $this->pinyin->convert('交还', PINYIN_TONE));
+        $this->assertPinyin(['hái', 'yǒu'], Pinyin::sentence('还有'));
+        $this->assertPinyin(['jiāo', 'huán'], Pinyin::sentence('交还'));
 
         // 什
-        $this->assertEquals(['shén', 'me'], $this->pinyin->convert('什么', PINYIN_TONE));
-        $this->assertEquals(['shí', 'jǐn'], $this->pinyin->convert('什锦', PINYIN_TONE));
+        $this->assertPinyin(['shén', 'me'], Pinyin::sentence('什么'));
+        $this->assertPinyin(['shí', 'jǐn'], Pinyin::sentence('什锦'));
 
         // 便
-        $this->assertEquals(['biàn', 'dāng'], $this->pinyin->convert('便当', PINYIN_TONE));
-        $this->assertEquals(['pián', 'yí'], $this->pinyin->convert('便宜', PINYIN_TONE));
+        $this->assertPinyin(['biàn', 'dāng'], Pinyin::sentence('便当'));
+        $this->assertPinyin(['pián', 'yí'], Pinyin::sentence('便宜'));
 
         // 剥
-        $this->assertEquals(['bō', 'xuē'], $this->pinyin->convert('剥削', PINYIN_TONE));
-        $this->assertEquals(['bāo', 'pí', 'qì'], $this->pinyin->convert('剥皮器', PINYIN_TONE));
+        $this->assertPinyin(['bō', 'xuē'], Pinyin::sentence('剥削'));
+        $this->assertPinyin(['bāo', 'pí', 'qì'], Pinyin::sentence('剥皮器'));
 
         // 不
-        $this->assertEquals(['péi', 'bú', 'shì'], $this->pinyin->convert('赔不是', PINYIN_TONE));
-        $this->assertEquals(['pǎo', 'le', 'hé', 'shàng', 'pǎo', 'bù', 'liǎo', 'miào'], $this->pinyin->convert('跑了和尚，跑不了庙', PINYIN_TONE));
+        $this->assertPinyin(['péi', 'bú', 'shì'], Pinyin::sentence('赔不是'));
+        $this->assertPinyin(
+            ['pǎo', 'le', 'hé', 'shàng', '，', 'pǎo', 'bù', 'liǎo', 'miào'],
+            Pinyin::sentence('跑了和尚，跑不了庙')
+        );
 
         // 降
-        $this->assertEquals(['jiàng', 'wēn'], $this->pinyin->convert('降温', PINYIN_TONE));
-        $this->assertEquals(['tóu', 'xiáng'], $this->pinyin->convert('投降', PINYIN_TONE));
+        $this->assertPinyin(['jiàng', 'wēn'], Pinyin::sentence('降温'));
+        $this->assertPinyin(['tóu', 'xiáng'], Pinyin::sentence('投降'));
 
         // 都
-        $this->assertEquals(['shǒu', 'dū'], $this->pinyin->convert('首都', PINYIN_TONE));
-        $this->assertEquals(['dōu', 'shén', 'me', 'nián', 'dài', 'le'], $this->pinyin->convert('都什么年代了', PINYIN_TONE));
+        $this->assertPinyin(['shǒu', 'dū'], Pinyin::sentence('首都'));
+        $this->assertPinyin(['dōu', 'shén', 'me', 'nián', 'dài', 'le'], Pinyin::sentence('都什么年代了'));
 
         // 乐
-        $this->assertEquals(['kuài', 'lè'], $this->pinyin->convert('快乐', PINYIN_TONE));
-        $this->assertEquals(['yīn', 'yuè'], $this->pinyin->convert('音乐', PINYIN_TONE));
+        $this->assertPinyin(['kuài', 'lè'], Pinyin::sentence('快乐'));
+        $this->assertPinyin(['yīn', 'yuè'], Pinyin::sentence('音乐'));
 
         // ⺁
-        $this->assertEquals(['fǎn'], $this->pinyin->convert('⺁', PINYIN_TONE));
+        $this->assertPinyin(['fǎn'], Pinyin::sentence('⺁'));
 
         // 长
-        $this->assertEquals(['chéng', 'zhǎng'], $this->pinyin->convert('成长', PINYIN_TONE));
-        $this->assertEquals(['cháng', 'jiāng'], $this->pinyin->convert('长江', PINYIN_TONE));
+        $this->assertPinyin(['chéng', 'zhǎng'], Pinyin::sentence('成长'));
+        $this->assertPinyin(['cháng', 'jiāng'], Pinyin::sentence('长江'));
 
         // 难
-        $this->assertEquals(['nàn', 'mín'], $this->pinyin->convert('难民', PINYIN_TONE));
-        $this->assertEquals(['nán', 'guò'], $this->pinyin->convert('难过', PINYIN_TONE));
+        $this->assertPinyin(['nàn', 'mín'], Pinyin::sentence('难民'));
+        $this->assertPinyin(['nán', 'guò'], Pinyin::sentence('难过'));
 
         // 厦
-        $this->assertEquals(['dà', 'shà'], $this->pinyin->convert('大厦', PINYIN_TONE));
-        $this->assertEquals(['xià', 'mén'], $this->pinyin->convert('厦门', PINYIN_TONE));
+        $this->assertPinyin(['dà', 'shà'], Pinyin::sentence('大厦'));
+        $this->assertPinyin(['xià', 'mén'], Pinyin::sentence('厦门'));
 
         // 曾
-        $this->assertEquals(['céng', 'jīng'], $this->pinyin->convert('曾经', PINYIN_TONE));
-        $this->assertEquals(['xìng', 'zēng'], $this->pinyin->convert('姓曾', PINYIN_TONE));
-        $this->assertEquals(['zēng', 'xìng'], $this->pinyin->convert('曾姓', PINYIN_TONE));
+        $this->assertPinyin(['céng', 'jīng'], Pinyin::sentence('曾经'));
+        $this->assertPinyin(['xìng', 'zēng'], Pinyin::sentence('姓曾'));
+        $this->assertPinyin(['zēng', 'xìng'], Pinyin::sentence('曾姓'));
 
         // 奇
-        $this->assertEquals(['qí', 'guài'], $this->pinyin->convert('奇怪', PINYIN_TONE));
-        $this->assertEquals(['jī', 'ǒu', 'jiào', 'yàn'], $this->pinyin->convert('奇偶校验', PINYIN_TONE));
+        $this->assertPinyin(['qí', 'guài'], Pinyin::sentence('奇怪'));
+        $this->assertPinyin(['jī', 'ǒu', 'jiào', 'yàn'], Pinyin::sentence('奇偶校验'));
 
         // 其它多音词
-        $this->assertEquals(['náo', 'zhí', 'wéi', 'qū'], $this->pinyin->convert('挠直为曲', PINYIN_TONE));
-        $this->assertEquals(['pī', 'fēng', 'mò', 'yuè'], $this->pinyin->convert('批风抹月', PINYIN_TONE));
+        $this->assertPinyin(['náo', 'zhí', 'wéi', 'qū'], Pinyin::sentence('挠直为曲'));
+        $this->assertPinyin(['pī', 'fēng', 'mò', 'yuè'], Pinyin::sentence('批风抹月'));
+
+        // 符号
+        $this->assertPinyin(['nín', 'hǎo', '&', '2018i', 'New', 'Year!'], Pinyin::sentence('您好&^2018i New Year!√ç'));
+
+        $this->assertPinyin(['nín', 'hǎo', '!'], Pinyin::sentence('您好!'));
+        $this->assertPinyin(['nín', 'hǎo', '2018!'], Pinyin::sentence('您好2018!'));
+        $this->assertPinyin(['nín', 'hǎo', 'New', 'Year!'], Pinyin::sentence('您好 New Year!'));
+
+        // 测试字母+数字Bug.
+        $this->assertPinyin('cè shì R60', Pinyin::sentence('测试R60'));
+        $this->assertPinyin('cè ce5 shì Rr60', Pinyin::sentence('测ce5试Rr60'));
+        $this->assertPinyin('cè 3sh4i R50', Pinyin::sentence('测3sh4i R50'));
+        $this->assertPinyin('ce3sh4i R50', Pinyin::sentence('ce3sh4i R50'));
+        $this->assertPinyin('33ai4', Pinyin::sentence('33ai4'));
+        $this->assertPinyin('33ai4 nǐ', Pinyin::sentence('33ai4你'));
+        $this->assertPinyin('ài 334 nǐ', Pinyin::sentence('爱334你'));
+        $this->assertPinyin('aaaa1234', Pinyin::sentence('aaaa1234'));
+        $this->assertPinyin('aaaa_1234', Pinyin::sentence('aaaa_1234'));
+        $this->assertPinyin('ai45 liǎo wú shēng qù cè shì', Pinyin::sentence('ai45了无生趣测试'));
+        $this->assertPinyin('java gōng chéng shī', Pinyin::sentence('java工程师'));
     }
 
-    /**
-     * 测试字母+数字Bug.
-     */
-    public function testNumberWithAlpha()
+    public function test_issues()
     {
-        $this->assertEquals('cè shì R60', $this->pinyin->sentence('测试R60', \PINYIN_TONE));
-        $this->assertEquals('ce4 shi4 R60', $this->pinyin->sentence('测试R60', \PINYIN_ASCII_TONE));
-        $this->assertEquals('ce shi R60', $this->pinyin->sentence('测试R60'));
-        $this->assertEquals('ce ce5 shi Rr60', $this->pinyin->sentence('测ce5试Rr60'));
-        $this->assertEquals('ce shi R50', $this->pinyin->sentence('测试R50'));
-        $this->assertEquals('ce 3sh4i R50', $this->pinyin->sentence('测3sh4i R50'));
-        $this->assertEquals('ce3sh4i R50', $this->pinyin->sentence('ce3sh4i R50'));
-        $this->assertEquals('33ai4', $this->pinyin->sentence('33ai4'));
-        $this->assertEquals('33ai4 ni', $this->pinyin->sentence('33ai4你'));
-        $this->assertEquals('ai 334 ni', $this->pinyin->sentence('爱334你'));
-        $this->assertEquals('aaaa1234', $this->pinyin->sentence('aaaa1234'));
-        $this->assertEquals('aaaa_1234', $this->pinyin->sentence('aaaa_1234'));
-        $this->assertEquals('ai45 liao wu sheng qu ce shi', $this->pinyin->sentence('ai45了无生趣测试'));
-        $this->assertEquals('java gong cheng shi', $this->pinyin->sentence('java工程师'));
-    }
-
-    public function testPhrase()
-    {
-        $this->assertEquals('bei3-jing1', $this->pinyin->phrase('北京', '-', \PINYIN_ASCII_TONE));
-    }
-
-    public function testIssues()
-    {
-        $this->assertEquals('a le tai', $this->pinyin->sentence('阿勒泰'));
-        $this->assertEquals('e er duo si', $this->pinyin->sentence('鄂尔多斯'));
-        $this->assertEquals('zu', $this->pinyin->sentence('足'));
-        $this->assertEquals('feng', $this->pinyin->sentence('冯'));
-        $this->assertEquals('bao hu ping he', $this->pinyin->sentence('暴虎冯河'));
-        $this->assertEquals('hé', $this->pinyin->sentence('和', PINYIN_TONE));
-        $this->assertEquals('gěi', $this->pinyin->sentence('给', PINYIN_TONE));
-        $this->assertEquals('là', $this->pinyin->sentence('腊', PINYIN_TONE));
+        $this->assertPinyin('ā lè tài', Pinyin::sentence('阿勒泰'));
+        $this->assertPinyin('è ěr duō sī', Pinyin::sentence('鄂尔多斯'));
+        $this->assertPinyin('zú', Pinyin::sentence('足'));
+        $this->assertPinyin('féng', Pinyin::sentence('冯'));
+        $this->assertPinyin('bào hǔ píng hé', Pinyin::sentence('暴虎冯河'));
+        $this->assertPinyin('hé', Pinyin::sentence('和'));
+        $this->assertPinyin('gěi', Pinyin::sentence('给'));
+        $this->assertPinyin('là', Pinyin::sentence('腊'));
         // # 28 词库不全
-        $this->assertEquals('kun', $this->pinyin->sentence('堃'));
+        $this->assertPinyin('kūn', Pinyin::sentence('堃'));
 
         // #29
-        $this->assertEquals('dì', $this->pinyin->sentence('地', PINYIN_TONE));
-        $this->assertEquals('zhi yu si di', $this->pinyin->sentence('置于死地'));
+        $this->assertPinyin('dì', Pinyin::sentence('地'));
+        $this->assertPinyin('zhì yú sǐ dì', Pinyin::sentence('置于死地'));
 
         // #35
-        $this->assertEquals('ji xiao', $this->pinyin->sentence('技校'));
-        $this->assertEquals('jiao zheng', $this->pinyin->sentence('校正'));
+        $this->assertPinyin('jì xiào', Pinyin::sentence('技校'));
+        $this->assertPinyin('jiào zhèng', Pinyin::sentence('校正'));
 
         // #45
-        $this->assertEquals('luó', $this->pinyin->sentence('罗', PINYIN_TONE));
+        $this->assertPinyin('luó', Pinyin::sentence('罗'));
 
         // #58
-        $this->assertEquals('fēi', $this->pinyin->sentence('飞', PINYIN_TONE));
-        $this->assertEquals('jiāng', $this->pinyin->sentence('将', PINYIN_TONE));
-        $this->assertEquals('míng jiàng', $this->pinyin->sentence('名将', PINYIN_TONE));
-        $this->assertEquals('dì wáng jiàng xiàng', $this->pinyin->sentence('帝王将相', PINYIN_TONE));
-        $this->assertEquals('dì wáng jiàng xiàng', $this->pinyin->sentence('帝王将相', PINYIN_TONE));
-        $this->assertEquals('wèi shǒu wèi wěi', $this->pinyin->sentence('畏首畏尾', PINYIN_TONE));
+        $this->assertPinyin('fēi', Pinyin::sentence('飞'));
+        $this->assertPinyin('jiāng', Pinyin::sentence('将'));
+        $this->assertPinyin('míng jiàng', Pinyin::sentence('名将'));
+        $this->assertPinyin('dì wáng jiàng xiàng', Pinyin::sentence('帝王将相'));
+        $this->assertPinyin('dì wáng jiàng xiàng', Pinyin::sentence('帝王将相'));
+        $this->assertPinyin('wèi shǒu wèi wěi', Pinyin::sentence('畏首畏尾'));
 
         // #63
-        $this->assertEquals('shěn', $this->pinyin->sentence('沈', PINYIN_TONE));
-        $this->assertEquals('shěn yáng', $this->pinyin->sentence('沈阳', PINYIN_TONE));
-        $this->assertEquals('chén yú luò yàn', $this->pinyin->sentence('沈鱼落雁', PINYIN_TONE));
+        $this->assertPinyin('shěn', Pinyin::sentence('沈'));
+        $this->assertPinyin('shěn yáng', Pinyin::sentence('沈阳'));
+        $this->assertPinyin('chén yú luò yàn', Pinyin::sentence('沈鱼落雁'));
 
         // #81
-        $this->assertEquals('yuán yùn', $this->pinyin->sentence('圆晕', PINYIN_TONE));
-        $this->assertEquals('guāng yùn', $this->pinyin->sentence('光晕', PINYIN_TONE));
-        $this->assertEquals('yūn jué', $this->pinyin->sentence('晕厥', PINYIN_TONE));
+        $this->assertPinyin('yuán yùn', Pinyin::sentence('圆晕'));
+        $this->assertPinyin('guāng yùn', Pinyin::sentence('光晕'));
+        $this->assertPinyin('yūn jué', Pinyin::sentence('晕厥'));
 
         // #105 #112
-        $this->assertEquals('ǹ', $this->pinyin->sentence('嗯', PINYIN_TONE));
+        $this->assertPinyin('ǹ', Pinyin::sentence('嗯'));
 
         // #167
-        $this->assertEquals('chǔ', $this->pinyin->sentence('褚', PINYIN_TONE));
+        $this->assertPinyin('chǔ', Pinyin::sentence('褚'));
 
         // #174
-        $this->assertEquals('tuò', $this->pinyin->sentence('拓', PINYIN_TONE));
+        $this->assertPinyin('tuò', Pinyin::sentence('拓'));
 
         // #146
-        $this->assertEquals('zhōng、wén', $this->pinyin->sentence('中、文', PINYIN_TONE));
+        $this->assertPinyin('zhōng 、 wén', Pinyin::sentence('中、文'));
 
         // #96
-        $this->assertEquals('shén me', $this->pinyin->sentence('什么', PINYIN_TONE));
-        $this->assertEquals('hái shuō shí mǒ ne？huán gěi nǐ。hái gè pì！', $this->pinyin->sentence('还说什么呢？还给你。还个屁！', \PINYIN_TONE));
+        $this->assertPinyin('shén me', Pinyin::sentence('什么'));
+        $this->assertPinyin('hái shuō shí mǒ ne ？ huán gěi nǐ 。 hái gè pì ！', Pinyin::sentence('还说什么呢？还给你。还个屁！'));
 
         // #82
-        $this->assertEquals('wū lā tè qián qí', $this->pinyin->sentence('乌拉特前旗', PINYIN_TONE));
-        $this->assertEquals('cháo yáng qū', $this->pinyin->sentence('朝阳区', PINYIN_TONE));
-        $this->assertEquals('jì xī xiàn', $this->pinyin->sentence('绩溪县', PINYIN_TONE));
-        $this->assertEquals('bǎi sè xiàn', $this->pinyin->sentence('百色县', PINYIN_TONE));
-        $this->assertEquals('dū ān yáo zú zì zhì xiàn', $this->pinyin->sentence('都安瑶族自治县', PINYIN_TONE));
-        $this->assertEquals('tǎ shí kù ěr gān', $this->pinyin->sentence('塔什库尔干', PINYIN_TONE));
-        $this->assertEquals('cháng yáng tǔ jiā zú zì zhì xiàn', $this->pinyin->sentence('长阳土家族自治县', PINYIN_TONE));
-        $this->assertEquals('mǎ wěi qū', $this->pinyin->sentence('马尾区', PINYIN_TONE));
-        $this->assertEquals('wèi shǒu wèi wěi', $this->pinyin->sentence('畏首畏尾', PINYIN_TONE));
-        $this->assertEquals('sān dū shuǐ zú zì zhì xiàn', $this->pinyin->sentence('三都水族自治县', PINYIN_TONE));
+        $this->assertPinyin('wū lā tè qián qí', Pinyin::sentence('乌拉特前旗'));
+        $this->assertPinyin('cháo yáng qū', Pinyin::sentence('朝阳区'));
+        $this->assertPinyin('jì xī xiàn', Pinyin::sentence('绩溪县'));
+        $this->assertPinyin('bǎi sè xiàn', Pinyin::sentence('百色县'));
+        $this->assertPinyin('dū ān yáo zú zì zhì xiàn', Pinyin::sentence('都安瑶族自治县'));
+        $this->assertPinyin('tǎ shí kù ěr gān', Pinyin::sentence('塔什库尔干'));
+        $this->assertPinyin('cháng yáng tǔ jiā zú zì zhì xiàn', Pinyin::sentence('长阳土家族自治县'));
+        $this->assertPinyin('mǎ wěi qū', Pinyin::sentence('马尾区'));
+        $this->assertPinyin('wèi shǒu wèi wěi', Pinyin::sentence('畏首畏尾'));
+        $this->assertPinyin('sān dū shuǐ zú zì zhì xiàn', Pinyin::sentence('三都水族自治县'));
 
-        $this->assertEquals(['lyu', 'xiu', 'cai'], $this->pinyin->convert('吕秀才'));
-        $this->assertEquals(['lv', 'xiu', 'cai'], $this->pinyin->convert('吕秀才', \PINYIN_UMLAUT_V));
+        $this->assertPinyin(['lyu', 'xiù', 'cai'], Pinyin::convert('吕秀才'));
+        $this->assertPinyin(['lv', 'xiù', 'cai'], Pinyin::yuToV()->convert('吕秀才'));
 
         #175
-        $this->assertEquals('yuán', $this->pinyin->sentence('貟', PINYIN_TONE));
-        $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('貟秀才'));
-        $this->assertEquals(['yun', 'xiu', 'cai'], $this->pinyin->name('贠秀才'));
+        $this->assertPinyin('yuán', Pinyin::sentence('貟'));
+        $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('貟秀才'));
+        $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('贠秀才'));
 
         #183
-        $this->assertEquals('yín háng quàn', $this->pinyin->sentence('银行券', PINYIN_TONE));
-        $this->assertEquals('xún chá', $this->pinyin->sentence('询查', PINYIN_TONE));
+        $this->assertPinyin('yín háng quàn', Pinyin::sentence('银行券'));
+        $this->assertPinyin('xún chá', Pinyin::sentence('询查'));
 
         #170
-        $this->assertEquals('ké', $this->pinyin->sentence('咳', PINYIN_TONE));
-        $this->assertEquals('xiǎo ér fèi ké kē lì', $this->pinyin->sentence('小儿肺咳颗粒', PINYIN_TONE));
+        $this->assertPinyin('ké', Pinyin::sentence('咳'));
+        $this->assertPinyin('xiǎo ér fèi ké kē lì', Pinyin::sentence('小儿肺咳颗粒'));
 
         #151
-        $this->assertEquals('gǔ tóu', $this->pinyin->sentence('骨头', PINYIN_TONE));
+        $this->assertPinyin('gǔ tóu', Pinyin::sentence('骨头'));
 
         #116
-        $this->assertEquals(['shan', 'mou', 'mou'], $this->pinyin->name('单某某', \PINYIN_UMLAUT_V));
+        $this->assertPinyin(['shàn', 'mǒu', 'mǒu'], Pinyin::name('单某某'));
 
         #106
-        $this->assertEquals('zhēn huán zhuàn', $this->pinyin->sentence('甄嬛传', PINYIN_TONE));
-        $this->assertEquals('chuán qí', $this->pinyin->sentence('传奇', PINYIN_TONE));
-        $this->assertEquals('zhuàn jì', $this->pinyin->sentence('传记', PINYIN_TONE));
-        $this->assertEquals('liú mèng qián', $this->pinyin->sentence('刘孟乾', PINYIN_TONE));
+        $this->assertPinyin('zhēn huán zhuàn', Pinyin::sentence('甄嬛传'));
+        $this->assertPinyin('chuán qí', Pinyin::sentence('传奇'));
+        $this->assertPinyin('zhuàn jì', Pinyin::sentence('传记'));
+        $this->assertPinyin('liú mèng qián', Pinyin::sentence('刘孟乾'));
 
         #164
-        $this->assertEquals(['ōu', 'mǒu', 'mǒu'], $this->pinyin->name('区某某', PINYIN_TONE));
-        $this->assertEquals(['yuè', 'mǒu', 'mǒu'], $this->pinyin->name('乐某某', PINYIN_TONE));
+        $this->assertPinyin(['ōu', 'mǒu', 'mǒu'], Pinyin::name('区某某'));
+        $this->assertPinyin(['yuè', 'mǒu', 'mǒu'], Pinyin::name('乐某某'));
     }
 }

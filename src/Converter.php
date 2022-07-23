@@ -1,0 +1,230 @@
+<?php
+
+namespace Overtrue\Pinyin;
+
+class Converter
+{
+    private const SEGMENTS_COUNT = 10;
+    private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
+    private const CHARS_PATH = __DIR__.'/../data/chars.php';
+    private const CHARS_WITH_POLYPHONES_PATH = __DIR__.'/../data/chars-with-polyphones.php';
+    private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
+
+    public const TONE_STYLE_DEFAULT = 'default';
+    public const TONE_STYLE_NUMBER = 'number';
+    public const TONE_STYLE_NONE = 'none';
+
+    protected bool $asPolyphonic = false;
+    protected bool $asSurname = false;
+
+    protected string $yuTo = 'yu';
+    protected string $toneStyle = self::TONE_STYLE_DEFAULT;
+
+    protected array $regexps = [
+        'separator' => '\p{Z}',
+        'mark' => '\p{M}',
+        'tab' => "\t"
+    ];
+
+    public const REGEXPS = [
+        'number' => '0-9',
+        'alphabet' => 'a-zA-Z',
+        // 中文不带符号
+        'hans' => '\x{3007}\x{2E80}-\x{2FFF}\x{3100}-\x{312F}\x{31A0}-\x{31EF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}',
+        // 符号: !"#$%&'()*+,-./:;<=>?@[\]^_{|}~`
+        'punctuation' => '\p{P}',
+    ];
+
+    public function __construct()
+    {
+        $this->regexps = \array_merge($this->regexps, self::REGEXPS);
+    }
+
+    public static function make(): static
+    {
+        return new static();
+    }
+
+    public function asPolyphonic(): static
+    {
+        $this->asPolyphonic = true;
+
+        return $this;
+    }
+
+    public function asSurname(): static
+    {
+        $this->asSurname = true;
+
+        return $this;
+    }
+
+    public function onlyHans(): static
+    {
+        // 中文汉字不含符号
+        $this->regexps['hans'] = self::REGEXPS['hans'];
+
+        return $this->noAlpha()->noNumber()->noPunctuation();
+    }
+
+    public function noAlpha(): static
+    {
+        unset($this->regexps['alphabet']);
+
+        return $this;
+    }
+
+    public function noNumber(): static
+    {
+        unset($this->regexps['number']);
+
+        return $this;
+    }
+
+    public function noPunctuation(): static
+    {
+        unset($this->regexps['punctuation']);
+
+        return $this;
+    }
+
+    public function withToneStyle(string $toneStyle): static
+    {
+        $this->toneStyle = $toneStyle;
+
+        return $this;
+    }
+
+    public function noTone(): static
+    {
+        $this->toneStyle = self::TONE_STYLE_NONE;
+
+        return $this;
+    }
+
+    public function useNumberTone(): static
+    {
+        $this->toneStyle = self::TONE_STYLE_NUMBER;
+
+        return $this;
+    }
+
+    public function yuToV(): static
+    {
+        $this->yuTo = 'v';
+
+        return $this;
+    }
+
+    public function yuToU(): static
+    {
+        $this->yuTo = 'u';
+
+        return $this;
+    }
+
+    public function when(bool $condition, callable $callback): static
+    {
+        if ($condition) {
+            $callback($this);
+        }
+
+        return $this;
+    }
+
+    public function convert(string $string, callable $beforeSplit = null): Collection
+    {
+        // 把原有的数字和汉字分离，避免拼音转换时被误作声调
+        $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
+            return "\t" . $matches[0];
+        }, $string);
+
+        // 过滤掉不保留的字符
+        $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+
+        // 多音字
+        if ($this->asPolyphonic) {
+            return $this->convertAsPolyphonic($string);
+        }
+
+        // 替换姓氏
+        if ($this->asSurname) {
+            $string = $this->convertSurname($string);
+        }
+
+        for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
+            $string = strtr($string, require sprintf(self::WORDS_PATH, $i));
+        }
+
+        return $this->split($beforeSplit ? $beforeSplit($string) : $string);
+    }
+
+    protected function convertAsPolyphonic(string $string): Collection
+    {
+        // split string as chinese chars
+        $chars = \preg_split('~['.$this->regexps['hans'].']~u', $string);
+
+        $string = \strtr($string, require self::CHARS_WITH_POLYPHONES_PATH);
+
+        return $this->split($string);
+    }
+
+    protected function convertSurname(string $name): string
+    {
+        static $surnames = null;
+        $surnames ??= require self::SURNAMES_PATH;
+
+        foreach ($surnames as $surname => $pinyin) {
+            if (\str_starts_with($name, $surname)) {
+                return $pinyin . \mb_substr($name, \mb_strlen($surname));
+            }
+        }
+
+        return $name;
+    }
+
+    protected function split(string $pinyin): Collection
+    {
+        $items = array_filter(preg_split('/\s+/i', $pinyin));
+
+        foreach ($items as $index => $pinyin) {
+            $items[$index] = $this->formatTone($pinyin, $this->toneStyle);
+        }
+
+        return new Collection($items);
+    }
+
+    protected function formatTone(string $pinyin, string $style): string
+    {
+        $replacements = [
+            'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
+            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['yu', 1],
+            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['yu', 2],
+            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['yu', 3],
+            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['yu', 4],
+        ];
+
+        foreach ($replacements as $unicode => $replacement) {
+            if (\str_contains($pinyin, $unicode)) {
+                $umlaut = $replacement[0];
+
+                if ($umlaut !== 'yu' && $style === self::TONE_STYLE_DEFAULT) {
+                    continue;
+                }
+
+                // https://zh.wikipedia.org/wiki/%C3%9C
+                if ($this->yuTo !== 'yu') {
+                    $umlaut = $this->yuTo;
+                }
+
+                $pinyin = \str_replace($unicode, $umlaut, $pinyin);
+
+                if ($this->toneStyle === self::TONE_STYLE_NUMBER) {
+                    $pinyin .= $replacement[1];
+                }
+            }
+        }
+
+        return $pinyin;
+    }
+}
