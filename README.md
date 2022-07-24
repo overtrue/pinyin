@@ -5,7 +5,7 @@
 
 :cn: 基于 [mozillazg/pinyin-data](https://github.com/mozillazg/pinyin-data) 词典的中文转拼音工具，更准确的支持多音字的汉字转拼音解决方案。
 
-[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
+[喜欢我的项目？点击这里支持我](https://github.com/sponsors/overtrue)
 
 ## 安装
 
