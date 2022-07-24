@@ -16,32 +16,32 @@ use InvalidArgumentException;
  * @method static Converter useNumberTone()
  * @method static Converter yuToV()
  * @method static Converter yuToU()
- * @method static Converter withToneStyle(string $toneStyle = 'default')
+ * @method static Converter withToneStyle(string $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
 class Pinyin
 {
-    public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::surname()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::noPunctuation()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function sentence(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    public static function sentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::polyphonic()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::onlyHans()->noWords()->withToneStyle($toneStyle)->convert($string);
     }

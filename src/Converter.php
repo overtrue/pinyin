@@ -9,7 +9,7 @@ class Converter
     private const CHARS_PATH = __DIR__.'/../data/chars.php';
     private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
 
-    public const TONE_STYLE_DEFAULT = 'default';
+    public const TONE_STYLE_SYMBOL = 'symbol';
     public const TONE_STYLE_NUMBER = 'number';
     public const TONE_STYLE_NONE = 'none';
 
@@ -18,7 +18,7 @@ class Converter
     protected bool $noWords = false;
 
     protected string $yuTo = 'yu';
-    protected string $toneStyle = self::TONE_STYLE_DEFAULT;
+    protected string $toneStyle = self::TONE_STYLE_SYMBOL;
 
     protected array $regexps = [
         'separator' => '\p{Z}',
@@ -230,7 +230,7 @@ class Converter
             if (\str_contains($pinyin, $unicode)) {
                 $umlaut = $replacement[0];
 
-                if ($umlaut !== 'yu' && $style === self::TONE_STYLE_DEFAULT) {
+                if ($umlaut !== 'yu' && $style === self::TONE_STYLE_SYMBOL) {
                     continue;
                 }
 

@@ -67,7 +67,7 @@ class ConverterTest extends TestCase
         $this->assertPinyin('chong qing', Converter::make()->noTone()->convert('重庆'));
         $this->assertPinyin('chong2 qing4', Converter::make()->useNumberTone()->convert('重庆'));
 
-        $this->assertPinyin('chóng qìng', Converter::make()->withToneStyle(Converter::TONE_STYLE_DEFAULT)->convert('重庆'));
+        $this->assertPinyin('chóng qìng', Converter::make()->withToneStyle(Converter::TONE_STYLE_SYMBOL)->convert('重庆'));
         $this->assertPinyin('chong qing', Converter::make()->withToneStyle(Converter::TONE_STYLE_NONE)->convert('重庆'));
         $this->assertPinyin('chong2 qing4', Converter::make()->withToneStyle(Converter::TONE_STYLE_NUMBER)->convert('重庆'));
     }
