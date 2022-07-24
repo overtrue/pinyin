@@ -7,15 +7,15 @@ class Converter
     private const SEGMENTS_COUNT = 10;
     private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
     private const CHARS_PATH = __DIR__.'/../data/chars.php';
-    private const CHARS_WITH_POLYPHONES_PATH = __DIR__.'/../data/chars-with-polyphones.php';
     private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
 
     public const TONE_STYLE_DEFAULT = 'default';
     public const TONE_STYLE_NUMBER = 'number';
     public const TONE_STYLE_NONE = 'none';
 
-    protected bool $asPolyphonic = false;
+    protected bool $polyphonic = false;
     protected bool $asSurname = false;
+    protected bool $noWords = false;
 
     protected string $yuTo = 'yu';
     protected string $toneStyle = self::TONE_STYLE_DEFAULT;
@@ -45,16 +45,23 @@ class Converter
         return new static();
     }
 
-    public function asPolyphonic(): static
+    public function polyphonic(): static
     {
-        $this->asPolyphonic = true;
+        $this->polyphonic = true;
 
         return $this;
     }
 
-    public function asSurname(): static
+    public function surname(): static
     {
         $this->asSurname = true;
+
+        return $this;
+    }
+
+    public function noWords(): static
+    {
+        $this->noWords = true;
 
         return $this;
     }
@@ -143,8 +150,12 @@ class Converter
         $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
 
         // 多音字
-        if ($this->asPolyphonic) {
-            return $this->convertAsPolyphonic($string);
+        if ($this->polyphonic) {
+            return $this->convertAsChars($string, true);
+        }
+
+        if ($this->noWords) {
+            return $this->convertAsChars($string);
         }
 
         // 替换姓氏
@@ -159,14 +170,25 @@ class Converter
         return $this->split($beforeSplit ? $beforeSplit($string) : $string);
     }
 
-    protected function convertAsPolyphonic(string $string): Collection
+    public function convertAsChars(string $string, bool $polyphonic = false): Collection
     {
+        $map = require self::CHARS_PATH;
+
         // split string as chinese chars
-        $chars = \preg_split('~['.$this->regexps['hans'].']~u', $string);
+        $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
 
-        $string = \strtr($string, require self::CHARS_WITH_POLYPHONES_PATH);
+        $items = [];
+        foreach ($chars as $char) {
+            if (isset($map[$char])) {
+                if ($polyphonic) {
+                    $items[$char] = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                } else {
+                    $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle);
+                }
+            }
+        }
 
-        return $this->split($string);
+        return new Collection($items);
     }
 
     protected function convertSurname(string $name): string
@@ -183,12 +205,12 @@ class Converter
         return $name;
     }
 
-    protected function split(string $pinyin): Collection
+    protected function split(string $item): Collection
     {
-        $items = array_filter(preg_split('/\s+/i', $pinyin));
+        $items = \array_values(array_filter(preg_split('/\s+/i', $item)));
 
-        foreach ($items as $index => $pinyin) {
-            $items[$index] = $this->formatTone($pinyin, $this->toneStyle);
+        foreach ($items as $index => $item) {
+            $items[$index] = $this->formatTone($item, $this->toneStyle);
         }
 
         return new Collection($items);

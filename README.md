@@ -12,77 +12,145 @@
 使用 Composer 安装:
 
 ``` bash
-composer require overtrue/pinyin
+composer require overtrue/pinyin:^5.0
 ```
 
 ## 使用
 
-## 选项
+### 拼音风格
 
-| 选项                      | 描述                                             |
-| ------------------------- | ------------------------------------------------ |
-| `PINYIN_TONE`             | UNICODE 式音调：`měi hǎo`                        |
-| `PINYIN_ASCII_TONE`       | 带数字式音调： `mei3 hao3`                       |
-| `PINYIN_NO_TONE`          | 无音调：`mei hao`                                |
-| `PINYIN_KEEP_NUMBER`      | 保留数字                                         |
-| `PINYIN_KEEP_ENGLISH`     | 保留英文                                         |
-| `PINYIN_KEEP_PUNCTUATION` | 保留标点                                         |
-| `PINYIN_UMLAUT_V`         | 使用 `v` 代替 `yu`, 例如：吕 `lyu` 将会转为 `lv` |
+除了获取首字母的方法外，所有方法都支持第二个参数，用于指定拼音的格式，可选值为：
 
-### 拼音数组
+- `default` 默认格式，即 `pīn yīn`
+- `none` 不输出拼音，即 `pin yin`
+- `number` 末尾数字模式的拼音，即 `pin1 yin1`
+
+### 返回值
+
+除了 `permalink` 返回字符串外，其它方法都返回集合类型 [`Overtrue\Pinyin\Collection`](https://github.com/overtrue/pinyin/blob/master/src/Collection.php)：
 
 ```php
 use Overtrue\Pinyin\Pinyin;
 
-$pinyin = new Pinyin(); // 默认
+$pinyin = Pinyin::sentence('你好，世界');
+```
 
-$pinyin->convert('带着希望去旅行，比到达终点更美好');
-// ["dai", "zhe", "xi", "wang", "qu", "lyu", "xing", "bi", "dao", "da", "zhong", "dian", "geng", "mei", "hao"]
+你可以通过以下方式访问集合内容:
 
-$pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_TONE);
-// ["dài","zhe","xī","wàng","qù","lǚ","xíng","bǐ","dào","dá","zhōng","diǎn","gèng","měi","hǎo"]
+```php
+echo $pinyin; // nǐ hǎo shì jiè
 
-$pinyin->convert('带着希望去旅行，比到达终点更美好', PINYIN_ASCII_TONE);
-//["dai4","zhe","xi1","wang4","qu4","lyu3","xing2","bi3","dao4","da2","zhong1","dian3","geng4","mei3","hao3"]
+// 直接将对象转成字符串
+$string = (string) $pinyin; // nǐ hǎo shì jiè
+
+$pinyin->toArray(); // ['nǐ', 'hǎo', 'shì', 'jiè']
+
+// 直接使用索引访问
+$pinyin[0]; // 'nǐ'
+
+// 使用函数遍历
+$pinyin->map('ucfirst'); // ['Nǐ', 'Hǎo', 'Shì', 'Jiè']
+
+// 拼接为字符串
+$pinyin->join(' '); // 'nǐ hǎo shì jiè'
+$pinyin->join('-'); // 'nǐ-hǎo-shì-jiè'
+
+// 转成 json
+$pinyin->toJson(); // '["nǐ","hǎo","shì","jiè"]'
+json_encode($pinyin); // '["nǐ","hǎo","shì","jiè"]'
+```
+
+### 文字段落转拼音
+
+```php
+use Overtrue\Pinyin\Pinyin;
+
+echo Pinyin::sentence('带着希望去旅行，比到达终点更美好');
+// dài zhe xī wàng qù lyu xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo
+
+// 去除声调
+echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', 'none');
+dai zhe xi wang qu lyu xing ， bi dao da zhong dian geng mei hao
 ```
 
 ### 生成用于链接的拼音字符串
 
+通常用于文章链接等，可以使用 `permalink` 方法获取拼音字符串：
+
 ```php
-$pinyin->permalink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lyu-xing
-$pinyin->permalink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lyu.xing
+echo Pinyin::permalink('带着希望去旅行'); // dai-zhe-xi-wang-qu-lyu-xing
+echo Pinyin::permalink('带着希望去旅行', '.'); // dai.zhe.xi.wang.qu.lyu.xing
 ```
 
 ### 获取首字符字符串
 
-```php
-$pinyin->abbr('带着希望去旅行'); // dzxwqlx
-$pinyin->abbr('带着希望去旅行', '-'); // d-z-x-w-q-l-x
-
-$pinyin->abbr('你好2018！', PINYIN_KEEP_NUMBER); // nh2018
-$pinyin->abbr('Happy New Year! 2018！', PINYIN_KEEP_ENGLISH); // HNY2018
-```
-
-### 翻译整段文字为拼音
-
-将会保留中文字符：`，。 ！ ？ ： “ ” ‘ ’` 并替换为对应的英文符号。
+通常用于创建搜索用的索引，可以使用 `abbr` 方法转换：
 
 ```php
-$pinyin->sentence('带着希望去旅行，比到达终点更美好！');
-// dai zhe xi wang qu lyu xing, bi dao da zhong dian geng mei hao!
+echo Pinyin::abbr('带着希望去旅行'); // d z x w q l x
+echo Pinyin::abbr('带着希望去旅行')->join('-'); // d-z-x-w-q-l-x
 
-$pinyin->sentence('带着希望去旅行，比到达终点更美好！', PINYIN_TONE);
-// dài zhe xī wàng qù lǚ xíng, bǐ dào dá zhōng diǎn gèng měi hǎo!
+echo Pinyin::abbr('你好2018！')->join(''); // nh2018
+echo Pinyin::abbr('Happy New Year! 2018！')->join(''); // HNY2018
 ```
 
-### 翻译姓名
+**姓名首字母**
+
+将首字作为姓氏转换，其余作为普通词语转换：
+
+```php
+echo Pinyin::nameAbbr('欧阳'); // o y
+echo Pinyin::nameAbbr('单单单')->join('-'); // s-d-d
+```
+
+
+### 姓名转换
 
 姓名的姓的读音有些与普通字不一样，比如 ‘单’ 常见的音为 `dan`，而作为姓的时候读 `shan`。
 
 ```php
-$pinyin->name('单某某'); // ['shan', 'mou', 'mou']
-$pinyin->name('单某某', PINYIN_TONE); // ["shàn","mǒu","mǒu"]
+echo Pinyin::name('单某某'); // shàn mǒu mǒu
+echo Pinyin::name('单某某', 'none'); // shan mou mou
+echo Pinyin::name('单某某', 'none')->join('-'); // shan-mou-mou
 ```
+
+### 多音字
+
+多音字的返回值为关联数组的集合：
+
+```php
+$pinyin = Pinyin::polyphones('重庆');
+
+echo $pinyin['重']; // ["zhòng", "chóng", "tóng"]
+echo $pinyin['庆']; // ["qìng"]
+
+$pinyin->toArray(); 
+// [
+//     "重": ["zhòng", "chóng", "tóng"],
+//     "庆": ["qìng"]
+// ]
+```
+
+### 单字转拼音
+
+和多音字类似，单字的返回值为字符串，多音字将根据该字字频调整得到常用音：
+
+```php
+$pinyin = Pinyin::polyphones('重庆');
+
+echo $pinyin['重']; // "zhòng"
+echo $pinyin['庆']; // "qìng"
+
+$pinyin->toArray(); 
+// [
+//     "重": "zhòng",
+//     "庆": "qìng"
+// ]
+```
+
+> ** Note **
+> 
+> 当单字处理时由于多音字来自词频表中取得常用音，所以在词语环境下可能出现不正确的情况，建议使用多音字处理。
 
 更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/PinyinTest.php)。
 

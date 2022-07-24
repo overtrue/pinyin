@@ -3,6 +3,7 @@
 namespace Overtrue\Pinyin\Tests;
 
 use Overtrue\Pinyin\Collection;
+use Overtrue\Pinyin\Converter;
 use PHPUnit\Framework\TestCase;
 use Overtrue\Pinyin\Pinyin;
 
@@ -32,11 +33,20 @@ class PinyinTest extends TestCase
         // 以下两词在任何位置都不变
         $this->assertPinyin(['mǒu', 'mǒu', 'yù', 'chí'], Pinyin::name('某某尉迟'));
         $this->assertPinyin(['shàn', 'chán', 'yú', 'dān'], Pinyin::name('单单于单'));
+
+        // 音调
+        $this->assertPinyin(['ou', 'yang'], Pinyin::name('欧阳', Converter::TONE_STYLE_NONE));
+        $this->assertPinyin(['ou1', 'yang2'], Pinyin::name('欧阳', Converter::TONE_STYLE_NUMBER));
     }
 
     public function test_phrase()
     {
         $this->assertPinyin(['nín', 'hǎo'], Pinyin::phrase('您好!'));
+        $this->assertPinyin('nǐ hǎo shì jiè', Pinyin::phrase('你好，世界'));
+
+        $this->assertPinyin(['nin', 'hao'], Pinyin::phrase('您好!', Converter::TONE_STYLE_NONE));
+        $this->assertPinyin(['nin2', 'hao3'], Pinyin::phrase('您好!', Converter::TONE_STYLE_NUMBER));
+
         $this->assertPinyin(['nín', 'hǎo', '2018i', 'New', 'Year'], Pinyin::phrase('您好&^2018i New Year!√ç'));
         $this->assertPinyin('dài zhe xī wàng qù lyu xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Pinyin::phrase('带着希望去旅行，比到达终点更美好！'));
     }
@@ -94,11 +104,47 @@ class PinyinTest extends TestCase
         $this->assertPinyin(['s', 'c', 'y', 'd'], Pinyin::nameAbbr('单单于单'));
     }
 
+    public function test_polyphones()
+    {
+        $this->assertPinyin([
+            '重' => ['zhòng', 'chóng', 'tóng'],
+            '庆' => ['qìng'],
+        ], Pinyin::polyphones('重庆'));
+
+        $this->assertPinyin([
+            '重' => ['zhong', 'chong', 'tong'],
+            '庆' => ['qing'],
+        ], Pinyin::polyphones('重庆', Converter::TONE_STYLE_NONE));
+
+        $this->assertPinyin([
+            '重' => ['zhong4', 'chong2', 'tong2'],
+            '庆' => ['qing4'],
+        ], Pinyin::polyphones('重庆', Converter::TONE_STYLE_NUMBER));
+    }
+
+    public function test_chars()
+    {
+        // 因为非多音字模式，所以已词频文件来决定拼音的顺序
+        $this->assertPinyin(['重' => 'zhòng', '庆' => 'qìng'], Pinyin::chars('重庆'));
+        $this->assertPinyin(['重' => 'zhong', '庆' => 'qing'], Pinyin::chars('重庆', Converter::TONE_STYLE_NONE));
+        $this->assertPinyin(['重' => 'zhong4', '庆' => 'qing4'], Pinyin::chars('重庆', Converter::TONE_STYLE_NUMBER));
+    }
+
     public function test_sentence()
     {
         $this->assertPinyin(
             'dài zhe xī wàng qù lyu xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo ！',
             Pinyin::sentence('带着希望去旅行，比到达终点更美好！')
+        );
+
+        $this->assertPinyin(
+            'dai zhe xi wang qu lyu xing ， bi dao da zhong dian geng mei hao ！',
+            Pinyin::sentence('带着希望去旅行，比到达终点更美好！', Converter::TONE_STYLE_NONE)
+        );
+
+        $this->assertPinyin(
+            'dai4 zhe xi1 wang4 qu4 lyu3 xing2 ， bi3 dao4 da2 zhong1 dian3 geng4 mei3 hao3 ！',
+            Pinyin::sentence('带着希望去旅行，比到达终点更美好！', Converter::TONE_STYLE_NUMBER)
         );
 
         $this->assertPinyin(

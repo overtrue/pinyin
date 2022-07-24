@@ -83,10 +83,7 @@ file_put_contents(__DIR__ . '/../data/surnames.php', "<?php\nreturn ".var_export
 echo count($surnames)." surnames saved.\n";
 
 // 单字：带多音
-file_put_contents(__DIR__ . '/../data/char-with-polyphones.php', "<?php\nreturn ".var_export($charWithPolyphones, true).";\n");
-echo count($charWithPolyphones)." chars with polyphones saved.\n";
-
-file_put_contents(__DIR__ . '/../data/chars.php', "<?php\nreturn ".var_export($chars, true).";\n");
+file_put_contents(__DIR__ . '/../data/chars.php', "<?php\nreturn ".var_export($charWithPolyphones, true).";\n");
 echo count($chars)." chars saved.\n";
 
 // 词：从长到短 + 单字

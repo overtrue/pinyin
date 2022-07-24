@@ -5,8 +5,9 @@ namespace Overtrue\Pinyin;
 use InvalidArgumentException;
 
 /**
- * @method static Converter asPolyphonic()
- * @method static Converter asSurname()
+ * @method static Converter polyphonic()
+ * @method static Converter surname()
+ * @method static Converter noWords()
  * @method static Converter onlyHans()
  * @method static Converter noAlpha()
  * @method static Converter noNumber()
@@ -20,14 +21,29 @@ use InvalidArgumentException;
  */
 class Pinyin
 {
-    public static function name(string $name): Collection
+    public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
     {
-        return self::asSurname()->convert($name);
+        return self::surname()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function phrase(string $string): Collection
+    public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
     {
-        return self::noPunctuation()->convert($string);
+        return self::noPunctuation()->withToneStyle($toneStyle)->convert($string);
+    }
+
+    public static function sentence(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    {
+        return self::withToneStyle($toneStyle)->convert($string);
+    }
+
+    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    {
+        return self::polyphonic()->withToneStyle($toneStyle)->convert($string);
+    }
+
+    public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_DEFAULT): Collection
+    {
+        return self::onlyHans()->noWords()->withToneStyle($toneStyle)->convert($string);
     }
 
     public static function permalink(string $string, string $delimiter = '-'): string
@@ -39,11 +55,6 @@ class Pinyin
         return self::noPunctuation()->noTone()->convert($string)->join($delimiter);
     }
 
-    public static function polyphones(string $string): Collection
-    {
-        return self::asPolyphonic()->convert($string);
-    }
-
     public static function nameAbbr(string $string): Collection
     {
         return self::abbr($string, true);
@@ -53,17 +64,12 @@ class Pinyin
     {
         return self::noTone()
             ->noPunctuation()
-            ->when($asName, fn ($c) => $c->asSurname())
+            ->when($asName, fn ($c) => $c->surname())
             ->convert($string)
             ->map(function ($pinyin) {
                 // 常用于电影名称入库索引处理，例如：《晚娘2012》-> WN2012
                 return \is_numeric($pinyin) || preg_match('/\d{2,}/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
             });
-    }
-
-    public static function sentence(string $string, string $toneStyle = 'default'): Collection
-    {
-        return self::withToneStyle($toneStyle)->convert($string);
     }
 
     public static function __callStatic(string $name, array $arguments)

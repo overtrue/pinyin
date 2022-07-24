@@ -10,12 +10,13 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
 {
     public function __construct(protected $items = [])
     {
-        $this->items = \array_values($this->items);
     }
 
     public function join(string $separator = ' '): string
     {
-        return implode($separator, $this->all());
+        return implode($separator, \array_map(function ($item) {
+            return \is_array($item) ? '['.\implode(', ', $item).']' : $item;
+        }, $this->items));
     }
 
     public function map(callable $callback): Collection
@@ -25,7 +26,7 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
 
     public function all(): array
     {
-        return \array_values($this->items);
+        return $this->items;
     }
 
     public function toArray(): array
