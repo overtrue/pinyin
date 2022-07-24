@@ -192,6 +192,7 @@ php ./bin/pinyin --help
 
 ## 参考
 
+- [mozillazg/pinyin-data](https://github.com/mozillazg/pinyin-data)
 - [详细参考资料](https://github.com/overtrue/pinyin-resources)
 
 ## :heart: Sponsor me
