@@ -21,9 +21,9 @@ composer require overtrue/pinyin:^5.0
 
 除了获取首字母的方法外，所有方法都支持第二个参数，用于指定拼音的格式，可选值为：
 
-- `default` 默认格式，即 `pīn yīn`
-- `none` 不输出拼音，即 `pin yin`
-- `number` 末尾数字模式的拼音，即 `pin1 yin1`
+- `default` 默认格式，例如 `pīn yīn`
+- `none` 不输出拼音，例如 `pin yin`
+- `number` 末尾数字模式的拼音，例如 `pin1 yin1`
 
 ### 返回值
 
