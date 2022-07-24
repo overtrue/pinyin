@@ -154,6 +154,32 @@ $pinyin->toArray();
 
 更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/PinyinTest.php)。
 
+## 命令行工具
+
+你可以使用命令行来实现拼音的转换：
+
+```bash
+php ./bin/pinyin 带着希望去旅行
+
+# dài zhe xī wàng qù lyu xíng
+```
+
+更多使用方法，可以查看帮助文档：
+
+```bash
+php ./bin/pinyin --help
+
+# Usage:
+#     ./pinyin [chinese] [method] [options]
+# Options:
+#     -j, --json               输出 JSON 格式.
+#     -c, --compact            不格式化输出 JSON.
+#     -m, --method=[method]    转换方式，可选：name/phrase/permalink/polyphones/chars/nameAbbr/abbr/sentence.
+#     --no-tone                不使用音调.
+#     --tone-style=[style]     音调风格，可选值：default/none/number.
+#     -h, --help               显示帮助.
+```
+
 ## 在 Laravel 中使用
 
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
