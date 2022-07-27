@@ -70,7 +70,7 @@ echo Pinyin::sentence('带着希望去旅行，比到达终点更美好');
 
 // 去除声调
 echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', 'none');
-dai zhe xi wang qu lyu xing ， bi dao da zhong dian geng mei hao
+// dai zhe xi wang qu lyu xing ， bi dao da zhong dian geng mei hao
 ```
 
 ### 生成用于链接的拼音字符串
