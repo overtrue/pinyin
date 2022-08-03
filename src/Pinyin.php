@@ -47,7 +47,7 @@ class Pinyin
      */
     public function __construct($loaderName = null)
     {
-        $this->loader = $loaderName ?: 'Overtrue\\Pinyin\\FileDictLoader';
+        $this->loader = $loaderName ?: 'Overtrue\\Pinyin\\MemoryFileDictLoader';
     }
 
     /**
