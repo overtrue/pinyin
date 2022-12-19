@@ -121,8 +121,8 @@ echo Pinyin::name('单某某', 'none')->join('-'); // shan-mou-mou
 ```php
 $pinyin = Pinyin::polyphones('重庆');
 
-echo $pinyin['重']; // ["zhòng", "chóng", "tóng"]
-echo $pinyin['庆']; // ["qìng"]
+$pinyin['重']; // ["zhòng", "chóng", "tóng"]
+$pinyin['庆']; // ["qìng"]
 
 $pinyin->toArray(); 
 // [
