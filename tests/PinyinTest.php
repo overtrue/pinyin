@@ -360,5 +360,9 @@ class PinyinTest extends TestCase
         //164
         $this->assertPinyin(['ōu', 'mǒu', 'mǒu'], Pinyin::name('区某某'));
         $this->assertPinyin(['yuè', 'mǒu', 'mǒu'], Pinyin::name('乐某某'));
+
+        //119
+        $this->assertPinyin(['e', 'e', 'e'], Pinyin::sentence('呃呃呃', 'none'));
+        $this->assertPinyin(['wu', 'la', 'gui'], Pinyin::sentence('乌拉圭', 'none'));
     }
 }
