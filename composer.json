@@ -53,11 +53,11 @@
     ],
     "post-merge": "composer install",
     "post-install-cmd": [
-      "cghooks add --ignore-lock",
-      "cghooks update"
+      "cghooks remove",
+      "cghooks add --ignore-lock"
     ],
     "cghooks": "vendor/bin/cghooks",
-    "pint": "vendor/bin/pint",
+    "pint": "vendor/bin/pint ./src ./tests",
     "fix-style": "vendor/bin/pint ./src ./tests",
     "test": "vendor/bin/phpunit --colors=always",
     "build": "php ./bin/build"
