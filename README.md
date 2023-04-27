@@ -163,7 +163,7 @@ $pinyin->toArray();
 
 更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/PinyinTest.php)。
 
-## nv/lv/lyu/lǚ 的问题
+## v/yu/ü 的问题
 
 根据国家语言文字工作委员会的规定，`lv`、`lyu`、`lǚ` 都是正确的，但是 `lv` 是最常用的，所以默认使用 `lv`，如果你需要使用其他的，可以在初始化时传入：
 
