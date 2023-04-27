@@ -5,3 +5,5 @@ tmp*
 index.php
 composer.lock
 .idea
+cghooks.lock
+.phpunit.result.cache

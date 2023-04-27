@@ -285,7 +285,7 @@ class Pinyin
             return "\t" . $matches[0];
         }, $string);
 
-        $regex = ['\p{Han}', '\p{Z}', '\p{M}', "\t"];
+        $regex = ['\x{3007}\x{2E80}-\x{2FFF}\x{3100}-\x{312F}\x{31A0}-\x{31EF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}', '\p{Z}', '\p{M}', "\t"];
 
         if ($this->hasOption($option, \PINYIN_KEEP_NUMBER)) {
             \array_push($regex, '0-9');
@@ -316,6 +316,8 @@ class Pinyin
     protected function formatTone($pinyin, $option = \PINYIN_NO_TONE)
     {
         $replacements = [
+            // mb_chr(593) => 'ɑ' 轻声中除了 `ɑ` 和 `ü` 以外，其它和字母一样
+            'ɑ' => ['a', 5], 'ü' => ['v', 5],
             'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
             'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['yu', 1],
             'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['yu', 2],
