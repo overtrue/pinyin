@@ -26,6 +26,11 @@ class Pinyin
         return self::surname()->withToneStyle($toneStyle)->convert($name);
     }
 
+    public static function passportName(string $name, string $toneStyle = Converter::TONE_STYLE_NONE): Collection
+    {
+        return self::surname()->yuToYu()->withToneStyle($toneStyle)->convert($name);
+    }
+
     public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::noPunctuation()->withToneStyle($toneStyle)->convert($string);
@@ -48,7 +53,7 @@ class Pinyin
 
     public static function permalink(string $string, string $delimiter = '-'): string
     {
-        if (!in_array($delimiter, ['_', '-', '.', ''], true)) {
+        if (! in_array($delimiter, ['_', '-', '.', ''], true)) {
             throw new InvalidArgumentException("Delimiter must be one of: '_', '-', '', '.'.");
         }
 

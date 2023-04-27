@@ -32,17 +32,18 @@
     "phpunit/phpunit": "^9.5",
     "brainmaestro/composer-git-hooks": "^2.7",
     "friendsofphp/php-cs-fixer": "^3.2",
-    "nunomaduro/termwind": "^1.13"
+    "nunomaduro/termwind": "^1.13",
+    "laravel/pint": "^1.10"
   },
   "extra": {
     "hooks": {
       "pre-commit": [
-        "composer test",
-        "composer fix-style"
+        "composer pint",
+        "composer test"
       ],
       "pre-push": [
-        "composer test",
-        "composer check-style"
+        "composer pint",
+        "composer test"
       ]
     }
   },
@@ -56,14 +57,13 @@
       "cghooks update"
     ],
     "cghooks": "vendor/bin/cghooks",
-    "check-style": "php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
-    "fix-style": "php-cs-fixer fix --using-cache=no --ansi",
+    "pint": "vendor/bin/pint",
+    "fix-style": "vendor/bin/pint ./src ./tests",
     "test": "vendor/bin/phpunit --colors=always",
     "build": "php ./bin/build"
   },
   "scripts-descriptions": {
     "test": "Run all tests.",
-    "check-style": "Run style checks (only dry run - no fixing!).",
     "fix-style": "Run style checks and fix violations."
   }
 }

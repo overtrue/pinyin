@@ -5,25 +5,33 @@ namespace Overtrue\Pinyin;
 class Converter
 {
     private const SEGMENTS_COUNT = 10;
+
     private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
+
     private const CHARS_PATH = __DIR__.'/../data/chars.php';
+
     private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
 
     public const TONE_STYLE_SYMBOL = 'symbol';
+
     public const TONE_STYLE_NUMBER = 'number';
+
     public const TONE_STYLE_NONE = 'none';
 
     protected bool $polyphonic = false;
+
     protected bool $asSurname = false;
+
     protected bool $noWords = false;
 
-    protected string $yuTo = 'yu';
+    protected string $yuTo = 'v';
+
     protected string $toneStyle = self::TONE_STYLE_SYMBOL;
 
     protected array $regexps = [
         'separator' => '\p{Z}',
         'mark' => '\p{M}',
-        'tab' => "\t"
+        'tab' => "\t",
     ];
 
     public const REGEXPS = [
@@ -116,6 +124,13 @@ class Converter
         return $this;
     }
 
+    public function yuToYu(): static
+    {
+        $this->yuTo = 'yu';
+
+        return $this;
+    }
+
     public function yuToV(): static
     {
         $this->yuTo = 'v';
@@ -143,7 +158,7 @@ class Converter
     {
         // 把原有的数字和汉字分离，避免拼音转换时被误作声调
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
-            return "\t" . $matches[0];
+            return "\t".$matches[0];
         }, $string);
 
         // 过滤掉不保留的字符
@@ -198,7 +213,7 @@ class Converter
 
         foreach ($surnames as $surname => $pinyin) {
             if (\str_starts_with($name, $surname)) {
-                return $pinyin . \mb_substr($name, \mb_strlen($surname));
+                return $pinyin.\mb_substr($name, \mb_strlen($surname));
             }
         }
 
@@ -218,24 +233,24 @@ class Converter
 
     protected function formatTone(string $pinyin, string $style): string
     {
+        if ($style === self::TONE_STYLE_SYMBOL) {
+            return $pinyin;
+        }
+
         $replacements = [
             'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
-            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['yu', 1],
-            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['yu', 2],
-            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['yu', 3],
-            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['yu', 4],
+            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
+            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
+            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
+            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['v', 4],
         ];
 
         foreach ($replacements as $unicode => $replacement) {
             if (\str_contains($pinyin, $unicode)) {
                 $umlaut = $replacement[0];
 
-                if ($umlaut !== 'yu' && $style === self::TONE_STYLE_SYMBOL) {
-                    continue;
-                }
-
                 // https://zh.wikipedia.org/wiki/%C3%9C
-                if ($this->yuTo !== 'yu') {
+                if ($this->yuTo !== 'v' && $umlaut === 'v') {
                     $umlaut = $this->yuTo;
                 }
 

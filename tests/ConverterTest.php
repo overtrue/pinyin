@@ -39,26 +39,26 @@ class ConverterTest extends TestCase
 
     public function test_onlyHans()
     {
-        $this->assertPinyin('dài zhe xī wàng qù lyu xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->convert('带着希望去旅行，比到达终点更美好'));
-        $this->assertPinyin('dài zhe xī wàng qù lyu xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->onlyHans()->convert('带着希望去旅行，比到达终点更美好'));
+        $this->assertPinyin('dài zhe xī wàng qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->convert('带着希望去旅行，比到达终点更美好'));
+        $this->assertPinyin('dài zhe xī wàng qù lǚ xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->onlyHans()->convert('带着希望去旅行，比到达终点更美好'));
     }
 
     public function test_noAlpha()
     {
-        $this->assertPinyin('abc dài zhe xī def wàng qù lyu xíng jkl', Converter::make()->convert('abc带着希def望去旅行jkl'));
-        $this->assertPinyin('dài zhe xī wàng qù lyu xíng', Converter::make()->noAlpha()->convert('abc带着希def望去旅行jkl'));
+        $this->assertPinyin('abc dài zhe xī def wàng qù lǚ xíng jkl', Converter::make()->convert('abc带着希def望去旅行jkl'));
+        $this->assertPinyin('dài zhe xī wàng qù lǚ xíng', Converter::make()->noAlpha()->convert('abc带着希def望去旅行jkl'));
     }
 
     public function test_noNumber()
     {
-        $this->assertPinyin('123 dài zhe xī 456 wàng qù lyu xíng 789', Converter::make()->convert('123带着希456望去旅行789'));
-        $this->assertPinyin('dài zhe xī wàng qù lyu xíng', Converter::make()->noNumber()->convert('123带着希456望去旅行789'));
+        $this->assertPinyin('123 dài zhe xī 456 wàng qù lǚ xíng 789', Converter::make()->convert('123带着希456望去旅行789'));
+        $this->assertPinyin('dài zhe xī wàng qù lǚ xíng', Converter::make()->noNumber()->convert('123带着希456望去旅行789'));
     }
 
     public function test_noPunctuation()
     {
-        $this->assertPinyin('123 dài , zhe " xī wàng " qù lyu xíng 789?', Converter::make()->convert('123带,着"希望"去旅行789?'));
-        $this->assertPinyin('123 dài zhe xī 456 wàng qù lyu xíng 789', Converter::make()->noPunctuation()->convert('123带着希456望去旅行789'));
+        $this->assertPinyin('123 dài , zhe " xī wàng " qù lǚ xíng 789?', Converter::make()->convert('123带,着"希望"去旅行789?'));
+        $this->assertPinyin('123 dài zhe xī 456 wàng qù lǚ xíng 789', Converter::make()->noPunctuation()->convert('123带着希456望去旅行789'));
     }
 
     public function test_tone_style()
@@ -74,9 +74,10 @@ class ConverterTest extends TestCase
 
     public function test_yu()
     {
-        $this->assertPinyin('lyu xíng', Converter::make()->convert('旅行'));
-        $this->assertPinyin('lv xíng', Converter::make()->yuToV()->convert('旅行'));
-        $this->assertPinyin('lu xíng', Converter::make()->yuToU()->convert('旅行'));
+        $this->assertPinyin('lǚ xíng', Converter::make()->convert('旅行'));
+        $this->assertPinyin('lyu xing', Converter::make()->yuToYu()->noTone()->convert('旅行'));
+        $this->assertPinyin('lv xing', Converter::make()->yuToV()->noTone()->convert('旅行'));
+        $this->assertPinyin('lu xing', Converter::make()->yuToU()->noTone()->convert('旅行'));
     }
 
     public function test_when()

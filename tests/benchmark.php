@@ -1,12 +1,12 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use Overtrue\Pinyin\Pinyin;
 use function Termwind\{render};
 
 $totalStart = microtime(true);
-$text = file_get_contents(__DIR__ . '/input.txt');
+$text = file_get_contents(__DIR__.'/input.txt');
 
 $html = [];
 foreach (['name', 'phrase', 'permalink', 'polyphones', 'chars', 'nameAbbr', 'abbr', 'sentence'] as $method) {
@@ -23,7 +23,7 @@ foreach (['name', 'phrase', 'permalink', 'polyphones', 'chars', 'nameAbbr', 'abb
         ";
 }
 $totalUsage = round(microtime(true) - $totalStart, 5) * 1000;
-$html = join("\n", $html);
+$html = implode("\n", $html);
 $textLength = mb_strlen($text);
 
 render(<<<"HTML"

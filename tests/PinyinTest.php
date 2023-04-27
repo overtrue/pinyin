@@ -4,8 +4,8 @@ namespace Overtrue\Pinyin\Tests;
 
 use Overtrue\Pinyin\Collection;
 use Overtrue\Pinyin\Converter;
-use PHPUnit\Framework\TestCase;
 use Overtrue\Pinyin\Pinyin;
+use PHPUnit\Framework\TestCase;
 
 class PinyinTest extends TestCase
 {
@@ -39,6 +39,13 @@ class PinyinTest extends TestCase
         $this->assertPinyin(['ou1', 'yang2'], Pinyin::name('欧阳', Converter::TONE_STYLE_NUMBER));
     }
 
+    public function test_passport_name()
+    {
+        $this->assertPinyin(['lyu', 'xiu', 'cai'], Pinyin::passportName('吕秀才'));
+        $this->assertPinyin(['nyu', 'hai', 'zi'], Pinyin::passportName('女孩子'));
+        $this->assertPinyin(['nyu', 'lyu'], Pinyin::passportName('女吕'));
+    }
+
     public function test_phrase()
     {
         $this->assertPinyin(['nín', 'hǎo'], Pinyin::phrase('您好!'));
@@ -48,22 +55,23 @@ class PinyinTest extends TestCase
         $this->assertPinyin(['nin2', 'hao3'], Pinyin::phrase('您好!', Converter::TONE_STYLE_NUMBER));
 
         $this->assertPinyin(['nín', 'hǎo', '2018i', 'New', 'Year'], Pinyin::phrase('您好&^2018i New Year!√ç'));
-        $this->assertPinyin('dài zhe xī wàng qù lyu xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Pinyin::phrase('带着希望去旅行，比到达终点更美好！'));
+        $this->assertPinyin('dài zhe xī wàng qù lǚ xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Pinyin::phrase('带着希望去旅行，比到达终点更美好！'));
     }
 
     public function test_permalink()
     {
-        $this->assertSame('dai-zhe-xi-wang-qu-lyu-xing', Pinyin::permalink('带着希望去旅行'));
-        $this->assertSame('dai_zhe_xi_wang_qu_lyu_xing', Pinyin::permalink('带着希望去旅行', '_'));
-        $this->assertSame('dai.zhe.xi.wang.qu.lyu.xing', Pinyin::permalink('带着希望去旅行', '.'));
-        $this->assertSame('daizhexiwangqulyuxing', Pinyin::permalink('带着希望去旅行', ''));
+        $this->assertSame('dai-zhe-xi-wang-qu-lv-xing', Pinyin::permalink('带着希望去旅行'));
+        $this->assertSame('dai_zhe_xi_wang_qu_lv_xing', Pinyin::permalink('带着希望去旅行', '_'));
+        $this->assertSame('dai.zhe.xi.wang.qu.lv.xing', Pinyin::permalink('带着希望去旅行', '.'));
+        $this->assertSame('daizhexiwangqulvxing', Pinyin::permalink('带着希望去旅行', ''));
 
         // with number.
-        $this->assertSame('1-dai-23-zhe-56-xi-wang-qu-abc-lyu-xing-568', Pinyin::permalink('1带23着。！5_6.=希望去abc旅行568'));
+        $this->assertSame('1-dai-23-zhe-56-xi-wang-qu-abc-lv-xing-568', Pinyin::permalink('1带23着。！5_6.=希望去abc旅行568'));
 
-        $this->expectException('InvalidArgumentException', "Delimiter must be one of: '_', '-', '', '.'.");
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Delimiter must be one of: '_', '-', '', '.'.");
 
-        $this->assertSame('daizhexiwangqulyuxing', Pinyin::permalink('带着希望去旅行', '='));
+        $this->assertSame('daizhexiwangqulvxing', Pinyin::permalink('带着希望去旅行', '='));
     }
 
     public function test_abbr()
@@ -122,7 +130,7 @@ class PinyinTest extends TestCase
         ], Pinyin::polyphones('重庆', Converter::TONE_STYLE_NUMBER));
     }
 
-    public function test_chars()
+    public function test_polyphones_chars()
     {
         // 因为非多音字模式，所以已词频文件来决定拼音的顺序
         $this->assertPinyin(['重' => 'zhòng', '庆' => 'qìng'], Pinyin::chars('重庆'));
@@ -133,26 +141,26 @@ class PinyinTest extends TestCase
     public function test_sentence()
     {
         $this->assertPinyin(
-            'dài zhe xī wàng qù lyu xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo ！',
+            'dài zhe xī wàng qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo ！',
             Pinyin::sentence('带着希望去旅行，比到达终点更美好！')
         );
 
         $this->assertPinyin(
-            'dai zhe xi wang qu lyu xing ， bi dao da zhong dian geng mei hao ！',
+            'dai zhe xi wang qu lv xing ， bi dao da zhong dian geng mei hao ！',
             Pinyin::sentence('带着希望去旅行，比到达终点更美好！', Converter::TONE_STYLE_NONE)
         );
 
         $this->assertPinyin(
-            'dai4 zhe xi1 wang4 qu4 lyu3 xing2 ， bi3 dao4 da2 zhong1 dian3 geng4 mei3 hao3 ！',
+            'dai4 zhe xi1 wang4 qu4 lv3 xing2 ， bi3 dao4 da2 zhong1 dian3 geng4 mei3 hao3 ！',
             Pinyin::sentence('带着希望去旅行，比到达终点更美好！', Converter::TONE_STYLE_NUMBER)
         );
 
         $this->assertPinyin(
-            'dài zhe &* xī 123 wàng qù good lyu boy2 xíng ！.',
+            'dài zhe &* xī 123 wàng qù good lǚ boy2 xíng ！.',
             Pinyin::sentence('带^着&*希123望去good旅boy2行！.')
         );
         $this->assertPinyin(
-            '-- dài zhe &* xī 123 wàng .。 qù good lyu boy2 xíng ！.',
+            '-- dài zhe &* xī 123 wàng .。 qù good lǚ boy2 xíng ！.',
             Pinyin::sentence('--带^着&*希123望.。去good旅boy2行！.')
         );
 
@@ -321,35 +329,35 @@ class PinyinTest extends TestCase
         $this->assertPinyin('wèi shǒu wèi wěi', Pinyin::sentence('畏首畏尾'));
         $this->assertPinyin('sān dū shuǐ zú zì zhì xiàn', Pinyin::sentence('三都水族自治县'));
 
-        $this->assertPinyin(['lyu', 'xiù', 'cai'], Pinyin::convert('吕秀才'));
-        $this->assertPinyin(['lv', 'xiù', 'cai'], Pinyin::yuToV()->convert('吕秀才'));
+        $this->assertPinyin(['lǚ', 'xiù', 'cai'], Pinyin::convert('吕秀才'));
+        $this->assertPinyin(['lv', 'xiu', 'cai'], Pinyin::yuToV()->noTone()->convert('吕秀才'));
 
-        #175
+        //175
         $this->assertPinyin('yuán', Pinyin::sentence('貟'));
         $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('貟秀才'));
         $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('贠秀才'));
 
-        #183
+        //183
         $this->assertPinyin('yín háng quàn', Pinyin::sentence('银行券'));
         $this->assertPinyin('xún chá', Pinyin::sentence('询查'));
 
-        #170
+        //170
         $this->assertPinyin('ké', Pinyin::sentence('咳'));
         $this->assertPinyin('xiǎo ér fèi ké kē lì', Pinyin::sentence('小儿肺咳颗粒'));
 
-        #151
+        //151
         $this->assertPinyin('gǔ tóu', Pinyin::sentence('骨头'));
 
-        #116
+        //116
         $this->assertPinyin(['shàn', 'mǒu', 'mǒu'], Pinyin::name('单某某'));
 
-        #106
+        //106
         $this->assertPinyin('zhēn huán zhuàn', Pinyin::sentence('甄嬛传'));
         $this->assertPinyin('chuán qí', Pinyin::sentence('传奇'));
         $this->assertPinyin('zhuàn jì', Pinyin::sentence('传记'));
         $this->assertPinyin('liú mèng qián', Pinyin::sentence('刘孟乾'));
 
-        #164
+        //164
         $this->assertPinyin(['ōu', 'mǒu', 'mǒu'], Pinyin::name('区某某'));
         $this->assertPinyin(['yuè', 'mǒu', 'mǒu'], Pinyin::name('乐某某'));
     }
