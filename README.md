@@ -184,7 +184,9 @@ echo Pinyin::yuToV()->sentence('旅行', 'none');
 // lv xing
 ```
 
-> {Warning} 仅在拼音风格为非 `none` 模式下有效。
+> **Warning**
+> 
+> 仅在拼音风格为非 `none` 模式下有效。
 
 ## 命令行工具
 
