@@ -29,7 +29,7 @@
     "php": ">=8.0.2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^10.1",
     "brainmaestro/composer-git-hooks": "^2.7",
     "friendsofphp/php-cs-fixer": "^3.2",
     "nunomaduro/termwind": "^1.13",
