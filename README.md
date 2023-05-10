@@ -192,9 +192,8 @@ echo Pinyin::yuToV()->sentence('旅行', 'none');
 你可以使用命令行来实现拼音的转换：
 
 ```bash
-php ./bin/pinyin 带着希望去旅行
-
-# dài zhe xī wàng qù lyu xíng
+php ./bin/pinyin 带着希望去旅行 --method=sentence --tone-style=symbol
+# dài zhe xī wàng qù lǚ xíng
 ```
 
 更多使用方法，可以查看帮助文档：
@@ -211,13 +210,6 @@ php ./bin/pinyin --help
 #     --no-tone                不使用音调.
 #     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
 #     -h, --help               显示帮助.
-```
-
-示例：
-
-```bash
-php ./bin/pinyin 带着希望去旅行 --method=sentence --tone-style=symbol
-# dài zhe xī wàng qù lǚ xíng
 ```
 
 ## 在 Laravel 中使用
