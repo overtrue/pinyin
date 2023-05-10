@@ -11,7 +11,7 @@
 
 使用 Composer 安装:
 
-``` bash
+```bash
 composer require overtrue/pinyin:^5.0
 ```
 
@@ -102,7 +102,6 @@ Pinyin::nameAbbr('欧阳'); // ['o', 'y']
 echo Pinyin::nameAbbr('单单单')->join('-'); // s-d-d
 ```
 
-
 ### 姓名转换
 
 姓名的姓的读音有些与普通字不一样，比如 ‘单’ 常见的音为 `dan`，而作为姓的时候读 `shan`。
@@ -115,13 +114,13 @@ Pinyin::name('单某某', 'none')->join('-'); // shan-mou-mou
 
 ### 护照姓名转换
 
-根据国家规定 [关于中国护照旅行证上姓名拼音ü（吕、律、闾、绿、女等）统一拼写为YU的提醒](http://sg.china-embassy.gov.cn/lsfw/zghz1/hzzxdt/201501/t20150122_2022198.htm) 的规则，将 `ü` 转换为 `yu`：
+根据国家规定 [关于中国护照旅行证上姓名拼音 ü（吕、律、闾、绿、女等）统一拼写为 YU 的提醒](http://sg.china-embassy.gov.cn/lsfw/zghz1/hzzxdt/201501/t20150122_2022198.htm) 的规则，将 `ü` 转换为 `yu`：
 
 ```php
 Pinyin::passportName('吕小布'); // ['lyu', 'xiao', 'bu']
 Pinyin::passportName('女小花'); // ['nyu', 'xiao', 'hua']
 Pinyin::passportName('律师'); // ['lyu', 'shi']
-``` 
+```
 
 ### 多音字
 
@@ -133,7 +132,7 @@ $pinyin = Pinyin::polyphones('重庆');
 $pinyin['重']; // ["zhòng", "chóng", "tóng"]
 $pinyin['庆']; // ["qìng"]
 
-$pinyin->toArray(); 
+$pinyin->toArray();
 // [
 //     "重": ["zhòng", "chóng", "tóng"],
 //     "庆": ["qìng"]
@@ -150,7 +149,7 @@ $pinyin = Pinyin::polyphones('重庆');
 echo $pinyin['重']; // "zhòng"
 echo $pinyin['庆']; // "qìng"
 
-$pinyin->toArray(); 
+$pinyin->toArray();
 // [
 //     "重": "zhòng",
 //     "庆": "qìng"
@@ -158,7 +157,7 @@ $pinyin->toArray();
 ```
 
 > **Warning**
-> 
+>
 > 当单字处理时由于多音字来自词频表中取得常用音，所以在词语环境下可能出现不正确的情况，建议使用多音字处理。
 
 更多使用请参考 [测试用例](https://github.com/overtrue/pinyin/blob/master/tests/PinyinTest.php)。
@@ -185,7 +184,7 @@ echo Pinyin::yuToV()->sentence('旅行', 'none');
 ```
 
 > **Warning**
-> 
+>
 > 仅在拼音风格为非 `none` 模式下有效。
 
 ## 命令行工具
@@ -208,10 +207,17 @@ php ./bin/pinyin --help
 # Options:
 #     -j, --json               输出 JSON 格式.
 #     -c, --compact            不格式化输出 JSON.
-#     -m, --method=[method]    转换方式，可选：name/phrase/permalink/polyphones/chars/nameAbbr/abbr/sentence.
+#     -m, --method=[method]    转换方式，可选：sentence/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
 #     --no-tone                不使用音调.
-#     --tone-style=[style]     音调风格，可选值：default/none/number.
+#     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
 #     -h, --help               显示帮助.
+```
+
+示例：
+
+```bash
+php ./bin/pinyin 带着希望去旅行 --method=sentence --tone-style=symbol
+# dài zhe xī wàng qù lǚ xíng
 ```
 
 ## 在 Laravel 中使用
@@ -221,6 +227,7 @@ php ./bin/pinyin --help
 ## Contribution
 
 欢迎提意见及完善补充词库：
+
 - 单字拼音错误请添加到：[sources/pathes/chars.txt](https://github.com/overtrue/pinyin/blob/master/sources/pathes/chars.txt)；
 - 词语错误或补齐，请添加到：[sources/pathes/words.txt](https://github.com/overtrue/pinyin/blob/master/sources/pathes/words.txt)；
 
