@@ -15,9 +15,9 @@ Usage:
 Options:
     -j, --json               输出 JSON 格式.
     -c, --compact            不格式化输出 JSON.
-    -m, --method=[method]    转换方式，可选：name/phrase/permalink/polyphones/chars/nameAbbr/abbr/sentence.
+    -m, --method=[method]    转换方式，可选：sentence/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
     --no-tone                不使用音调.
-    --tone-style=[style]     音调风格，可选值：default/none/number.
+    --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
     -h, --help               显示帮助.
 
 HELP;
@@ -65,7 +65,7 @@ if (has_option('--method', '-m')) {
     $method = get_option('--method');
 }
 
-$toneStyle = has_option('--no-tone') ? 'none' : get_option('--tone-style', 'default');
+$toneStyle = has_option('--no-tone') ? 'none' : get_option('--tone-style', 'none');
 
 $result = Pinyin::$method($input, $method === 'permalink' ? '-' : $toneStyle);
 
