@@ -125,9 +125,18 @@ class PinyinTest extends TestCase
         ], Pinyin::polyphones('重庆', Converter::TONE_STYLE_NONE));
 
         $this->assertPinyin([
-            '重' => ['zhong4', 'chong2', 'tong2'],
-            '庆' => ['qing4'],
-        ], Pinyin::polyphones('重庆', Converter::TONE_STYLE_NUMBER));
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+        ], Pinyin::polyphones('重庆重庆', Converter::TONE_STYLE_NUMBER, true));
+
+        $this->assertPinyin([
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+        ], Pinyin::polyphonesAsArray('重庆重庆', Converter::TONE_STYLE_NUMBER));
     }
 
     public function test_polyphones_chars()
@@ -364,5 +373,28 @@ class PinyinTest extends TestCase
         //119
         $this->assertPinyin(['e', 'e', 'e'], Pinyin::sentence('呃呃呃', 'none'));
         $this->assertPinyin(['wu', 'la', 'gui'], Pinyin::sentence('乌拉圭', 'none'));
+
+        //195
+        $this->assertSame([
+            '你' => ['ni3'],
+            '电' => ['dian4'],
+            '脑' => ['nao3'],
+            '什' => ['shen2', 'shi2'],
+            '么' => ['me', 'yao1', 'mo2', 'ma'],
+            '的' => ['de', 'di1', 'di2', 'di4'],
+        ], Pinyin::polyphones('你电脑电脑电脑什么的', Converter::TONE_STYLE_NUMBER)->toArray());
+
+        $this->assertSame([
+            ['你' => ['ni3']],
+            ['电' => ['dian4']],
+            ['脑' => ['nao3']],
+            ['电' => ['dian4']],
+            ['脑' => ['nao3']],
+            ['电' => ['dian4']],
+            ['脑' => ['nao3']],
+            ['什' => ['shen2', 'shi2']],
+            ['么' => ['me', 'yao1', 'mo2', 'ma']],
+            ['的' => ['de', 'di1', 'di2', 'di4']],
+        ], Pinyin::polyphonesAsArray('你电脑电脑电脑什么的', Converter::TONE_STYLE_NUMBER)->toArray());
     }
 }

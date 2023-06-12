@@ -5,7 +5,6 @@ namespace Overtrue\Pinyin;
 use InvalidArgumentException;
 
 /**
- * @method static Converter polyphonic()
  * @method static Converter surname()
  * @method static Converter noWords()
  * @method static Converter onlyHans()
@@ -16,6 +15,7 @@ use InvalidArgumentException;
  * @method static Converter useNumberTone()
  * @method static Converter yuToV()
  * @method static Converter yuToU()
+ * @method static Converter polyphonic(bool $asList = false)
  * @method static Converter withToneStyle(string $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
@@ -41,9 +41,14 @@ class Pinyin
         return self::withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
     {
-        return self::polyphonic()->withToneStyle($toneStyle)->convert($string);
+        return self::polyphonic($asList)->withToneStyle($toneStyle)->convert($string);
+    }
+
+    public static function polyphonesAsArray(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    {
+        return self::polyphones($string, $toneStyle, true);
     }
 
     public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection

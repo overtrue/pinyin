@@ -124,7 +124,7 @@ Pinyin::passportName('律师'); // ['lyu', 'shi']
 
 ### 多音字
 
-多音字的返回值为关联数组的集合：
+多音字的返回值为关联数组的集合，默认返回去重后的所有读音：
 
 ```php
 $pinyin = Pinyin::polyphones('重庆');
@@ -139,12 +139,29 @@ $pinyin->toArray();
 // ]
 ```
 
+如果不想要去重，可以数组形式返回：
+
+```php
+$pinyin = Pinyin::polyphones('重庆重庆', Converter::TONE_STYLE_SYMBOL, true);
+
+// or 
+$pinyin = Pinyin::polyphonesAsArray('重庆重庆', Converter::TONE_STYLE_SYMBOL);
+
+$pinyin->toArray();
+// [
+//     ["重" => ["zhòng", "chóng", "tóng"]],
+//     ["庆" => ["qìng"]],
+//     ["重" => ["zhòng", "chóng", "tóng"]],
+//     ["庆" => ["qìng"]]
+// ]
+```
+
 ### 单字转拼音
 
 和多音字类似，单字的返回值为字符串，多音字将根据该字字频调整得到常用音：
 
 ```php
-$pinyin = Pinyin::polyphones('重庆');
+$pinyin = Pinyin::chars('重庆');
 
 echo $pinyin['重']; // "zhòng"
 echo $pinyin['庆']; // "qìng"

@@ -21,6 +21,12 @@ class ConverterTest extends TestCase
             '重' => ['zhòng', 'chóng', 'tóng'],
             '庆' => ['qìng'],
         ], Converter::make()->polyphonic()->convert('重庆'));
+
+        $this->assertPinyin([
+            ['重' => ['zhòng', 'chóng', 'tóng']],
+            ['庆' => ['qìng']],
+            ['庆' => ['qìng']],
+        ], Converter::make()->polyphonic(true)->convert('重庆庆'));
     }
 
     public function test_surname()

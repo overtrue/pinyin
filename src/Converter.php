@@ -20,6 +20,8 @@ class Converter
 
     protected bool $polyphonic = false;
 
+    protected bool $polyphonicAsList = false;
+
     protected bool $asSurname = false;
 
     protected bool $noWords = false;
@@ -53,9 +55,10 @@ class Converter
         return new static();
     }
 
-    public function polyphonic(): static
+    public function polyphonic(bool $asList = false): static
     {
         $this->polyphonic = true;
+        $this->polyphonicAsList = $asList;
 
         return $this;
     }
@@ -196,7 +199,13 @@ class Converter
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $items[$char] = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    if ($this->polyphonicAsList) {
+                        $items[] = [$char => $pinyin];
+                    } else {
+                        $items[$char] = $pinyin;
+                    }
+
                 } else {
                     $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle);
                 }
