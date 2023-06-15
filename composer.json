@@ -35,6 +35,7 @@
     "nunomaduro/termwind": "^1.13",
     "laravel/pint": "^1.10"
   },
+  "bin": ["bin/pinyin"],
   "extra": {
     "hooks": {
       "pre-commit": [
