@@ -233,6 +233,10 @@ php ./bin/pinyin --help
 
 独立的包在这里：[overtrue/laravel-pinyin](https://github.com/overtrue/laravel-pinyin)
 
+## 中文简繁转换
+
+如何你有这个需求，也可以了解我的另一个包：[overtrue/php-opencc](https://github.com/overtrue/php-opencc)
+
 ## Contribution
 
 欢迎提意见及完善补充词库：
