@@ -174,7 +174,7 @@ class Converter
         }, $string);
 
         // 过滤掉不保留的字符
-        if (!$this->keepOtherCharacters) {
+        if (! $this->keepOtherCharacters) {
             $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
         }
 

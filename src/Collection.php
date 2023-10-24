@@ -56,7 +56,7 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->items[] = $value;
         } else {
             $this->items[$offset] = $value;
