@@ -41,6 +41,11 @@ class Pinyin
         return self::withToneStyle($toneStyle)->convert($string);
     }
 
+    public static function sentenceFull(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    {
+        return self::keepOtherCharacters()->withToneStyle($toneStyle)->convert($string);
+    }
+
     public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
     {
         return self::polyphonic($asList)->withToneStyle($toneStyle)->convert($string);
