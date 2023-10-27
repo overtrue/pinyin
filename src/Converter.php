@@ -26,6 +26,8 @@ class Converter
 
     protected bool $noWords = false;
 
+    protected bool $keepOtherCharacters = false;
+
     protected string $yuTo = 'v';
 
     protected string $toneStyle = self::TONE_STYLE_SYMBOL;
@@ -73,6 +75,13 @@ class Converter
     public function noWords(): static
     {
         $this->noWords = true;
+
+        return $this;
+    }
+
+    public function keepOtherCharacters(): static
+    {
+        $this->keepOtherCharacters = true;
 
         return $this;
     }
@@ -165,7 +174,9 @@ class Converter
         }, $string);
 
         // 过滤掉不保留的字符
-        $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+        if (! $this->keepOtherCharacters) {
+            $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+        }
 
         // 多音字
         if ($this->polyphonic) {

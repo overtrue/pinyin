@@ -3,6 +3,7 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Overtrue\Pinyin\Pinyin;
+
 use function Termwind\{render};
 
 $totalStart = microtime(true);

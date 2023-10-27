@@ -71,6 +71,10 @@ echo Pinyin::sentence('带着希望去旅行，比到达终点更美好');
 // 去除声调
 echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', 'none');
 // dai zhe xi wang qu lv xing ， bi dao da zhong dian geng mei hao
+
+// 保留所有其他字符
+echo Pinyin::sentenceFull('ル是片假名，π是希腊字母', 'none');
+// ル shi pian jia ming ，π shi xi la zi mu
 ```
 
 ### 生成用于链接的拼音字符串
@@ -223,7 +227,7 @@ php ./bin/pinyin --help
 # Options:
 #     -j, --json               输出 JSON 格式.
 #     -c, --compact            不格式化输出 JSON.
-#     -m, --method=[method]    转换方式，可选：sentence/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
+#     -m, --method=[method]    转换方式，可选：sentence/sentenceFull/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
 #     --no-tone                不使用音调.
 #     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
 #     -h, --help               显示帮助.
