@@ -268,9 +268,9 @@ class PinyinTest extends TestCase
         $this->assertPinyin('java gōng chéng shī', Pinyin::sentence('java工程师'));
     }
 
-    public function test_sentenceFull()
+    public function test_fullSentence()
     {
-        $this->assertPinyin('ル shì piàn jiǎ míng ，π shì xī là zì mǔ', Pinyin::sentenceFull('ル是片假名，π是希腊字母'));
+        $this->assertPinyin('ル shì piàn 。 jiǎ # míng ，π shì xī là zì …… mǔ', Pinyin::fullSentence('ル是片。假#名，π是希腊字……母'));
     }
 
     public function test_issues()

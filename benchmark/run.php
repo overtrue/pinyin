@@ -1,16 +1,18 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Overtrue\Pinyin\Pinyin;
 
 use function Termwind\{render};
 
 $totalStart = microtime(true);
-$text = file_get_contents(__DIR__.'/input.txt');
+$text = file_get_contents(__DIR__ . '/input.txt');
 
 $html = [];
-foreach (['name', 'phrase', 'permalink', 'polyphones', 'chars', 'nameAbbr', 'abbr', 'sentence'] as $method) {
+$methods = ['sentence','fullSentence','name','passportName','phrase','permalink','polyphones','chars','abbr','nameAbbr'];
+
+foreach ($methods as $method) {
     $start = microtime(true);
     $result = call_user_func(Pinyin::class.'::'.$method, $text);
     $usage = round(microtime(true) - $start, 5) * 1000;

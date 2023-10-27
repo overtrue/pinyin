@@ -10,6 +10,7 @@ use InvalidArgumentException;
  * @method static Converter onlyHans()
  * @method static Converter noAlpha()
  * @method static Converter noNumber()
+ * @method static Converter noCleanup()
  * @method static Converter noPunctuation()
  * @method static Converter noTone()
  * @method static Converter useNumberTone()
@@ -41,9 +42,9 @@ class Pinyin
         return self::withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function sentenceFull(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function fullSentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
-        return self::keepOtherCharacters()->withToneStyle($toneStyle)->convert($string);
+        return self::noCleanup()->withToneStyle($toneStyle)->convert($string);
     }
 
     public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection

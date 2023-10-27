@@ -3,6 +3,7 @@
 /tests export-ignore
 /vendor export-ignore
 /sources export-ignore
+/benchmark export-ignore
 /bin/build export-ignore
 /bin/utils.php export-ignore
 .gitattributes export-ignore

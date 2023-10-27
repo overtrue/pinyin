@@ -2,37 +2,26 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/utils.php';
 
 use Overtrue\Pinyin\Pinyin;
 
-$input = $argv[1] ?? null;
-$methods = explode(',', 'name,phrase,permalink,polyphones,chars,nameAbbr,abbr,sentence');
+$methods = ['sentence','fullSentence','name','passportName','phrase','permalink','polyphones','chars','abbr','nameAbbr'];
 $method = 'sentence';
 $inputOptions = [];
+$methodAsString = implode('/', $methods);
+
 $help = <<<"HELP"
 Usage:
     ./pinyin [chinese] [method] [options]
 Options:
     -j, --json               输出 JSON 格式.
     -c, --compact            不格式化输出 JSON.
-    -m, --method=[method]    转换方式，可选：sentence/sentenceFull/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
+    -m, --method=[method]    转换方式，可选：{$methodAsString}.
     --no-tone                不使用音调.
     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
     -h, --help               显示帮助.
-
 HELP;
-
-foreach ($argv as $i => $arg) {
-    if ($i === 0) {
-        continue;
-    }
-    if (in_array($arg, $methods)) {
-        $method = $arg;
-    } elseif (str_starts_with($arg, '-')) {
-        [$key, $value] = array_pad(array_map('trim', explode('=', $arg, 2)), 2, null);
-        $inputOptions[$key] = $value;
-    }
-}
 
 function has_option($option, $alias = null): bool
 {
@@ -56,25 +45,30 @@ function get_option($option, $default = null, $alias = null): ?string
     return $inputOptions[$option] ?? $default;
 }
 
-if (empty($input) || has_option('--help', '-h')) {
+$inputOptions = parse_options($argv);
+$input = $inputOptions[0] ?? null;
+
+if (empty($input) || has_option('help', 'h')) {
     echo $help;
     exit(0);
 }
 
-if (has_option('--method', '-m')) {
-    $method = get_option('--method');
-}
+$method = get_option('method', $method, 'm');
+$toneStyle = has_option('no-tone') ? 'none' : get_option('tone-style', 'none');
 
-$toneStyle = has_option('--no-tone') ? 'none' : get_option('--tone-style', 'none');
+if (! in_array($method, $methods)) {
+    echo "Method '{$method}' is not supported.\n";
+    exit(1);
+}
 
 $result = Pinyin::$method($input, $method === 'permalink' ? '-' : $toneStyle);
 
-$toJson = has_option('--json', '-j') || in_array($method, ['polyphones']);
+$toJson = has_option('json', 'j') || in_array($method, ['polyphones']);
 
 if ($toJson) {
     $options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
 
-    if (has_option('--compact', '-c')) {
+    if (has_option('compact', 'c')) {
         $options = 0;
     }
 

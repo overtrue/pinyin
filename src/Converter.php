@@ -26,7 +26,7 @@ class Converter
 
     protected bool $noWords = false;
 
-    protected bool $keepOtherCharacters = false;
+    protected bool $cleanup = true;
 
     protected string $yuTo = 'v';
 
@@ -79,9 +79,9 @@ class Converter
         return $this;
     }
 
-    public function keepOtherCharacters(): static
+    public function noCleanup(): static
     {
-        $this->keepOtherCharacters = true;
+        $this->cleanup = false;
 
         return $this;
     }
@@ -174,7 +174,7 @@ class Converter
         }, $string);
 
         // 过滤掉不保留的字符
-        if (! $this->keepOtherCharacters) {
+        if ($this->cleanup) {
             $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
         }
 

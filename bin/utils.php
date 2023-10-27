@@ -43,3 +43,53 @@ function parse_words(string $path, callable $fn = null): Generator
         }
     }
 }
+
+function parse_options(array $argv): array
+{
+    $inputOptions = [];
+    $currentOption = null;
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $arg = $argv[$i];
+
+        if (str_starts_with($arg, '--')) {
+            // 长选项
+            $option = substr($arg, 2);
+            if (str_contains($option, '=')) {
+                [$option, $value] = explode('=', $option, 2);
+                $inputOptions[$option] = $value;
+            } else {
+                $inputOptions[$option] = true;
+                $currentOption = $option;
+            }
+        } elseif (str_starts_with($arg, '-')) {
+            // 短选项
+            $option = substr($arg, 1);
+            if (strlen($option) > 1 && $option[1] !== '=') {
+                // 多个短选项，如 -abc
+                for ($j = 0; $j < strlen($option); $j++) {
+                    $inputOptions[$option[$j]] = true;
+                }
+            } else {
+                // 单个短选项，如 -a 或 -a=value
+                if (str_contains($option, '=')) {
+                    [$option, $value] = explode('=', $option, 2);
+                    $inputOptions[$option] = $value;
+                } else {
+                    $inputOptions[$option] = true;
+                    $currentOption = $option;
+                }
+            }
+        } else {
+            // 参数值
+            if ($currentOption !== null) {
+                $inputOptions[$currentOption] = $arg;
+                $currentOption = null;
+            } else {
+                $inputOptions[] = $arg;
+            }
+        }
+    }
+
+    return $inputOptions;
+}

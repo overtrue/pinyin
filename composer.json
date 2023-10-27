@@ -61,7 +61,8 @@
     "pint": "vendor/bin/pint ./src ./tests",
     "fix-style": "vendor/bin/pint ./src ./tests",
     "test": "vendor/bin/phpunit --colors=always",
-    "build": "php ./bin/build"
+    "build": "php ./bin/build",
+    "benchmark": "php ./benchmark/run.php"
   },
   "scripts-descriptions": {
     "test": "Run all tests.",

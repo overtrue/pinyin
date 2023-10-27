@@ -72,8 +72,8 @@ echo Pinyin::sentence('带着希望去旅行，比到达终点更美好');
 echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', 'none');
 // dai zhe xi wang qu lv xing ， bi dao da zhong dian geng mei hao
 
-// 保留所有其他字符
-echo Pinyin::sentenceFull('ル是片假名，π是希腊字母', 'none');
+// 保留所有非汉字字符
+echo Pinyin::fullSentence('ル是片假名，π是希腊字母', 'none');
 // ル shi pian jia ming ，π shi xi la zi mu
 ```
 

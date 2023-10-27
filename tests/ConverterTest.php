@@ -67,6 +67,11 @@ class ConverterTest extends TestCase
         $this->assertPinyin('123 dài zhe xī 456 wàng qù lǚ xíng 789', Converter::make()->noPunctuation()->convert('123带着希456望去旅行789'));
     }
 
+    public function test_noCleanup()
+    {
+        $this->assertPinyin('dài zhe （ xī wàng ） qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng kuài lè 。ル shì piàn jiǎ míng ，π shì xī là zì mǔ 。', Converter::make()->noCleanup()->convert('带着（希望）去旅行，比到达终点更快乐。ル是片假名，π是希腊字母。'));
+    }
+
     public function test_tone_style()
     {
         $this->assertPinyin('chóng qìng', Converter::make()->convert('重庆'));
