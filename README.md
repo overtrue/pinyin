@@ -95,6 +95,9 @@ Pinyin::abbr('带着希望去旅行'); // ['d', 'z', 'x', 'w', 'q', 'l', 'x']
 echo Pinyin::abbr('带着希望去旅行')->join('-'); // d-z-x-w-q-l-x
 echo Pinyin::abbr('你好2018！')->join(''); // nh2018
 echo Pinyin::abbr('Happy New Year! 2018！')->join(''); // HNY2018
+
+// 保留原字符串的英文单词
+echo Pinyin::abbr('CGV电影院', false, true)->join(''); // CGVdyy
 ```
 
 **姓名首字母**
