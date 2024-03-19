@@ -89,6 +89,11 @@ class PinyinTest extends TestCase
 
         $this->assertPinyin(['d', 'f', 's', 'c', 'd', 'z', 'z', '123', 'r'], Pinyin::abbr('Ⅲ度房室传导阻滞123人'));
         $this->assertPinyin(['d', 't', 'f'], Pinyin::abbr('单田芳'));
+
+        // https://github.com/overtrue/pinyin/issues/199
+        $this->assertSame('Cdyy', Pinyin::abbr('CGV电影院')->join(''));
+        $this->assertSame('CGVdyy', Pinyin::abbr('CGV电影院', false, true)->join(''));
+        $this->assertSame('CGV1990dyAy', Pinyin::abbr('CGV1990电影A院', false, true)->join(''));
     }
 
     public function test_name_abbr()

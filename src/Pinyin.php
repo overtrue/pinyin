@@ -76,13 +76,18 @@ class Pinyin
         return self::abbr($string, true);
     }
 
-    public static function abbr(string $string, bool $asName = false): Collection
+    public static function abbr(string $string, bool $asName = false, bool $preserveEnglishWords = false): Collection
     {
         return self::noTone()
             ->noPunctuation()
             ->when($asName, fn ($c) => $c->surname())
             ->convert($string)
-            ->map(function ($pinyin) {
+            ->map(function ($pinyin) use ($string, $preserveEnglishWords) {
+                // 如果内容在原字符串中，则直接返回
+                if ($preserveEnglishWords && str_contains($string, $pinyin)) {
+                    return $pinyin;
+                }
+
                 // 常用于电影名称入库索引处理，例如：《晚娘2012》-> WN2012
                 return \is_numeric($pinyin) || preg_match('/\d{2,}/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
             });
