@@ -346,40 +346,43 @@ class PinyinTest extends TestCase
         $this->assertPinyin(['lǚ', 'xiù', 'cai'], Pinyin::convert('吕秀才'));
         $this->assertPinyin(['lv', 'xiu', 'cai'], Pinyin::yuToV()->noTone()->convert('吕秀才'));
 
-        //175
+        // https://github.com/overtrue/pinyin/issues/175
         $this->assertPinyin('yuán', Pinyin::sentence('貟'));
         $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('貟秀才'));
         $this->assertPinyin(['yùn', 'xiù', 'cai'], Pinyin::name('贠秀才'));
 
-        //183
+        // https://github.com/overtrue/pinyin/issues/183
         $this->assertPinyin('yín háng quàn', Pinyin::sentence('银行券'));
         $this->assertPinyin('xún chá', Pinyin::sentence('询查'));
 
-        //170
+        // https://github.com/overtrue/pinyin/issues/170
         $this->assertPinyin('ké', Pinyin::sentence('咳'));
         $this->assertPinyin('xiǎo ér fèi ké kē lì', Pinyin::sentence('小儿肺咳颗粒'));
 
-        //151
+        // https://github.com/overtrue/pinyin/issues/151
         $this->assertPinyin('gǔ tóu', Pinyin::sentence('骨头'));
 
-        //116
+        // https://github.com/overtrue/pinyin/issues/116
         $this->assertPinyin(['shàn', 'mǒu', 'mǒu'], Pinyin::name('单某某'));
 
-        //106
+        // https://github.com/overtrue/pinyin/issues/106
         $this->assertPinyin('zhēn huán zhuàn', Pinyin::sentence('甄嬛传'));
         $this->assertPinyin('chuán qí', Pinyin::sentence('传奇'));
         $this->assertPinyin('zhuàn jì', Pinyin::sentence('传记'));
         $this->assertPinyin('liú mèng qián', Pinyin::sentence('刘孟乾'));
 
-        //164
+        // https://github.com/overtrue/pinyin/issues/164
         $this->assertPinyin(['ōu', 'mǒu', 'mǒu'], Pinyin::name('区某某'));
         $this->assertPinyin(['yuè', 'mǒu', 'mǒu'], Pinyin::name('乐某某'));
 
-        //119
+        // https://github.com/overtrue/pinyin/issues/119
         $this->assertPinyin(['e', 'e', 'e'], Pinyin::sentence('呃呃呃', 'none'));
         $this->assertPinyin(['wu', 'la', 'gui'], Pinyin::sentence('乌拉圭', 'none'));
 
-        //195
+        // https://github.com/overtrue/pinyin/issues/200
+        $this->assertPinyin(['pú', 'ōu'], Pinyin::sentence('仆区'));
+
+        // https://github.com/overtrue/pinyin/issues/195
         $this->assertSame([
             '你' => ['ni3'],
             '电' => ['dian4'],
