@@ -13,6 +13,22 @@ class ConverterTest extends TestCase
         $this->assertEquals($expected, \is_array($expected) ? $collection->toArray() : $collection->join());
     }
 
+    public function test_heteronym()
+    {
+        $this->assertPinyin(['chóng', 'qìng'], Converter::make()->convert('重庆'));
+
+        $this->assertPinyin([
+            '重' => ['zhòng', 'chóng', 'tóng'],
+            '庆' => ['qìng'],
+        ], Converter::make()->heteronym()->convert('重庆'));
+
+        $this->assertPinyin([
+            ['重' => ['zhòng', 'chóng', 'tóng']],
+            ['庆' => ['qìng']],
+            ['庆' => ['qìng']],
+        ], Converter::make()->heteronym(true)->convert('重庆庆'));
+    }
+
     public function test_polyphonic()
     {
         $this->assertPinyin(['chóng', 'qìng'], Converter::make()->convert('重庆'));

@@ -117,6 +117,33 @@ class PinyinTest extends TestCase
         $this->assertPinyin(['s', 'c', 'y', 'd'], Pinyin::nameAbbr('单单于单'));
     }
 
+    public function test_heteronym()
+    {
+        $this->assertPinyin([
+            '重' => ['zhòng', 'chóng', 'tóng'],
+            '庆' => ['qìng'],
+        ], Pinyin::heteronym('重庆'));
+
+        $this->assertPinyin([
+            '重' => ['zhong', 'chong', 'tong'],
+            '庆' => ['qing'],
+        ], Pinyin::heteronym('重庆', Converter::TONE_STYLE_NONE));
+
+        $this->assertPinyin([
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+        ], Pinyin::heteronym('重庆重庆', Converter::TONE_STYLE_NUMBER, true));
+
+        $this->assertPinyin([
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+            ['重' => ['zhong4', 'chong2', 'tong2']],
+            ['庆' => ['qing4']],
+        ], Pinyin::heteronymAsList('重庆重庆', Converter::TONE_STYLE_NUMBER));
+    }
+
     public function test_polyphones()
     {
         $this->assertPinyin([

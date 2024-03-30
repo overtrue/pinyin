@@ -18,9 +18,9 @@ class Converter
 
     public const TONE_STYLE_NONE = 'none';
 
-    protected bool $polyphonic = false;
+    protected bool $heteronym = false;
 
-    protected bool $polyphonicAsList = false;
+    protected bool $heteronymAsList = false;
 
     protected bool $asSurname = false;
 
@@ -57,12 +57,21 @@ class Converter
         return new static();
     }
 
-    public function polyphonic(bool $asList = false): static
+    public function heteronym(bool $asList = false): static
     {
-        $this->polyphonic = true;
-        $this->polyphonicAsList = $asList;
+        $this->heteronym = true;
+        $this->heteronymAsList = $asList;
 
         return $this;
+    }
+
+    /**
+     * @deprecated Use `heteronym` instead.
+     *             This method will be removed in the next major version.
+     */
+    public function polyphonic(bool $asList = false): static
+    {
+        return $this->heteronym($asList);
     }
 
     public function surname(): static
@@ -166,7 +175,7 @@ class Converter
         return $this;
     }
 
-    public function convert(string $string, callable $beforeSplit = null): Collection
+    public function convert(string $string, ?callable $beforeSplit = null): Collection
     {
         // 把原有的数字和汉字分离，避免拼音转换时被误作声调
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
@@ -179,7 +188,7 @@ class Converter
         }
 
         // 多音字
-        if ($this->polyphonic) {
+        if ($this->heteronym) {
             return $this->convertAsChars($string, true);
         }
 
@@ -211,7 +220,7 @@ class Converter
             if (isset($map[$char])) {
                 if ($polyphonic) {
                     $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
-                    if ($this->polyphonicAsList) {
+                    if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
                         $items[$char] = $pinyin;
