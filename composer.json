@@ -32,7 +32,7 @@
     "phpunit/phpunit": "^10.1",
     "brainmaestro/composer-git-hooks": "^3.0",
     "friendsofphp/php-cs-fixer": "^3.2",
-    "nunomaduro/termwind": "^1.13",
+    "nunomaduro/termwind": "^2.0",
     "laravel/pint": "^1.10"
   },
   "bin": ["bin/pinyin"],
