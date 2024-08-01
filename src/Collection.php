@@ -8,9 +8,7 @@ use Stringable;
 
 class Collection implements ArrayAccess, JsonSerializable, Stringable
 {
-    public function __construct(protected $items = [])
-    {
-    }
+    public function __construct(protected $items = []) {}
 
     public function join(string $separator = ' '): string
     {
