@@ -29,13 +29,15 @@
     "php": ">=8.0.2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^11.2",
+    "phpunit/phpunit": "^10.0|^11.2",
     "brainmaestro/composer-git-hooks": "^3.0",
     "friendsofphp/php-cs-fixer": "^3.2",
     "nunomaduro/termwind": "^2.0",
     "laravel/pint": "^1.10"
   },
-  "bin": ["bin/pinyin"],
+  "bin": [
+    "bin/pinyin"
+  ],
   "extra": {
     "hooks": {
       "pre-commit": [
