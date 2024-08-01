@@ -416,6 +416,13 @@ class PinyinTest extends TestCase
 
         // https://github.com/overtrue/pinyin/issues/207
         $this->assertPinyin(['zhuó'], Pinyin::sentence('琢'));
+        // 玉不琢,不成器
+        $this->assertPinyin(['yù', 'bù', 'zhuó', ',', 'bù', 'chéng', 'qì'], Pinyin::sentence('玉不琢,不成器'));
+        // 玉琢
+        $this->assertPinyin(['yù', 'zhuó'], Pinyin::sentence('玉琢'));
+        // 琢磨
+        // https://dict.revised.moe.edu.tw/dictView.jsp?ID=118935&la=0&powerMode=0
+        $this->assertPinyin(['zhuó', 'mó'], Pinyin::sentence('琢磨'));
 
         // https://github.com/overtrue/pinyin/issues/195
         $this->assertSame([
