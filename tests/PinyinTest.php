@@ -414,6 +414,9 @@ class PinyinTest extends TestCase
         // https://github.com/overtrue/pinyin/issues/200
         $this->assertPinyin(['pú', 'ōu'], Pinyin::sentence('仆区'));
 
+        // https://github.com/overtrue/pinyin/issues/207
+        $this->assertPinyin(['zhuó'], Pinyin::sentence('琢'));
+
         // https://github.com/overtrue/pinyin/issues/195
         $this->assertSame([
             '你' => ['ni3'],

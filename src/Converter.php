@@ -175,7 +175,7 @@ class Converter
         return $this;
     }
 
-    public function convert(string $string, ?callable $beforeSplit = null): Collection
+    public function convert(string $string, callable $beforeSplit = null): Collection
     {
         // 把原有的数字和汉字分离，避免拼音转换时被误作声调
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
