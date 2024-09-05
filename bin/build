@@ -23,7 +23,7 @@ if (!file_exists($wordsSouce)) {
 // ------------------------------------------------
 $surnames = [];
 foreach ($surnamesSource as $line) {
-    [$surname, $pinyin] = explode(',', trim($line));
+    [$surname, $pinyin] = explode(':', trim($line));
 
     $surnames[trim($surname)] = join("\t", ["", ...preg_split('/\s+/', trim($pinyin)), ""]);
 }
