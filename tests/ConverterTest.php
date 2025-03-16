@@ -59,31 +59,31 @@ class ConverterTest extends TestCase
         ], Converter::make()->noWords()->convert('重庆'));
     }
 
-    public function test_onlyHans()
+    public function test_only_hans()
     {
         $this->assertPinyin('dài zhe xī wàng qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->convert('带着希望去旅行，比到达终点更美好'));
         $this->assertPinyin('dài zhe xī wàng qù lǚ xíng bǐ dào dá zhōng diǎn gèng měi hǎo', Converter::make()->onlyHans()->convert('带着希望去旅行，比到达终点更美好'));
     }
 
-    public function test_noAlpha()
+    public function test_no_alpha()
     {
         $this->assertPinyin('abc dài zhe xī def wàng qù lǚ xíng jkl', Converter::make()->convert('abc带着希def望去旅行jkl'));
         $this->assertPinyin('dài zhe xī wàng qù lǚ xíng', Converter::make()->noAlpha()->convert('abc带着希def望去旅行jkl'));
     }
 
-    public function test_noNumber()
+    public function test_no_number()
     {
         $this->assertPinyin('123 dài zhe xī 456 wàng qù lǚ xíng 789', Converter::make()->convert('123带着希456望去旅行789'));
         $this->assertPinyin('dài zhe xī wàng qù lǚ xíng', Converter::make()->noNumber()->convert('123带着希456望去旅行789'));
     }
 
-    public function test_noPunctuation()
+    public function test_no_punctuation()
     {
         $this->assertPinyin('123 dài , zhe " xī wàng " qù lǚ xíng 789?', Converter::make()->convert('123带,着"希望"去旅行789?'));
         $this->assertPinyin('123 dài zhe xī 456 wàng qù lǚ xíng 789', Converter::make()->noPunctuation()->convert('123带着希456望去旅行789'));
     }
 
-    public function test_noCleanup()
+    public function test_no_cleanup()
     {
         $this->assertPinyin('dài zhe （ xī wàng ） qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng kuài lè 。ル shì piàn jiǎ míng ，π shì xī là zì mǔ 。', Converter::make()->noCleanup()->convert('带着（希望）去旅行，比到达终点更快乐。ル是片假名，π是希腊字母。'));
     }
