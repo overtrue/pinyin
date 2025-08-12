@@ -6,7 +6,7 @@ use Overtrue\Pinyin\Collection;
 
 /**
  * 智能版本的转换器
- * 
+ *
  * 特点：
  * - 根据文本长度智能选择策略
  * - 短文本跳过不必要的长词词典
@@ -16,8 +16,11 @@ use Overtrue\Pinyin\Collection;
 class SmartConverter extends AbstractConverter
 {
     private static ?array $surnamesCache = null;
+
     private static ?array $commonWordsCache = null;
+
     private static array $segmentCache = [];
+
     private const MAX_CACHE_SEGMENTS = 3;
 
     public function convert(string $string): Collection
@@ -47,20 +50,20 @@ class SmartConverter extends AbstractConverter
     private function smartConvert(string $string): string
     {
         $textLength = mb_strlen($string);
-        
+
         // 分析文本特征
         $startSegment = $this->analyzeTextComplexity($string, $textLength);
-        
+
         // 短文本优化：使用缓存
         if ($textLength < 50 && $startSegment > 5) {
             return $this->convertWithCache($string, $startSegment);
         }
-        
+
         // 标准处理
         for ($i = $startSegment; $i < self::SEGMENTS_COUNT; $i++) {
             $string = strtr($string, require sprintf(self::WORDS_PATH, $i));
         }
-        
+
         return $string;
     }
 
@@ -70,17 +73,17 @@ class SmartConverter extends AbstractConverter
         if ($length < 10) {
             return 6;
         }
-        
+
         // 短文本（<30字）：跳过长词典
         if ($length < 30) {
             return 3;
         }
-        
+
         // 中等文本（<100字）：跳过超长词典
         if ($length < 100) {
             return 1;
         }
-        
+
         // 长文本：加载全部
         return 0;
     }
@@ -89,7 +92,7 @@ class SmartConverter extends AbstractConverter
     {
         // 缓存最近使用的几个段
         for ($i = $startSegment; $i < self::SEGMENTS_COUNT; $i++) {
-            if (!isset(self::$segmentCache[$i])) {
+            if (! isset(self::$segmentCache[$i])) {
                 // 缓存数量限制
                 if (count(self::$segmentCache) >= self::MAX_CACHE_SEGMENTS) {
                     // 移除最早的缓存（简单的FIFO）
@@ -99,7 +102,7 @@ class SmartConverter extends AbstractConverter
             }
             $string = strtr($string, self::$segmentCache[$i]);
         }
-        
+
         return $string;
     }
 
@@ -110,7 +113,7 @@ class SmartConverter extends AbstractConverter
 
         $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
         $items = [];
-        
+
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
@@ -159,13 +162,13 @@ class SmartConverter extends AbstractConverter
     {
         $cacheCount = count(self::$segmentCache);
         $estimatedSize = $cacheCount * 200; // 每段约200KB
-        
+
         return [
             'strategy' => 'smart',
             'peak_memory' => '~600KB-1.5MB',
             'persistent_cache' => 'partial',
             'cached_segments' => $cacheCount,
-            'estimated_cache_size' => $estimatedSize . 'KB',
+            'estimated_cache_size' => $estimatedSize.'KB',
             'description' => '智能策略，根据文本特征优化',
         ];
     }

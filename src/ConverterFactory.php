@@ -2,58 +2,59 @@
 
 namespace Overtrue\Pinyin;
 
-use Overtrue\Pinyin\Contracts\ConverterInterface;
-use Overtrue\Pinyin\Converters\MemoryOptimizedConverter;
-use Overtrue\Pinyin\Converters\CachedConverter;
-use Overtrue\Pinyin\Converters\SmartConverter;
 use InvalidArgumentException;
+use Overtrue\Pinyin\Contracts\ConverterInterface;
+use Overtrue\Pinyin\Converters\CachedConverter;
+use Overtrue\Pinyin\Converters\MemoryOptimizedConverter;
+use Overtrue\Pinyin\Converters\SmartConverter;
 
 /**
  * Converter 工厂类
- * 
+ *
  * 提供不同策略的 Converter 实例
  */
 class ConverterFactory
 {
     public const MEMORY_OPTIMIZED = 'memory';
+
     public const CACHED = 'cached';
+
     public const SMART = 'smart';
-    
+
     /**
      * 默认策略
      */
     private static string $defaultStrategy = self::MEMORY_OPTIMIZED;
-    
+
     /**
      * 创建 Converter 实例
-     * 
-     * @param string|null $strategy 策略名称，null 则使用默认策略
-     * @return ConverterInterface
+     *
+     * @param  string|null  $strategy  策略名称，null 则使用默认策略
      */
     public static function make(?string $strategy = null): ConverterInterface
     {
         $strategy = $strategy ?? self::$defaultStrategy;
-        
+
         return match ($strategy) {
-            self::MEMORY_OPTIMIZED => new MemoryOptimizedConverter(),
-            self::CACHED => new CachedConverter(),
-            self::SMART => new SmartConverter(),
+            self::MEMORY_OPTIMIZED => new MemoryOptimizedConverter,
+            self::CACHED => new CachedConverter,
+            self::SMART => new SmartConverter,
             default => throw new InvalidArgumentException("Unknown converter strategy: {$strategy}")
         };
     }
-    
+
     /**
      * 设置默认策略
      */
     public static function setDefaultStrategy(string $strategy): void
     {
-        if (!in_array($strategy, [self::MEMORY_OPTIMIZED, self::CACHED, self::SMART])) {
+        if (! in_array($strategy, [self::MEMORY_OPTIMIZED, self::CACHED, self::SMART])) {
             throw new InvalidArgumentException("Invalid strategy: {$strategy}");
         }
-        
+
         self::$defaultStrategy = $strategy;
     }
-    
+
     /**
      * 获取当前默认策略
      */
@@ -61,11 +62,11 @@ class ConverterFactory
     {
         return self::$defaultStrategy;
     }
-    
+
     /**
      * 根据场景推荐策略
-     * 
-     * @param array $context 场景上下文
+     *
+     * @param  array  $context  场景上下文
      * @return string 推荐的策略
      */
     public static function recommend(array $context = []): string
@@ -74,22 +75,22 @@ class ConverterFactory
         if (($context['sapi'] ?? php_sapi_name()) === 'fpm-fcgi') {
             return self::MEMORY_OPTIMIZED;
         }
-        
+
         // CLI 批处理场景
         if (($context['batch'] ?? false) === true) {
             return self::CACHED;
         }
-        
+
         // 内存限制场景
         $memoryLimit = ini_get('memory_limit');
         if ($memoryLimit !== '-1' && self::parseBytes($memoryLimit) < 128 * 1024 * 1024) {
             return self::MEMORY_OPTIMIZED;
         }
-        
+
         // 默认使用智能策略
         return self::SMART;
     }
-    
+
     /**
      * 获取所有可用策略的信息
      */
@@ -119,13 +120,13 @@ class ConverterFactory
             ],
         ];
     }
-    
+
     private static function parseBytes(string $value): int
     {
         $value = trim($value);
         $last = strtolower($value[strlen($value) - 1]);
         $value = (int) $value;
-        
+
         switch ($last) {
             case 'g':
                 $value *= 1024;
@@ -134,7 +135,7 @@ class ConverterFactory
             case 'k':
                 $value *= 1024;
         }
-        
+
         return $value;
     }
 }

@@ -6,7 +6,7 @@ use Overtrue\Pinyin\Collection;
 
 /**
  * 内存优化版本的转换器
- * 
+ *
  * 特点：
  * - 最小内存占用（峰值 ~400KB）
  * - 每次加载一个段，用完即释放
@@ -46,7 +46,7 @@ class MemoryOptimizedConverter extends AbstractConverter
 
         $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
         $items = [];
-        
+
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {

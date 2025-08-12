@@ -2,10 +2,10 @@
 
 namespace Overtrue\Pinyin\Tests;
 
-use Overtrue\Pinyin\Pinyin;
 use Overtrue\Pinyin\ConverterFactory;
 use Overtrue\Pinyin\Converters\CachedConverter;
 use Overtrue\Pinyin\Converters\SmartConverter;
+use Overtrue\Pinyin\Pinyin;
 use PHPUnit\Framework\TestCase;
 
 class PinyinStrategyTest extends TestCase
@@ -21,7 +21,7 @@ class PinyinStrategyTest extends TestCase
         // 清理缓存
         CachedConverter::clearCache();
         SmartConverter::clearCache();
-        
+
         // 重置为默认策略
         Pinyin::useMemoryOptimized();
     }
@@ -33,28 +33,28 @@ class PinyinStrategyTest extends TestCase
     {
         // 默认应该是内存优化策略
         $this->assertEquals(
-            ConverterFactory::MEMORY_OPTIMIZED, 
+            ConverterFactory::MEMORY_OPTIMIZED,
             ConverterFactory::getDefaultStrategy()
         );
-        
+
         // 切换到缓存策略
         Pinyin::useCached();
         $this->assertEquals(
-            ConverterFactory::CACHED, 
+            ConverterFactory::CACHED,
             ConverterFactory::getDefaultStrategy()
         );
-        
+
         // 切换到智能策略
         Pinyin::useSmart();
         $this->assertEquals(
-            ConverterFactory::SMART, 
+            ConverterFactory::SMART,
             ConverterFactory::getDefaultStrategy()
         );
-        
+
         // 切换回内存优化策略
         Pinyin::useMemoryOptimized();
         $this->assertEquals(
-            ConverterFactory::MEMORY_OPTIMIZED, 
+            ConverterFactory::MEMORY_OPTIMIZED,
             ConverterFactory::getDefaultStrategy()
         );
     }
@@ -65,37 +65,43 @@ class PinyinStrategyTest extends TestCase
     public function test_pinyin_methods_with_different_strategies()
     {
         $strategies = [
-            'memory' => function() { Pinyin::useMemoryOptimized(); },
-            'cached' => function() { Pinyin::useCached(); },
-            'smart' => function() { Pinyin::useSmart(); },
+            'memory' => function () {
+                Pinyin::useMemoryOptimized();
+            },
+            'cached' => function () {
+                Pinyin::useCached();
+            },
+            'smart' => function () {
+                Pinyin::useSmart();
+            },
         ];
 
         foreach ($strategies as $name => $setup) {
             $setup();
-            
+
             // 测试 sentence
             $result = Pinyin::sentence('你好世界');
-            $this->assertEquals('nǐ hǎo shì jiè', $result->join(' '), 
+            $this->assertEquals('nǐ hǎo shì jiè', $result->join(' '),
                 "sentence() failed with {$name} strategy");
-            
+
             // 测试 phrase
             $result = Pinyin::phrase('你好，世界！');
-            $this->assertEquals('nǐ hǎo shì jiè', $result->join(' '), 
+            $this->assertEquals('nǐ hǎo shì jiè', $result->join(' '),
                 "phrase() failed with {$name} strategy");
-            
+
             // 测试 name
             $result = Pinyin::name('单田芳');
-            $this->assertEquals('shàn tián fāng', $result->join(' '), 
+            $this->assertEquals('shàn tián fāng', $result->join(' '),
                 "name() failed with {$name} strategy");
-            
+
             // 测试 abbr
             $result = Pinyin::abbr('带着希望去旅行');
-            $this->assertEquals(['d', 'z', 'x', 'w', 'q', 'l', 'x'], $result->toArray(), 
+            $this->assertEquals(['d', 'z', 'x', 'w', 'q', 'l', 'x'], $result->toArray(),
                 "abbr() failed with {$name} strategy");
-            
+
             // 测试 permalink
             $result = Pinyin::permalink('带着希望去旅行');
-            $this->assertEquals('dai-zhe-xi-wang-qu-lv-xing', $result, 
+            $this->assertEquals('dai-zhe-xi-wang-qu-lv-xing', $result,
                 "permalink() failed with {$name} strategy");
         }
     }
@@ -106,19 +112,19 @@ class PinyinStrategyTest extends TestCase
     public function test_auto_strategy()
     {
         Pinyin::useAutoStrategy();
-        
+
         // 应该选择了一个有效的策略
         $validStrategies = [
             ConverterFactory::MEMORY_OPTIMIZED,
             ConverterFactory::CACHED,
             ConverterFactory::SMART,
         ];
-        
+
         $this->assertContains(
             ConverterFactory::getDefaultStrategy(),
             $validStrategies
         );
-        
+
         // 功能应该正常
         $result = Pinyin::sentence('你好世界');
         $this->assertEquals(['nǐ', 'hǎo', 'shì', 'jiè'], $result->toArray());
@@ -134,7 +140,7 @@ class PinyinStrategyTest extends TestCase
             ConverterFactory::CACHED,
             ConverterFactory::getDefaultStrategy()
         );
-        
+
         $result = Pinyin::sentence('你好');
         $this->assertEquals(['nǐ', 'hǎo'], $result->toArray());
     }
@@ -146,7 +152,7 @@ class PinyinStrategyTest extends TestCase
     {
         $text = '中华人民共和国';
         $iterations = 50;
-        
+
         // 内存优化策略
         Pinyin::useMemoryOptimized();
         $start = microtime(true);
@@ -154,17 +160,17 @@ class PinyinStrategyTest extends TestCase
             Pinyin::sentence($text);
         }
         $memoryTime = microtime(true) - $start;
-        
+
         // 缓存策略（预热）
         Pinyin::useCached();
         Pinyin::sentence($text); // 预热缓存
-        
+
         $start = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
             Pinyin::sentence($text);
         }
         $cachedTime = microtime(true) - $start;
-        
+
         // 缓存策略应该更快
         $this->assertLessThan($memoryTime, $cachedTime,
             'Cached strategy should be faster for repeated conversions');
@@ -176,18 +182,24 @@ class PinyinStrategyTest extends TestCase
     public function test_heteronym_with_different_strategies()
     {
         $strategies = [
-            'memory' => function() { Pinyin::useMemoryOptimized(); },
-            'cached' => function() { Pinyin::useCached(); },
-            'smart' => function() { Pinyin::useSmart(); },
+            'memory' => function () {
+                Pinyin::useMemoryOptimized();
+            },
+            'cached' => function () {
+                Pinyin::useCached();
+            },
+            'smart' => function () {
+                Pinyin::useSmart();
+            },
         ];
 
         foreach ($strategies as $name => $setup) {
             $setup();
-            
+
             $result = Pinyin::heteronym('重庆');
             $array = $result->toArray();
-            
-            $this->assertArrayHasKey('重', $array, 
+
+            $this->assertArrayHasKey('重', $array,
                 "heteronym() failed with {$name} strategy");
             $this->assertIsArray($array['重']);
             $this->assertContains('zhòng', $array['重']);
@@ -206,14 +218,14 @@ class PinyinStrategyTest extends TestCase
             ->noPunctuation()
             ->convert('你好，世界！');
         $this->assertEquals(['ni', 'hao', 'shi', 'jie'], $result->toArray());
-        
+
         // 切换到缓存策略
         Pinyin::useCached();
         $result = Pinyin::noTone()
             ->noPunctuation()
             ->convert('你好，世界！');
         $this->assertEquals(['ni', 'hao', 'shi', 'jie'], $result->toArray());
-        
+
         // 切换到智能策略
         Pinyin::useSmart();
         $result = Pinyin::noTone()
@@ -231,12 +243,12 @@ class PinyinStrategyTest extends TestCase
         Pinyin::useCached();
         $result1 = Pinyin::sentence('你好');
         $this->assertEquals(['nǐ', 'hǎo'], $result1->toArray());
-        
+
         // 切换到内存优化策略
         Pinyin::useMemoryOptimized();
         $result2 = Pinyin::sentence('世界');
         $this->assertEquals(['shì', 'jiè'], $result2->toArray());
-        
+
         // 再切换回缓存策略，之前的缓存应该还在
         Pinyin::useCached();
         $result3 = Pinyin::sentence('你好');
@@ -251,14 +263,14 @@ class PinyinStrategyTest extends TestCase
         // 原有的使用方式应该仍然有效
         $converter = Pinyin::converter();
         $this->assertNotNull($converter);
-        
+
         // 所有原有的静态方法应该正常工作
         $methods = [
             'sentence' => ['你好世界', ['nǐ', 'hǎo', 'shì', 'jiè']],
             'phrase' => ['你好世界', ['nǐ', 'hǎo', 'shì', 'jiè']],
             'chars' => ['你好', ['你' => 'nǐ', '好' => 'hǎo']],
         ];
-        
+
         foreach ($methods as $method => $testCase) {
             [$input, $expected] = $testCase;
             $result = Pinyin::$method($input);
@@ -279,16 +291,22 @@ class PinyinStrategyTest extends TestCase
             '你好123ABC' => ['nǐ', 'hǎo', '123ABC'],
             '😀' => [],  // Emoji
         ];
-        
+
         $strategies = [
-            'memory' => function() { Pinyin::useMemoryOptimized(); },
-            'cached' => function() { Pinyin::useCached(); },
-            'smart' => function() { Pinyin::useSmart(); },
+            'memory' => function () {
+                Pinyin::useMemoryOptimized();
+            },
+            'cached' => function () {
+                Pinyin::useCached();
+            },
+            'smart' => function () {
+                Pinyin::useSmart();
+            },
         ];
-        
+
         foreach ($strategies as $name => $setup) {
             $setup();
-            
+
             foreach ($edgeCases as $input => $expected) {
                 $result = Pinyin::sentence($input);
                 $this->assertEquals($expected, $result->toArray(),

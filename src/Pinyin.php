@@ -119,28 +119,27 @@ class Pinyin
 
     /**
      * 获取 Converter 实例
-     * 
-     * @param string|null $strategy 指定策略，null 则使用默认策略
-     * @return ConverterInterface|Converter
+     *
+     * @param  string|null  $strategy  指定策略，null 则使用默认策略
      */
     public static function converter(?string $strategy = null): ConverterInterface|Converter
     {
         // 向后兼容：如果没有指定策略，使用配置的策略或默认策略
         $strategy = $strategy ?? self::$converterStrategy;
-        
+
         // 如果类存在（向后兼容），使用原 Converter
         if ($strategy === null && class_exists(Converter::class)) {
             return Converter::make();
         }
-        
+
         // 使用新的工厂模式
         return ConverterFactory::make($strategy);
     }
 
     /**
      * 设置默认转换策略
-     * 
-     * @param string $strategy 策略名称
+     *
+     * @param  string  $strategy  策略名称
      */
     public static function setConverterStrategy(string $strategy): void
     {

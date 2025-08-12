@@ -8,20 +8,31 @@ use Overtrue\Pinyin\Contracts\ConverterInterface;
 abstract class AbstractConverter implements ConverterInterface
 {
     protected const SEGMENTS_COUNT = 10;
+
     protected const WORDS_PATH = __DIR__.'/../../data/words-%s.php';
+
     protected const CHARS_PATH = __DIR__.'/../../data/chars.php';
+
     protected const SURNAMES_PATH = __DIR__.'/../../data/surnames.php';
 
     public const TONE_STYLE_SYMBOL = 'symbol';
+
     public const TONE_STYLE_NUMBER = 'number';
+
     public const TONE_STYLE_NONE = 'none';
 
     protected bool $heteronym = false;
+
     protected bool $heteronymAsList = false;
+
     protected bool $asSurname = false;
+
     protected bool $noWords = false;
+
     protected bool $cleanup = true;
+
     protected string $yuTo = 'v';
+
     protected string $toneStyle = self::TONE_STYLE_SYMBOL;
 
     protected array $regexps = [
@@ -35,31 +46,35 @@ abstract class AbstractConverter implements ConverterInterface
     ];
 
     abstract public function convert(string $string): Collection;
-    
+
     abstract public function getMemoryUsage(): array;
 
     public function heteronym(bool $asList = false): static
     {
         $this->heteronym = true;
         $this->heteronymAsList = $asList;
+
         return $this;
     }
 
     public function surname(): static
     {
         $this->asSurname = true;
+
         return $this;
     }
 
     public function noWords(): static
     {
         $this->noWords = true;
+
         return $this;
     }
 
     public function noCleanup(): static
     {
         $this->cleanup = false;
+
         return $this;
     }
 
@@ -69,60 +84,70 @@ abstract class AbstractConverter implements ConverterInterface
         unset($this->regexps['alphabet']);
         unset($this->regexps['number']);
         unset($this->regexps['punctuation']);
+
         return $this;
     }
 
     public function noAlpha(): static
     {
         unset($this->regexps['alphabet']);
+
         return $this;
     }
 
     public function noNumber(): static
     {
         unset($this->regexps['number']);
+
         return $this;
     }
 
     public function noPunctuation(): static
     {
         unset($this->regexps['punctuation']);
+
         return $this;
     }
 
     public function withToneStyle(string $toneStyle): static
     {
         $this->toneStyle = $toneStyle;
+
         return $this;
     }
 
     public function noTone(): static
     {
         $this->toneStyle = self::TONE_STYLE_NONE;
+
         return $this;
     }
 
     public function useNumberTone(): static
     {
         $this->toneStyle = self::TONE_STYLE_NUMBER;
+
         return $this;
     }
 
     public function yuToV(): static
     {
         $this->yuTo = 'v';
+
         return $this;
     }
 
     public function yuToU(): static
     {
         $this->yuTo = 'u';
+
         return $this;
     }
 
     public function yuToYu(): static
     {
         $this->yuTo = 'yu';
+
         return $this;
     }
 
@@ -131,6 +156,7 @@ abstract class AbstractConverter implements ConverterInterface
         if ($condition) {
             $callback($this);
         }
+
         return $this;
     }
 

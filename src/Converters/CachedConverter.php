@@ -6,7 +6,7 @@ use Overtrue\Pinyin\Collection;
 
 /**
  * 缓存版本的转换器
- * 
+ *
  * 特点：
  * - 缓存所有词典数据
  * - 更快的重复转换速度
@@ -16,8 +16,11 @@ use Overtrue\Pinyin\Collection;
 class CachedConverter extends AbstractConverter
 {
     private static ?array $charsCache = null;
+
     private static ?array $surnamesCache = null;
+
     private static array $wordsCache = [];
+
     private static ?array $fullDictionary = null;
 
     public function convert(string $string): Collection
@@ -54,14 +57,16 @@ class CachedConverter extends AbstractConverter
                 self::$fullDictionary += $this->loadWordsSegment($i);
             }
         }
+
         return self::$fullDictionary;
     }
 
     private function loadWordsSegment(int $index): array
     {
-        if (!isset(self::$wordsCache[$index])) {
+        if (! isset(self::$wordsCache[$index])) {
             self::$wordsCache[$index] = require sprintf(self::WORDS_PATH, $index);
         }
+
         return self::$wordsCache[$index];
     }
 
@@ -73,7 +78,7 @@ class CachedConverter extends AbstractConverter
 
         $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
         $items = [];
-        
+
         foreach ($chars as $char) {
             if (isset(self::$charsCache[$char])) {
                 if ($polyphonic) {
@@ -132,7 +137,7 @@ class CachedConverter extends AbstractConverter
             'strategy' => 'cached',
             'peak_memory' => '~4MB',
             'persistent_cache' => true,
-            'cache_size' => round($cacheSize / 1024 / 1024, 2) . 'MB',
+            'cache_size' => round($cacheSize / 1024 / 1024, 2).'MB',
             'description' => '全缓存，适合批处理和长时运行',
         ];
     }

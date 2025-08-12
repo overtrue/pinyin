@@ -15,12 +15,12 @@ $textLength = mb_strlen($text);
 
 // ========== 原有的单策略测试 ==========
 $html = [];
-$methods = ['sentence','fullSentence','name','passportName','phrase','permalink','polyphones','chars','abbr','nameAbbr'];
+$methods = ['sentence', 'fullSentence', 'name', 'passportName', 'phrase', 'permalink', 'polyphones', 'chars', 'abbr', 'nameAbbr'];
 
 // 使用默认策略（内存优化）运行原有测试
 foreach ($methods as $method) {
     $start = microtime(true);
-    $result = call_user_func(Pinyin::class.'::'.$method, $text);
+    $result = call_user_func(Pinyin::class . '::' . $method, $text);
     $usage = round(microtime(true) - $start, 5) * 1000;
     $sample = mb_substr(is_array($result) ? implode(' ', $result) : (string) $result, 0, 30);
 
@@ -39,19 +39,25 @@ $strategies = [
     'memory' => [
         'name' => 'Memory Optimized',
         'short_name' => 'Memory',
-        'setup' => function() { Pinyin::useMemoryOptimized(); },
+        'setup' => function () {
+            Pinyin::useMemoryOptimized();
+        },
         'color' => 'text-blue-500',
     ],
     'cached' => [
         'name' => 'Cached',
         'short_name' => 'Cached',
-        'setup' => function() { Pinyin::useCached(); },
+        'setup' => function () {
+            Pinyin::useCached();
+        },
         'color' => 'text-green-500',
     ],
     'smart' => [
         'name' => 'Smart',
         'short_name' => 'Smart',
-        'setup' => function() { Pinyin::useSmart(); },
+        'setup' => function () {
+            Pinyin::useSmart();
+        },
         'color' => 'text-yellow-500',
     ],
 ];
@@ -62,17 +68,17 @@ $results = [];
 foreach ($strategies as $strategyKey => $strategy) {
     $strategy['setup']();
     $strategyStart = microtime(true);
-    
+
     foreach ($methods as $method) {
         $start = microtime(true);
-        $result = call_user_func(Pinyin::class.'::'.$method, $text);
+        $result = call_user_func(Pinyin::class . '::' . $method, $text);
         $usage = round(microtime(true) - $start, 5) * 1000;
-        
+
         $results[$strategyKey][$method] = [
             'time' => $usage,
         ];
     }
-    
+
     $results[$strategyKey]['total'] = round(microtime(true) - $strategyStart, 5) * 1000;
 }
 
@@ -97,22 +103,22 @@ $comparisonHtml[] = '</tr>';
 foreach ($methods as $method) {
     $comparisonHtml[] = '<tr>';
     $comparisonHtml[] = '<td class="text-teal-500">' . $method . '</td>';
-    
+
     $times = [];
     foreach ($strategies as $strategyKey => $strategy) {
         $time = $results[$strategyKey][$method]['time'];
         $times[$strategyKey] = $time;
         $comparisonHtml[] = '<td class="text-center">' . sprintf('%.2f ms', $time) . '</td>';
     }
-    
+
     // 找出最快的策略
     $minTime = min($times);
     $maxTime = max($times);
     $bestStrategy = array_search($minTime, $times);
-    
-    $comparisonHtml[] = '<td class="text-center ' . $strategies[$bestStrategy]['color'] . '">' . 
-             $strategies[$bestStrategy]['short_name'] . '</td>';
-    
+
+    $comparisonHtml[] = '<td class="text-center ' . $strategies[$bestStrategy]['color'] . '">' .
+        $strategies[$bestStrategy]['short_name'] . '</td>';
+
     // 计算加速比
     $speedup = $maxTime > 0 ? sprintf('%.1fx', $maxTime / $minTime) : '-';
     $comparisonHtml[] = '<td class="text-center">' . $speedup . '</td>';
@@ -131,12 +137,14 @@ foreach ($strategies as $strategyKey => $strategy) {
     $totalTime = $results[$strategyKey]['total'];
     $totalTimes[$strategyKey] = $totalTime;
     $isFastest = false;
-    
+
     // 预先检查是否是最快的
-    $minTotal = min(array_values($results)['memory']['total'] ?? PHP_FLOAT_MAX, 
-                    array_values($results)['cached']['total'] ?? PHP_FLOAT_MAX,
-                    array_values($results)['smart']['total'] ?? PHP_FLOAT_MAX);
-    
+    $minTotal = min(
+        array_values($results)['memory']['total'] ?? PHP_FLOAT_MAX,
+        array_values($results)['cached']['total'] ?? PHP_FLOAT_MAX,
+        array_values($results)['smart']['total'] ?? PHP_FLOAT_MAX
+    );
+
     if ($totalTime == $minTotal) {
         $comparisonHtml[] = '<td class="text-center font-bold ' . $strategy['color'] . '">' . sprintf('%.2f ms', $totalTime) . '</td>';
     } else {
@@ -148,8 +156,8 @@ $minTotal = min($totalTimes);
 $maxTotal = max($totalTimes);
 $bestTotal = array_search($minTotal, $totalTimes);
 
-$comparisonHtml[] = '<td class="text-center font-bold ' . $strategies[$bestTotal]['color'] . '">' . 
-         $strategies[$bestTotal]['short_name'] . '</td>';
+$comparisonHtml[] = '<td class="text-center font-bold ' . $strategies[$bestTotal]['color'] . '">' .
+    $strategies[$bestTotal]['short_name'] . '</td>';
 
 // 总体加速比
 $totalSpeedup = $maxTotal > 0 ? sprintf('%.1fx', $maxTotal / $minTotal) : '-';
@@ -193,7 +201,7 @@ if (isset($totalTimes['cached']) && isset($totalTimes['memory'])) {
         <div>• <span class="text-green-500">Cached strategy</span> is <span class="font-bold">%.2fx faster</span> than Memory Optimized</div>',
         $cacheSpeedup
     );
-    
+
     if (isset($totalTimes['smart'])) {
         $smartVsMemory = round($totalTimes['memory'] / $totalTimes['smart'], 2);
         $smartVsCached = round($totalTimes['smart'] / $totalTimes['cached'], 2);
@@ -210,12 +218,12 @@ $totalUsage = round(microtime(true) - $totalStart, 5) * 1000;
 render(<<<"HTML"
     <div class="m-2">
         <div class="px-1 bg-green-600 text-white">Pinyin Benchmark</div>
-        
+
         <div class="py-1">
             Converted <span class="text-teal-500">{$textLength}</span> chars with following methods:
         </div>
-        
-        <div class="mt-2 mb-1 text-yellow-500">Standard Test (Memory Optimized Strategy):</div>
+
+        <div class="text-yellow-500">Standard Test (Memory Optimized Strategy):</div>
         <table>
             <thead>
                 <tr>
@@ -226,20 +234,20 @@ render(<<<"HTML"
             </thead>
             {$htmlOriginal}
         </table>
-        
+
         <div class="mt-1">
             Default strategy usage: <span class="text-green-500">{$defaultTotalUsage}</span>ms
         </div>
-        
-        <div class="mt-4 mb-1 text-yellow-500">Strategy Comparison:</div>
+
+        <div class="my-1 text-yellow-500">Strategy Comparison:</div>
         <table>
             <thead>
                 {$comparisonTable}
             </thead>
         </table>
-        
+
         {$speedupSummary}
-        
+
         <div class="mt-3 mb-1 text-yellow-500">Memory Usage:</div>
         <table>
             <thead>
@@ -251,11 +259,11 @@ render(<<<"HTML"
             </thead>
             {$memoryTable}
         </table>
-        
-        <div class="mt-3">
+
+        <div class="mt-1">
             <div>Total benchmark time: <span class="text-green-500">{$totalUsage}</span>ms</div>
         </div>
-        
+
         <div class="mt-3 text-gray-500">
             <div>💡 Tips:</div>
             <div>• <span class="text-blue-500">Memory Optimized</span>: Best for web requests with limited memory</div>
