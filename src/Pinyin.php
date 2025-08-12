@@ -3,25 +3,31 @@
 namespace Overtrue\Pinyin;
 
 use InvalidArgumentException;
+use Overtrue\Pinyin\Contracts\ConverterInterface;
 
 /**
- * @method static Converter surname()
- * @method static Converter noWords()
- * @method static Converter onlyHans()
- * @method static Converter noAlpha()
- * @method static Converter noNumber()
- * @method static Converter noCleanup()
- * @method static Converter noPunctuation()
- * @method static Converter noTone()
- * @method static Converter useNumberTone()
- * @method static Converter yuToV()
- * @method static Converter yuToU()
- * @method static Converter polyphonic(bool $asList = false)
- * @method static Converter withToneStyle(string $toneStyle = 'symbol')
+ * @method static ConverterInterface surname()
+ * @method static ConverterInterface noWords()
+ * @method static ConverterInterface onlyHans()
+ * @method static ConverterInterface noAlpha()
+ * @method static ConverterInterface noNumber()
+ * @method static ConverterInterface noCleanup()
+ * @method static ConverterInterface noPunctuation()
+ * @method static ConverterInterface noTone()
+ * @method static ConverterInterface useNumberTone()
+ * @method static ConverterInterface yuToV()
+ * @method static ConverterInterface yuToU()
+ * @method static ConverterInterface polyphonic(bool $asList = false)
+ * @method static ConverterInterface withToneStyle(string $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
 class Pinyin
 {
+    /**
+     * 当前使用的转换策略
+     */
+    private static ?string $converterStrategy = null;
+
     public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
     {
         return self::converter()->surname()->withToneStyle($toneStyle)->convert($name);
@@ -111,9 +117,68 @@ class Pinyin
             });
     }
 
-    public static function converter(): Converter
+    /**
+     * 获取 Converter 实例
+     * 
+     * @param string|null $strategy 指定策略，null 则使用默认策略
+     * @return ConverterInterface
+     */
+    public static function converter(?string $strategy = null): ConverterInterface
     {
-        return Converter::make();
+        // 向后兼容：如果没有指定策略，使用配置的策略或默认策略
+        $strategy = $strategy ?? self::$converterStrategy;
+        
+        // 如果类存在（向后兼容），使用原 Converter
+        if ($strategy === null && class_exists(Converter::class)) {
+            return Converter::make();
+        }
+        
+        // 使用新的工厂模式
+        return ConverterFactory::make($strategy);
+    }
+
+    /**
+     * 设置默认转换策略
+     * 
+     * @param string $strategy 策略名称
+     */
+    public static function setConverterStrategy(string $strategy): void
+    {
+        self::$converterStrategy = $strategy;
+        ConverterFactory::setDefaultStrategy($strategy);
+    }
+
+    /**
+     * 使用内存优化策略
+     */
+    public static function useMemoryOptimized(): void
+    {
+        self::setConverterStrategy(ConverterFactory::MEMORY_OPTIMIZED);
+    }
+
+    /**
+     * 使用缓存策略
+     */
+    public static function useCached(): void
+    {
+        self::setConverterStrategy(ConverterFactory::CACHED);
+    }
+
+    /**
+     * 使用智能策略
+     */
+    public static function useSmart(): void
+    {
+        self::setConverterStrategy(ConverterFactory::SMART);
+    }
+
+    /**
+     * 根据运行环境自动选择策略
+     */
+    public static function useAutoStrategy(): void
+    {
+        $strategy = ConverterFactory::recommend();
+        self::setConverterStrategy($strategy);
     }
 
     public static function __callStatic(string $name, array $arguments)
