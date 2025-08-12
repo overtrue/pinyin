@@ -13,7 +13,6 @@
   <testsuites>
     <testsuite name="overtrue/pinyin Test Suite (All PHP version)">
       <directory>./tests/</directory>
-      <exclude>./tests/*.php</exclude>
     </testsuite>
   </testsuites>
 </phpunit>
