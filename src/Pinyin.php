@@ -6,19 +6,19 @@ use InvalidArgumentException;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
 
 /**
- * @method static ConverterInterface surname()
- * @method static ConverterInterface noWords()
- * @method static ConverterInterface onlyHans()
- * @method static ConverterInterface noAlpha()
- * @method static ConverterInterface noNumber()
- * @method static ConverterInterface noCleanup()
- * @method static ConverterInterface noPunctuation()
- * @method static ConverterInterface noTone()
- * @method static ConverterInterface useNumberTone()
- * @method static ConverterInterface yuToV()
- * @method static ConverterInterface yuToU()
- * @method static ConverterInterface polyphonic(bool $asList = false)
- * @method static ConverterInterface withToneStyle(string $toneStyle = 'symbol')
+ * @method static ConverterInterface|Converter surname()
+ * @method static ConverterInterface|Converter noWords()
+ * @method static ConverterInterface|Converter onlyHans()
+ * @method static ConverterInterface|Converter noAlpha()
+ * @method static ConverterInterface|Converter noNumber()
+ * @method static ConverterInterface|Converter noCleanup()
+ * @method static ConverterInterface|Converter noPunctuation()
+ * @method static ConverterInterface|Converter noTone()
+ * @method static ConverterInterface|Converter useNumberTone()
+ * @method static ConverterInterface|Converter yuToV()
+ * @method static ConverterInterface|Converter yuToU()
+ * @method static ConverterInterface|Converter polyphonic(bool $asList = false)
+ * @method static ConverterInterface|Converter withToneStyle(string $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
 class Pinyin
@@ -121,9 +121,9 @@ class Pinyin
      * 获取 Converter 实例
      * 
      * @param string|null $strategy 指定策略，null 则使用默认策略
-     * @return ConverterInterface
+     * @return ConverterInterface|Converter
      */
-    public static function converter(?string $strategy = null): ConverterInterface
+    public static function converter(?string $strategy = null): ConverterInterface|Converter
     {
         // 向后兼容：如果没有指定策略，使用配置的策略或默认策略
         $strategy = $strategy ?? self::$converterStrategy;
