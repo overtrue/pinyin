@@ -4,6 +4,7 @@ namespace Overtrue\Pinyin\Converters;
 
 use Overtrue\Pinyin\Collection;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
+use Overtrue\Pinyin\ToneStyle;
 
 abstract class AbstractConverter implements ConverterInterface
 {
@@ -14,12 +15,6 @@ abstract class AbstractConverter implements ConverterInterface
     protected const CHARS_PATH = __DIR__.'/../../data/chars.php';
 
     protected const SURNAMES_PATH = __DIR__.'/../../data/surnames.php';
-
-    public const TONE_STYLE_SYMBOL = 'symbol';
-
-    public const TONE_STYLE_NUMBER = 'number';
-
-    public const TONE_STYLE_NONE = 'none';
 
     protected bool $heteronym = false;
 
@@ -33,7 +28,7 @@ abstract class AbstractConverter implements ConverterInterface
 
     protected string $yuTo = 'v';
 
-    protected string $toneStyle = self::TONE_STYLE_SYMBOL;
+    protected ToneStyle $toneStyle = ToneStyle::SYMBOL;
 
     protected array $regexps = [
         'separator' => '\p{Z}',
@@ -109,23 +104,28 @@ abstract class AbstractConverter implements ConverterInterface
         return $this;
     }
 
-    public function withToneStyle(string $toneStyle): static
+    /**
+     * 设置声调风格
+     *
+     * @param  string|ToneStyle  $toneStyle  声调风格，可以是字符串或 ToneStyle 枚举
+     */
+    public function withToneStyle(string|ToneStyle $toneStyle): static
     {
-        $this->toneStyle = $toneStyle;
+        $this->toneStyle = $toneStyle instanceof ToneStyle ? $toneStyle : ToneStyle::from($toneStyle);
 
         return $this;
     }
 
     public function noTone(): static
     {
-        $this->toneStyle = self::TONE_STYLE_NONE;
+        $this->toneStyle = ToneStyle::NONE;
 
         return $this;
     }
 
     public function useNumberTone(): static
     {
-        $this->toneStyle = self::TONE_STYLE_NUMBER;
+        $this->toneStyle = ToneStyle::NUMBER;
 
         return $this;
     }
@@ -181,7 +181,7 @@ abstract class AbstractConverter implements ConverterInterface
         $items = \array_values(array_filter(preg_split('/\s+/i', $item)));
 
         foreach ($items as $index => $item) {
-            $items[$index] = $this->formatTone($item, $this->toneStyle);
+            $items[$index] = $this->formatTone($item, $this->toneStyle->value);
         }
 
         return new Collection($items);
@@ -189,17 +189,41 @@ abstract class AbstractConverter implements ConverterInterface
 
     protected function formatTone(string $pinyin, string $style): string
     {
-        if ($style === self::TONE_STYLE_SYMBOL) {
+        if ($style === ToneStyle::SYMBOL->value) {
             return $pinyin;
         }
 
         $replacements = [
-            'ɑ' => ['a', 5], 'ü' => ['v', 5],
-            'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
-            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
-            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
-            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
-            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['v', 4],
+            'ɑ' => ['a', 5],
+            'ü' => ['v', 5],
+            'üē' => ['ue', 1],
+            'üé' => ['ue', 2],
+            'üě' => ['ue', 3],
+            'üè' => ['ue', 4],
+            'ā' => ['a', 1],
+            'ē' => ['e', 1],
+            'ī' => ['i', 1],
+            'ō' => ['o', 1],
+            'ū' => ['u', 1],
+            'ǖ' => ['v', 1],
+            'á' => ['a', 2],
+            'é' => ['e', 2],
+            'í' => ['i', 2],
+            'ó' => ['o', 2],
+            'ú' => ['u', 2],
+            'ǘ' => ['v', 2],
+            'ǎ' => ['a', 3],
+            'ě' => ['e', 3],
+            'ǐ' => ['i', 3],
+            'ǒ' => ['o', 3],
+            'ǔ' => ['u', 3],
+            'ǚ' => ['v', 3],
+            'à' => ['a', 4],
+            'è' => ['e', 4],
+            'ì' => ['i', 4],
+            'ò' => ['o', 4],
+            'ù' => ['u', 4],
+            'ǜ' => ['v', 4],
         ];
 
         foreach ($replacements as $unicode => $replacement) {
@@ -212,7 +236,7 @@ abstract class AbstractConverter implements ConverterInterface
 
                 $pinyin = \str_replace($unicode, $umlaut, $pinyin);
 
-                if ($this->toneStyle === self::TONE_STYLE_NUMBER) {
+                if ($style === ToneStyle::NUMBER->value) {
                     $pinyin .= $replacement[1];
                 }
             }

@@ -6,19 +6,19 @@ use InvalidArgumentException;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
 
 /**
- * @method static ConverterInterface|Converter surname()
- * @method static ConverterInterface|Converter noWords()
- * @method static ConverterInterface|Converter onlyHans()
- * @method static ConverterInterface|Converter noAlpha()
- * @method static ConverterInterface|Converter noNumber()
- * @method static ConverterInterface|Converter noCleanup()
- * @method static ConverterInterface|Converter noPunctuation()
- * @method static ConverterInterface|Converter noTone()
- * @method static ConverterInterface|Converter useNumberTone()
- * @method static ConverterInterface|Converter yuToV()
- * @method static ConverterInterface|Converter yuToU()
- * @method static ConverterInterface|Converter polyphonic(bool $asList = false)
- * @method static ConverterInterface|Converter withToneStyle(string $toneStyle = 'symbol')
+ * @method static ConverterInterface surname()
+ * @method static ConverterInterface noWords()
+ * @method static ConverterInterface onlyHans()
+ * @method static ConverterInterface noAlpha()
+ * @method static ConverterInterface noNumber()
+ * @method static ConverterInterface noCleanup()
+ * @method static ConverterInterface noPunctuation()
+ * @method static ConverterInterface noTone()
+ * @method static ConverterInterface useNumberTone()
+ * @method static ConverterInterface yuToV()
+ * @method static ConverterInterface yuToU()
+ * @method static ConverterInterface polyphonic(bool $asList = false)
+ * @method static ConverterInterface withToneStyle(string|ToneStyle $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
 class Pinyin
@@ -28,37 +28,37 @@ class Pinyin
      */
     private static ?string $converterStrategy = null;
 
-    public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function name(string $name, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->surname()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function passportName(string $name, string $toneStyle = Converter::TONE_STYLE_NONE): Collection
+    public static function passportName(string $name, string|ToneStyle $toneStyle = ToneStyle::NONE): Collection
     {
         return self::converter()->surname()->yuToYu()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function phrase(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->noPunctuation()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function sentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function sentence(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function fullSentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function fullSentence(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->noCleanup()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function heteronym(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
+    public static function heteronym(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL, bool $asList = false): Collection
     {
         return self::converter()->heteronym($asList)->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function heteronymAsList(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function heteronymAsList(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::heteronym($string, $toneStyle, true);
     }
@@ -67,7 +67,7 @@ class Pinyin
      * @deprecated Use `heteronym` instead.
      *             This method will be removed in the next major version.
      */
-    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
+    public static function polyphones(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL, bool $asList = false): Collection
     {
         return self::heteronym($string, $toneStyle, $asList);
     }
@@ -76,12 +76,12 @@ class Pinyin
      * @deprecated Use `heteronymAsList` instead.
      *             This method will be removed in the next major version.
      */
-    public static function polyphonesAsArray(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function polyphonesAsArray(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::heteronym($string, $toneStyle, true);
     }
 
-    public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function chars(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->onlyHans()->noWords()->withToneStyle($toneStyle)->convert($string);
     }
@@ -122,17 +122,11 @@ class Pinyin
      *
      * @param  string|null  $strategy  指定策略，null 则使用默认策略
      */
-    public static function converter(?string $strategy = null): ConverterInterface|Converter
+    public static function converter(?string $strategy = null): ConverterInterface
     {
-        // 向后兼容：如果没有指定策略，使用配置的策略或默认策略
+        // 使用新的工厂模式
         $strategy = $strategy ?? self::$converterStrategy;
 
-        // 如果类存在（向后兼容），使用原 Converter
-        if ($strategy === null && class_exists(Converter::class)) {
-            return Converter::make();
-        }
-
-        // 使用新的工厂模式
         return ConverterFactory::make($strategy);
     }
 

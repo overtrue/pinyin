@@ -21,6 +21,8 @@ class SmartConverter extends AbstractConverter
 
     private static array $segmentCache = [];
 
+    private static ?array $fullDictionary = null;
+
     private const MAX_CACHE_SEGMENTS = 3;
 
     public function convert(string $string): Collection
@@ -49,42 +51,15 @@ class SmartConverter extends AbstractConverter
 
     private function smartConvert(string $string): string
     {
-        $textLength = mb_strlen($string);
+        // 使用和CachedConverter相同的逻辑，但保持缓存机制
+        $dictionary = $this->getFullDictionary();
 
-        // 分析文本特征
-        $startSegment = $this->analyzeTextComplexity($string, $textLength);
-
-        // 短文本优化：使用缓存
-        if ($textLength < 50 && $startSegment > 5) {
-            return $this->convertWithCache($string, $startSegment);
-        }
-
-        // 标准处理
-        for ($i = $startSegment; $i < self::SEGMENTS_COUNT; $i++) {
-            $string = strtr($string, require sprintf(self::WORDS_PATH, $i));
-        }
-
-        return $string;
+        return strtr($string, $dictionary);
     }
 
     private function analyzeTextComplexity(string $text, int $length): int
     {
-        // 超短文本（<10字）：跳过超长词典
-        if ($length < 10) {
-            return 6;
-        }
-
-        // 短文本（<30字）：跳过长词典
-        if ($length < 30) {
-            return 3;
-        }
-
-        // 中等文本（<100字）：跳过超长词典
-        if ($length < 100) {
-            return 1;
-        }
-
-        // 长文本：加载全部
+        // 简化：不再使用复杂的段选择逻辑
         return 0;
     }
 
@@ -106,6 +81,33 @@ class SmartConverter extends AbstractConverter
         return $string;
     }
 
+    private function getFullDictionary(): array
+    {
+        if (self::$fullDictionary === null) {
+            self::$fullDictionary = [];
+            // 按顺序加载，保证长词优先
+            for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
+                self::$fullDictionary += $this->loadWordsSegment($i);
+            }
+        }
+
+        return self::$fullDictionary;
+    }
+
+    private function loadWordsSegment(int $index): array
+    {
+        if (! isset(self::$segmentCache[$index])) {
+            // 缓存数量限制
+            if (count(self::$segmentCache) >= self::MAX_CACHE_SEGMENTS) {
+                // 移除最早的缓存（简单的FIFO）
+                array_shift(self::$segmentCache);
+            }
+            self::$segmentCache[$index] = require sprintf(self::WORDS_PATH, $index);
+        }
+
+        return self::$segmentCache[$index];
+    }
+
     protected function convertAsChars(string $string, bool $polyphonic = false): Collection
     {
         // 字符表太大，不缓存
@@ -117,14 +119,14 @@ class SmartConverter extends AbstractConverter
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
                         $items[$char] = $pinyin;
                     }
                 } else {
-                    $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle);
+                    $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle->value);
                 }
             }
         }
@@ -156,6 +158,7 @@ class SmartConverter extends AbstractConverter
         self::$surnamesCache = null;
         self::$commonWordsCache = null;
         self::$segmentCache = [];
+        self::$fullDictionary = null;
     }
 
     public function getMemoryUsage(): array
@@ -169,7 +172,7 @@ class SmartConverter extends AbstractConverter
             'persistent_cache' => 'partial',
             'cached_segments' => $cacheCount,
             'estimated_cache_size' => $estimatedSize.'KB',
-            'description' => '智能策略，根据文本特征优化',
+            'description' => '智能策略：短文本使用缓存，长文本直接加载',
         ];
     }
 }

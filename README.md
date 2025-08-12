@@ -120,6 +120,23 @@ php benchmark/compare-strategies.php
 - `none` 不输出声调，例如 `pin yin`
 - `number` 末尾数字模式的拼音，例如 `pin1 yin1`
 
+你可以使用字符串值或者 `ToneStyle` 枚举：
+
+```php
+use Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\ToneStyle;
+
+// 使用字符串
+echo Pinyin::sentence('你好', 'none');       // ni hao
+echo Pinyin::sentence('你好', 'number');     // ni3 hao3
+echo Pinyin::sentence('你好', 'symbol');     // nǐ hǎo
+
+// 使用枚举（推荐）
+echo Pinyin::sentence('你好', ToneStyle::NONE);   // ni hao
+echo Pinyin::sentence('你好', ToneStyle::NUMBER); // ni3 hao3
+echo Pinyin::sentence('你好', ToneStyle::SYMBOL); // nǐ hǎo
+```
+
 ### 返回值
 
 除了 `permalink` 返回字符串外，其它方法都返回集合类型 [`Overtrue\Pinyin\Collection`](https://github.com/overtrue/pinyin/blob/master/src/Collection.php)：
@@ -244,10 +261,10 @@ $pinyin->toArray();
 如果不想要去重，可以数组形式返回：
 
 ```php
-$pinyin = Pinyin::polyphones('重庆重庆', Converter::TONE_STYLE_SYMBOL, true);
+$pinyin = Pinyin::polyphones('重庆重庆', ToneStyle::SYMBOL, true);
 
 // or 
-$pinyin = Pinyin::polyphonesAsArray('重庆重庆', Converter::TONE_STYLE_SYMBOL);
+$pinyin = Pinyin::polyphonesAsArray('重庆重庆', ToneStyle::SYMBOL);
 
 $pinyin->toArray();
 // [

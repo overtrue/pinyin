@@ -50,14 +50,14 @@ class MemoryOptimizedConverter extends AbstractConverter
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
                         $items[$char] = $pinyin;
                     }
                 } else {
-                    $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle);
+                    $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle->value);
                 }
             }
         }

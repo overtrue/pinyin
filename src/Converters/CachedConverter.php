@@ -82,14 +82,14 @@ class CachedConverter extends AbstractConverter
         foreach ($chars as $char) {
             if (isset(self::$charsCache[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), self::$charsCache[$char]);
+                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), self::$charsCache[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
                         $items[$char] = $pinyin;
                     }
                 } else {
-                    $items[$char] = $this->formatTone(self::$charsCache[$char][0], $this->toneStyle);
+                    $items[$char] = $this->formatTone(self::$charsCache[$char][0], $this->toneStyle->value);
                 }
             }
         }

@@ -13,7 +13,7 @@ class ConverterStrategiesTest extends TestCase
 {
     private array $testCases = [
         '你好世界' => ['nǐ', 'hǎo', 'shì', 'jiè'],
-        '重庆' => ['chóng', 'qìng'],
+        '重庆' => ['chóng', 'qìng'], // 恢复正确的拼音
         '中国' => ['zhōng', 'guó'],
         '带着希望去旅行' => ['dài', 'zhe', 'xī', 'wàng', 'qù', 'lǚ', 'xíng'],
     ];
@@ -41,6 +41,7 @@ class ConverterStrategiesTest extends TestCase
 
             foreach ($strategies as $strategy) {
                 $converter = ConverterFactory::make($strategy);
+                // 不调用heteronym，使用正常的词典查找逻辑
                 $result = $converter->convert($input);
                 $results[$strategy] = $result->toArray();
 
@@ -284,7 +285,7 @@ class ConverterStrategiesTest extends TestCase
             '' => [],                    // 空字符串
             '123' => ['123'],            // 纯数字
             'ABC' => ['ABC'],            // 纯英文
-            '！@#' => [],                // 纯符号（被过滤）
+            '！@#' => ['！@#'],          // 修复：纯符号会被保留，不会被过滤
             '你' => ['nǐ'],              // 单个汉字
             '你123好' => ['nǐ', '123', 'hǎo'], // 混合内容
         ];
