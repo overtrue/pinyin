@@ -86,100 +86,11 @@ foreach ($strategies as $strategyKey => $strategy) {
 CachedConverter::clearCache();
 SmartConverter::clearCache();
 
-// 生成策略对比表格
-$comparisonHtml = [];
-
-// 标题行
-$comparisonHtml[] = '<tr>';
-$comparisonHtml[] = '<th>Method</th>';
-foreach ($strategies as $strategy) {
-    $comparisonHtml[] = '<th class="text-center">' . $strategy['short_name'] . '</th>';
-}
-$comparisonHtml[] = '<th class="text-center">Fastest</th>';
-$comparisonHtml[] = '<th class="text-center">Speedup</th>';
-$comparisonHtml[] = '</tr>';
-
-// 数据行
-foreach ($methods as $method) {
-    $comparisonHtml[] = '<tr>';
-    $comparisonHtml[] = '<td class="text-teal-500">' . $method . '</td>';
-
-    $times = [];
-    foreach ($strategies as $strategyKey => $strategy) {
-        $time = $results[$strategyKey][$method]['time'];
-        $times[$strategyKey] = $time;
-        $comparisonHtml[] = '<td class="text-center">' . sprintf('%.2f ms', $time) . '</td>';
-    }
-
-    // 找出最快的策略
-    $minTime = min($times);
-    $maxTime = max($times);
-    $bestStrategy = array_search($minTime, $times);
-
-    $comparisonHtml[] = '<td class="text-center ' . $strategies[$bestStrategy]['color'] . '">' .
-        $strategies[$bestStrategy]['short_name'] . '</td>';
-
-    // 计算加速比
-    $speedup = $maxTime > 0 ? sprintf('%.1fx', $maxTime / $minTime) : '-';
-    $comparisonHtml[] = '<td class="text-center">' . $speedup . '</td>';
-    $comparisonHtml[] = '</tr>';
-}
-
-// 分隔线
-$comparisonHtml[] = '<tr><td colspan="6" class="text-gray-500">────────────────────────────────────────────────</td></tr>';
-
-// 总计行标题（添加列说明）
-$comparisonHtml[] = '<tr class="text-gray-400">';
-$comparisonHtml[] = '<td></td>';
-$comparisonHtml[] = '<td class="text-center text-blue-400">Memory</td>';
-$comparisonHtml[] = '<td class="text-center text-green-400">Cached</td>';
-$comparisonHtml[] = '<td class="text-center text-yellow-400">Smart</td>';
-$comparisonHtml[] = '<td></td>';
-$comparisonHtml[] = '<td></td>';
-$comparisonHtml[] = '</tr>';
-
-// 总计行
-$comparisonHtml[] = '<tr>';
-$comparisonHtml[] = '<td class="font-bold text-white">TOTAL</td>';
-
+// 收集总时间数据（供后面使用）
 $totalTimes = [];
 foreach ($strategies as $strategyKey => $strategy) {
-    $totalTime = $results[$strategyKey]['total'];
-    $totalTimes[$strategyKey] = $totalTime;
-    $isFastest = false;
-
-    // 预先检查是否是最快的
-    $minTotal = min(
-        array_values($results)['memory']['total'] ?? PHP_FLOAT_MAX,
-        array_values($results)['cached']['total'] ?? PHP_FLOAT_MAX,
-        array_values($results)['smart']['total'] ?? PHP_FLOAT_MAX
-    );
-
-    if ($totalTime == $minTotal) {
-        $comparisonHtml[] = '<td class="text-center font-bold ' . $strategy['color'] . '">' . sprintf('%.2f ms', $totalTime) . '</td>';
-    } else {
-        $comparisonHtml[] = '<td class="text-center">' . sprintf('%.2f ms', $totalTime) . '</td>';
-    }
+    $totalTimes[$strategyKey] = $results[$strategyKey]['total'];
 }
-
-$minTotal = min($totalTimes);
-$maxTotal = max($totalTimes);
-$bestTotal = array_search($minTotal, $totalTimes);
-
-$comparisonHtml[] = '<td class="text-center font-bold ' . $strategies[$bestTotal]['color'] . '">' .
-    $strategies[$bestTotal]['short_name'] . '</td>';
-
-// 总体加速比
-$totalSpeedup = $maxTotal > 0 ? sprintf('%.1fx', $maxTotal / $minTotal) : '-';
-$comparisonHtml[] = '<td class="text-center font-bold">' . $totalSpeedup . '</td>';
-$comparisonHtml[] = '</tr>';
-
-// 添加说明行
-$comparisonHtml[] = '<tr class="text-gray-500">';
-$comparisonHtml[] = '<td colspan="6" class="text-center">↑ 三列数字分别是：内存优化策略、缓存策略、智能策略的总耗时</td>';
-$comparisonHtml[] = '</tr>';
-
-$comparisonTable = implode("\n", $comparisonHtml);
 
 // 计算内存使用情况
 $memoryInfo = [];
@@ -190,22 +101,7 @@ foreach (['memory', 'cached', 'smart'] as $strategyKey) {
     $memoryInfo[$strategyKey] = $info;
 }
 
-// 生成内存使用对比
-$memoryHtml = [];
-foreach ($memoryInfo as $strategy => $info) {
-    $memoryHtml[] = sprintf(
-        '<tr>
-            <td class="%s">%s</td>
-            <td>%s</td>
-            <td class="text-gray-500">%s</td>
-        </tr>',
-        $strategies[$strategy]['color'],
-        $strategies[$strategy]['name'],
-        $info['peak_memory'],
-        $info['description']
-    );
-}
-$memoryTable = implode("\n", $memoryHtml);
+// 不再需要单独的内存表格
 
 // 创建综合对比表格
 $summaryHtml = [];
@@ -247,6 +143,20 @@ foreach ($strategies as $strategyKey => $strategy) {
         $performanceIcon = '✨'; // 比基准快
     }
     
+    // 简化的适用场景描述
+    $scenario = '';
+    switch($strategyKey) {
+        case 'memory':
+            $scenario = 'Web请求、内存受限';
+            break;
+        case 'cached':
+            $scenario = '批量处理、重复转换';
+            break;
+        case 'smart':
+            $scenario = '通用场景、自适应';
+            break;
+    }
+    
     $rowClass = $isFastest ? 'font-bold' : '';
     $memoryClass = $isLeastMemory ? 'text-green-500' : ($memoryVal == $maxMemory ? 'text-red-500' : '');
     $timeClass = $isFastest ? 'text-green-500' : ($time == $maxTime ? 'text-red-500' : '');
@@ -269,32 +179,11 @@ foreach ($strategies as $strategyKey => $strategy) {
         $time,
         $speedup >= 1.2 ? 'text-green-500' : ($speedup <= 0.8 ? 'text-red-500' : ''),
         $speedup,
-        $memoryInfo[$strategyKey]['description']
+        $scenario
     );
 }
 
 $summaryTable = implode("\n", $summaryHtml);
-
-// 性能提升总结
-$speedupSummary = '';
-if (isset($totalTimes['cached']) && isset($totalTimes['memory'])) {
-    $cacheSpeedup = round($totalTimes['memory'] / $totalTimes['cached'], 2);
-    $speedupSummary = sprintf(
-        '<div class="mt-2">📊 Performance Summary:</div>
-        <div>• <span class="text-green-500">Cached strategy</span> is <span class="font-bold">%.2fx faster</span> than Memory Optimized</div>',
-        $cacheSpeedup
-    );
-
-    if (isset($totalTimes['smart'])) {
-        $smartVsMemory = round($totalTimes['memory'] / $totalTimes['smart'], 2);
-        $smartVsCached = round($totalTimes['smart'] / $totalTimes['cached'], 2);
-        $speedupSummary .= sprintf(
-            '<div>• <span class="text-yellow-500">Smart strategy</span> is <span class="font-bold">%.2fx faster</span> than Memory, <span class="font-bold">%.2fx slower</span> than Cached</div>',
-            $smartVsMemory,
-            $smartVsCached
-        );
-    }
-}
 
 $totalUsage = round(microtime(true) - $totalStart, 5) * 1000;
 
@@ -322,14 +211,7 @@ render(<<<"HTML"
             Default strategy usage: <span class="text-green-500">{$defaultTotalUsage}</span>ms
         </div>
 
-        <div class="my-1 text-yellow-500">Strategy Comparison:</div>
-        <table>
-            <thead>
-                {$comparisonTable}
-            </thead>
-        </table>
-
-        <div class="mt-3 mb-1 text-yellow-500">📊 综合性能对比（内存 + 耗时 + 倍率）:</div>
+        <div class="mt-4 mb-1 text-yellow-500">📊 策略性能对比:</div>
         <table>
             <thead>
                 <tr>
@@ -337,47 +219,25 @@ render(<<<"HTML"
                     <th class="text-center">内存占用</th>
                     <th class="text-center">总耗时</th>
                     <th class="text-center">速度倍率</th>
-                    <th>特点说明</th>
+                    <th>适用场景</th>
                 </tr>
             </thead>
             {$summaryTable}
         </table>
         
         <div class="mt-2 text-gray-500">
-            <div>速度倍率说明：以 Memory Optimized 为基准 (1.0x)</div>
-            <div class="mt-1">图标说明：⚡速度最快 | 💚内存最少 | 🏆综合最优 | ✨比基准快</div>
+            <div>* 速度倍率以 Memory Optimized 为基准 (1.0x)</div>
         </div>
         
         <div class="mt-2 px-2 py-1 bg-blue-800 text-white">
-            <div class="font-bold">🎯 快速选择建议：</div>
-            <div>• 内存受限环境（如Web请求）→ 选择 <span class="text-blue-400">Memory Optimized</span></div>
-            <div>• 批量处理大量文本 → 选择 <span class="text-green-400">Cached</span></div>
-            <div>• 平衡性能和内存 → 选择 <span class="text-yellow-400">Smart</span></div>
+            <div class="font-bold">🎯 如何选择：</div>
+            <div>• Web请求 → <span class="text-blue-400">Memory Optimized</span> (省内存)</div>
+            <div>• 批量处理 → <span class="text-green-400">Cached</span> (最快)</div>
+            <div>• 通用场景 → <span class="text-yellow-400">Smart</span> (平衡)</div>
         </div>
 
-        {$speedupSummary}
-
-        <div class="mt-3 mb-1 text-yellow-500">Memory Usage Details:</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Strategy</th>
-                    <th>Peak Memory</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            {$memoryTable}
-        </table>
-
-        <div class="mt-1">
+        <div class="mt-3">
             <div>Total benchmark time: <span class="text-green-500">{$totalUsage}</span>ms</div>
-        </div>
-
-        <div class="mt-3 text-gray-500">
-            <div>💡 Tips:</div>
-            <div>• <span class="text-blue-500">Memory Optimized</span>: Best for web requests with limited memory</div>
-            <div>• <span class="text-green-500">Cached</span>: Best for batch processing and repeated conversions</div>
-            <div>• <span class="text-yellow-500">Smart</span>: Balanced approach with adaptive optimization</div>
         </div>
     </div>
 HTML);
