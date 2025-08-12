@@ -158,8 +158,8 @@ $html = [];
 foreach ($scenarios as $scenarioKey => $scenario) {
     $html[] = sprintf(
         '<div class="mt-4">
-            <div class="text-lg font-bold text-white bg-gray-700 px-2">%s</div>
-            <div class="text-sm text-gray-400 px-2">%s</div>
+            <div class="font-bold text-white bg-gray-700 px-2">%s</div>
+            <div class="text-gray-400 px-2">%s</div>
         </div>',
         $scenario['name'],
         $scenario['description']
@@ -168,7 +168,7 @@ foreach ($scenarios as $scenarioKey => $scenario) {
     // 表格头
     $html[] = '<table class="mt-2">';
     $html[] = '<thead><tr>';
-    $html[] = '<th class="text-left">Text Type</th>';
+    $html[] = '<th>Text Type</th>';
     foreach ($strategies as $strategy) {
         $html[] = sprintf('<th class="text-center text-%s-500">%s</th>', $strategy['color'], $strategy['name']);
     }
@@ -220,7 +220,7 @@ foreach ($scenarios as $scenarioKey => $scenario) {
 
 // 内存使用对比
 $html[] = '<div class="mt-6">';
-$html[] = '<div class="text-lg font-bold text-white bg-gray-700 px-2">Memory Usage Comparison</div>';
+$html[] = '<div class="font-bold text-white bg-gray-700 px-2">Memory Usage Comparison</div>';
 $html[] = '</div>';
 
 $html[] = '<table class="mt-2">';
@@ -241,7 +241,7 @@ foreach ($strategies as $strategyKey => $strategy) {
     $html[] = sprintf('<td class="text-%s-500">%s</td>', $strategy['color'], $strategy['name']);
     $html[] = sprintf('<td>%s</td>', $info['peak_memory']);
     $html[] = sprintf('<td>%s</td>', $info['persistent_cache'] ? 'Yes' : 'No');
-    $html[] = sprintf('<td class="text-sm">%s</td>', $info['description']);
+    $html[] = sprintf('<td>%s</td>', $info['description']);
     $html[] = '</tr>';
 }
 
@@ -277,7 +277,7 @@ $recommendations = [
 ];
 
 $html[] = '<div class="mt-6">';
-$html[] = '<div class="text-lg font-bold text-white bg-gray-700 px-2">Recommendations</div>';
+$html[] = '<div class="font-bold text-white bg-gray-700 px-2">Recommendations</div>';
 $html[] = '</div>';
 
 $html[] = '<div class="mt-2">';
