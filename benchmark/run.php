@@ -110,7 +110,8 @@ $minTime = min($totalTimes);
 $maxTime = max($totalTimes);
 
 // 解析内存值（提取数字）
-function parseMemory($memStr) {
+function parseMemory($memStr)
+{
     preg_match('/[\d.]+/', $memStr, $matches);
     return floatval($matches[0] ?? 0);
 }
@@ -127,10 +128,10 @@ foreach ($strategies as $strategyKey => $strategy) {
     $memory = $memoryInfo[$strategyKey]['peak_memory'];
     $memoryVal = $memoryValues[$strategyKey];
     $speedup = $baselineTime / $time;
-    
+
     $isFastest = $time == $minTime;
     $isLeastMemory = $memoryVal == $minMemory;
-    
+
     // 性能评级
     $performanceIcon = '';
     if ($isFastest && $isLeastMemory) {
@@ -142,10 +143,10 @@ foreach ($strategies as $strategyKey => $strategy) {
     } elseif ($speedup > 1.0) {
         $performanceIcon = '✨'; // 比基准快
     }
-    
+
     // 简化的适用场景描述
     $scenario = '';
-    switch($strategyKey) {
+    switch ($strategyKey) {
         case 'memory':
             $scenario = 'Web请求、内存受限';
             break;
@@ -156,11 +157,11 @@ foreach ($strategies as $strategyKey => $strategy) {
             $scenario = '通用场景、自适应';
             break;
     }
-    
+
     $rowClass = $isFastest ? 'font-bold' : '';
     $memoryClass = $isLeastMemory ? 'text-green-500' : ($memoryVal == $maxMemory ? 'text-red-500' : '');
     $timeClass = $isFastest ? 'text-green-500' : ($time == $maxTime ? 'text-red-500' : '');
-    
+
     $summaryHtml[] = sprintf(
         '<tr class="%s">
             <td class="%s">%s %s</td>
@@ -211,7 +212,7 @@ render(<<<"HTML"
             Default strategy usage: <span class="text-green-500">{$defaultTotalUsage}</span>ms
         </div>
 
-        <div class="mt-4 mb-1 text-yellow-500">📊 策略性能对比:</div>
+        <div class="mt-1 mb-1 text-yellow-500">📊 策略性能对比:</div>
         <table>
             <thead>
                 <tr>
@@ -224,19 +225,19 @@ render(<<<"HTML"
             </thead>
             {$summaryTable}
         </table>
-        
-        <div class="mt-2 text-gray-500">
+
+        <div class="text-gray-500">
             <div>* 速度倍率以 Memory Optimized 为基准 (1.0x)</div>
         </div>
-        
-        <div class="mt-2 px-2 py-1 bg-blue-800 text-white">
+
+        <div class="mt-1 py-1 text-white">
             <div class="font-bold">🎯 如何选择：</div>
             <div>• Web请求 → <span class="text-blue-400">Memory Optimized</span> (省内存)</div>
             <div>• 批量处理 → <span class="text-green-400">Cached</span> (最快)</div>
             <div>• 通用场景 → <span class="text-yellow-400">Smart</span> (平衡)</div>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-1">
             <div>Total benchmark time: <span class="text-green-500">{$totalUsage}</span>ms</div>
         </div>
     </div>
