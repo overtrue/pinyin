@@ -72,6 +72,24 @@ abstract class AbstractConverter implements ConverterInterface
         return $this;
     }
 
+    public function noAlpha(): static
+    {
+        unset($this->regexps['alphabet']);
+        return $this;
+    }
+
+    public function noNumber(): static
+    {
+        unset($this->regexps['number']);
+        return $this;
+    }
+
+    public function noPunctuation(): static
+    {
+        unset($this->regexps['punctuation']);
+        return $this;
+    }
+
     public function withToneStyle(string $toneStyle): static
     {
         $this->toneStyle = $toneStyle;
@@ -81,6 +99,12 @@ abstract class AbstractConverter implements ConverterInterface
     public function noTone(): static
     {
         $this->toneStyle = self::TONE_STYLE_NONE;
+        return $this;
+    }
+
+    public function useNumberTone(): static
+    {
+        $this->toneStyle = self::TONE_STYLE_NUMBER;
         return $this;
     }
 
@@ -99,6 +123,14 @@ abstract class AbstractConverter implements ConverterInterface
     public function yuToYu(): static
     {
         $this->yuTo = 'yu';
+        return $this;
+    }
+
+    public function when(bool $condition, callable $callback): static
+    {
+        if ($condition) {
+            $callback($this);
+        }
         return $this;
     }
 
