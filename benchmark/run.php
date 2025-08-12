@@ -128,6 +128,16 @@ foreach ($methods as $method) {
 // 分隔线
 $comparisonHtml[] = '<tr><td colspan="6" class="text-gray-500">────────────────────────────────────────────────</td></tr>';
 
+// 总计行标题（添加列说明）
+$comparisonHtml[] = '<tr class="text-gray-400">';
+$comparisonHtml[] = '<td></td>';
+$comparisonHtml[] = '<td class="text-center text-blue-400">Memory</td>';
+$comparisonHtml[] = '<td class="text-center text-green-400">Cached</td>';
+$comparisonHtml[] = '<td class="text-center text-yellow-400">Smart</td>';
+$comparisonHtml[] = '<td></td>';
+$comparisonHtml[] = '<td></td>';
+$comparisonHtml[] = '</tr>';
+
 // 总计行
 $comparisonHtml[] = '<tr>';
 $comparisonHtml[] = '<td class="font-bold text-white">TOTAL</td>';
@@ -162,6 +172,11 @@ $comparisonHtml[] = '<td class="text-center font-bold ' . $strategies[$bestTotal
 // 总体加速比
 $totalSpeedup = $maxTotal > 0 ? sprintf('%.1fx', $maxTotal / $minTotal) : '-';
 $comparisonHtml[] = '<td class="text-center font-bold">' . $totalSpeedup . '</td>';
+$comparisonHtml[] = '</tr>';
+
+// 添加说明行
+$comparisonHtml[] = '<tr class="text-gray-500">';
+$comparisonHtml[] = '<td colspan="6" class="text-center">↑ 三列数字分别是：内存优化策略、缓存策略、智能策略的总耗时</td>';
 $comparisonHtml[] = '</tr>';
 
 $comparisonTable = implode("\n", $comparisonHtml);
