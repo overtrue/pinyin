@@ -207,6 +207,74 @@ foreach ($memoryInfo as $strategy => $info) {
 }
 $memoryTable = implode("\n", $memoryHtml);
 
+// 创建综合对比表格
+$summaryHtml = [];
+$baselineTime = $totalTimes['memory']; // 使用Memory作为基准
+$minTime = min($totalTimes);
+$maxTime = max($totalTimes);
+
+// 解析内存值（提取数字）
+function parseMemory($memStr) {
+    preg_match('/[\d.]+/', $memStr, $matches);
+    return floatval($matches[0] ?? 0);
+}
+
+$memoryValues = [];
+foreach ($strategies as $key => $strategy) {
+    $memoryValues[$key] = parseMemory($memoryInfo[$key]['peak_memory']);
+}
+$minMemory = min($memoryValues);
+$maxMemory = max($memoryValues);
+
+foreach ($strategies as $strategyKey => $strategy) {
+    $time = $totalTimes[$strategyKey];
+    $memory = $memoryInfo[$strategyKey]['peak_memory'];
+    $memoryVal = $memoryValues[$strategyKey];
+    $speedup = $baselineTime / $time;
+    
+    $isFastest = $time == $minTime;
+    $isLeastMemory = $memoryVal == $minMemory;
+    
+    // 性能评级
+    $performanceIcon = '';
+    if ($isFastest && $isLeastMemory) {
+        $performanceIcon = '🏆'; // 最佳：速度最快且内存最少
+    } elseif ($isFastest) {
+        $performanceIcon = '⚡'; // 速度最快
+    } elseif ($isLeastMemory) {
+        $performanceIcon = '💚'; // 内存最少
+    } elseif ($speedup > 1.0) {
+        $performanceIcon = '✨'; // 比基准快
+    }
+    
+    $rowClass = $isFastest ? 'font-bold' : '';
+    $memoryClass = $isLeastMemory ? 'text-green-500' : ($memoryVal == $maxMemory ? 'text-red-500' : '');
+    $timeClass = $isFastest ? 'text-green-500' : ($time == $maxTime ? 'text-red-500' : '');
+    
+    $summaryHtml[] = sprintf(
+        '<tr class="%s">
+            <td class="%s">%s %s</td>
+            <td class="text-center %s">%s</td>
+            <td class="text-center %s">%.2f ms</td>
+            <td class="text-center %s">%.2fx</td>
+            <td class="text-gray-500">%s</td>
+        </tr>',
+        $rowClass,
+        $strategy['color'],
+        $performanceIcon,
+        $strategy['name'],
+        $memoryClass,
+        $memory,
+        $timeClass,
+        $time,
+        $speedup >= 1.2 ? 'text-green-500' : ($speedup <= 0.8 ? 'text-red-500' : ''),
+        $speedup,
+        $memoryInfo[$strategyKey]['description']
+    );
+}
+
+$summaryTable = implode("\n", $summaryHtml);
+
 // 性能提升总结
 $speedupSummary = '';
 if (isset($totalTimes['cached']) && isset($totalTimes['memory'])) {
@@ -261,9 +329,35 @@ render(<<<"HTML"
             </thead>
         </table>
 
+        <div class="mt-3 mb-1 text-yellow-500">📊 综合性能对比（内存 + 耗时 + 倍率）:</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>策略</th>
+                    <th class="text-center">内存占用</th>
+                    <th class="text-center">总耗时</th>
+                    <th class="text-center">速度倍率</th>
+                    <th>特点说明</th>
+                </tr>
+            </thead>
+            {$summaryTable}
+        </table>
+        
+        <div class="mt-2 text-gray-500">
+            <div>速度倍率说明：以 Memory Optimized 为基准 (1.0x)</div>
+            <div class="mt-1">图标说明：⚡速度最快 | 💚内存最少 | 🏆综合最优 | ✨比基准快</div>
+        </div>
+        
+        <div class="mt-2 px-2 py-1 bg-blue-800 text-white">
+            <div class="font-bold">🎯 快速选择建议：</div>
+            <div>• 内存受限环境（如Web请求）→ 选择 <span class="text-blue-400">Memory Optimized</span></div>
+            <div>• 批量处理大量文本 → 选择 <span class="text-green-400">Cached</span></div>
+            <div>• 平衡性能和内存 → 选择 <span class="text-yellow-400">Smart</span></div>
+        </div>
+
         {$speedupSummary}
 
-        <div class="mt-3 mb-1 text-yellow-500">Memory Usage:</div>
+        <div class="mt-3 mb-1 text-yellow-500">Memory Usage Details:</div>
         <table>
             <thead>
                 <tr>
