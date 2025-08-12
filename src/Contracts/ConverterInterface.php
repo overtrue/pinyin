@@ -2,6 +2,8 @@
 
 namespace Overtrue\Pinyin\Contracts;
 
+use Overtrue\Pinyin\Collection;
+
 interface ConverterInterface
 {
     public function convert(string $string): Collection;
