@@ -15,18 +15,20 @@ $textLength = mb_strlen($text);
 
 // ========== 原有的单策略测试 ==========
 $html = [];
-$methods = ['sentence', 'fullSentence', 'name', 'passportName', 'phrase', 'permalink', 'polyphones', 'chars', 'abbr', 'nameAbbr'];
+$methods = ['sentence', 'fullSentence', 'name', 'passportName', 'phrase', 'permalink', 'heteronym', 'chars', 'abbr', 'nameAbbr'];
 
 // 使用默认策略（内存优化）运行原有测试
 foreach ($methods as $method) {
     $start = microtime(true);
     $result = call_user_func(Pinyin::class . '::' . $method, $text);
     $usage = round(microtime(true) - $start, 5) * 1000;
+    $avgPerChar = round($usage / $textLength, 4);
     $sample = mb_substr(is_array($result) ? implode(' ', $result) : (string) $result, 0, 30);
 
     $html[] = "<tr>
                 <td><span class=\"text-teal-500\">{$method}</span></td>
                 <td><span class=\"text-green-500\">{$usage} ms</span></td>
+                <td><span class=\"text-blue-500\">{$avgPerChar} ms/字</span></td>
                 <td>{$sample}...</td>
                </tr>
         ";
@@ -63,28 +65,40 @@ $strategies = [
 ];
 
 $results = [];
+$strategyHtmls = [];
 
 // 测试每个策略
 foreach ($strategies as $strategyKey => $strategy) {
     $strategy['setup']();
     $strategyStart = microtime(true);
 
+    $html = [];
     foreach ($methods as $method) {
         $start = microtime(true);
         $result = call_user_func(Pinyin::class . '::' . $method, $text);
         $usage = round(microtime(true) - $start, 5) * 1000;
+        $avgPerChar = round($usage / $textLength, 4);
+        $sample = mb_substr(is_array($result) ? implode(' ', $result) : (string) $result, 0, 30);
 
         $results[$strategyKey][$method] = [
             'time' => $usage,
         ];
+
+        $html[] = "<tr>
+                    <td><span class=\"text-teal-500\">{$method}</span></td>
+                    <td><span class=\"text-green-500\">{$usage} ms</span></td>
+                    <td><span class=\"text-blue-500\">{$avgPerChar} ms/字</span></td>
+                    <td>{$sample}...</td>
+                   </tr>
+            ";
     }
 
     $results[$strategyKey]['total'] = round(microtime(true) - $strategyStart, 5) * 1000;
+    $strategyHtmls[$strategyKey] = implode("\n", $html);
 }
 
 // 清理缓存
-CachedConverter::clearCache();
-SmartConverter::clearCache();
+        Pinyin::clearCache();
 
 // 收集总时间数据（供后面使用）
 $totalTimes = [];
@@ -92,16 +106,30 @@ foreach ($strategies as $strategyKey => $strategy) {
     $totalTimes[$strategyKey] = $results[$strategyKey]['total'];
 }
 
-// 计算内存使用情况
+// 计算内存使用情况（运行时监控）
 $memoryInfo = [];
 foreach (['memory', 'cached', 'smart'] as $strategyKey) {
-    $converter = ConverterFactory::make($strategyKey);
-    $converter->convert('测试'); // 触发加载
-    $info = $converter->getMemoryUsage();
-    $memoryInfo[$strategyKey] = $info;
-}
+    $strategy['setup']();
 
-// 不再需要单独的内存表格
+    // 记录初始内存
+    $initialMemory = memory_get_usage();
+    $initialPeakMemory = memory_get_peak_usage();
+
+    // 执行转换操作
+    $converter = ConverterFactory::make($strategyKey);
+    $converter->convert('测试文本'); // 触发加载
+
+    // 记录转换后内存
+    $finalMemory = memory_get_usage();
+    $finalPeakMemory = memory_get_peak_usage();
+
+    $memoryInfo[$strategyKey] = [
+        'memory_growth' => $finalMemory - $initialMemory,
+        'peak_memory_growth' => $finalPeakMemory - $initialPeakMemory,
+        'current_memory' => $finalMemory,
+        'peak_memory' => $finalPeakMemory,
+    ];
+}
 
 // 创建综合对比表格
 $summaryHtml = [];
@@ -109,28 +137,21 @@ $baselineTime = $totalTimes['memory']; // 使用Memory作为基准
 $minTime = min($totalTimes);
 $maxTime = max($totalTimes);
 
-// 解析内存值（提取数字）
-function parseMemory($memStr)
-{
-    preg_match('/[\d.]+/', $memStr, $matches);
-    return floatval($matches[0] ?? 0);
-}
-
+// 计算内存使用情况
 $memoryValues = [];
 foreach ($strategies as $key => $strategy) {
-    $memoryValues[$key] = parseMemory($memoryInfo[$key]['peak_memory']);
+    $memoryValues[$key] = $memoryInfo[$key]['memory_growth'];
 }
 $minMemory = min($memoryValues);
 $maxMemory = max($memoryValues);
 
 foreach ($strategies as $strategyKey => $strategy) {
     $time = $totalTimes[$strategyKey];
-    $memory = $memoryInfo[$strategyKey]['peak_memory'];
-    $memoryVal = $memoryValues[$strategyKey];
+    $memoryGrowth = $memoryInfo[$strategyKey]['memory_growth'];
     $speedup = $baselineTime / $time;
 
     $isFastest = $time == $minTime;
-    $isLeastMemory = $memoryVal == $minMemory;
+    $isLeastMemory = $memoryGrowth == $minMemory;
 
     // 性能评级
     $performanceIcon = '';
@@ -159,13 +180,13 @@ foreach ($strategies as $strategyKey => $strategy) {
     }
 
     $rowClass = $isFastest ? 'font-bold' : '';
-    $memoryClass = $isLeastMemory ? 'text-green-500' : ($memoryVal == $maxMemory ? 'text-red-500' : '');
+    $memoryClass = $isLeastMemory ? 'text-green-500' : ($memoryGrowth == $maxMemory ? 'text-red-500' : '');
     $timeClass = $isFastest ? 'text-green-500' : ($time == $maxTime ? 'text-red-500' : '');
 
     $summaryHtml[] = sprintf(
         '<tr class="%s">
             <td class="%s">%s %s</td>
-            <td class="text-center %s">%s</td>
+            <td class="text-center %s">%.1f KB</td>
             <td class="text-center %s">%.2f ms</td>
             <td class="text-center %s">%.2fx</td>
             <td class="text-gray-500">%s</td>
@@ -175,7 +196,7 @@ foreach ($strategies as $strategyKey => $strategy) {
         $performanceIcon,
         $strategy['name'],
         $memoryClass,
-        $memory,
+        $memoryGrowth / 1024,
         $timeClass,
         $time,
         $speedup >= 1.2 ? 'text-green-500' : ($speedup <= 0.8 ? 'text-red-500' : ''),
@@ -196,28 +217,70 @@ render(<<<"HTML"
             Converted <span class="text-teal-500">{$textLength}</span> chars with following methods:
         </div>
 
-        <div class="text-yellow-500">Standard Test (Memory Optimized Strategy):</div>
+        <div class="text-yellow-500">标准测试 (内存优化策略):</div>
         <table>
             <thead>
                 <tr>
-                    <th>Method</th>
-                    <th>Time Usage</th>
-                    <th>Result</th>
+                    <th>方法</th>
+                    <th>耗时</th>
+                    <th>平均单字耗时</th>
+                    <th>结果</th>
                 </tr>
             </thead>
             {$htmlOriginal}
         </table>
 
         <div class="mt-1">
-            Default strategy usage: <span class="text-green-500">{$defaultTotalUsage}</span>ms
+            默认策略总耗时: <span class="text-green-500">{$defaultTotalUsage}</span>ms
         </div>
+
+        <div class="mt-1 mb-1 text-yellow-500">📊 各策略详细测试:</div>
+
+        <div class="text-blue-500">Memory Optimized 策略:</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>耗时</th>
+                    <th>平均单字耗时</th>
+                    <th>结果</th>
+                </tr>
+            </thead>
+            {$strategyHtmls['memory']}
+        </table>
+
+        <div class="text-green-500">Cached 策略:</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>耗时</th>
+                    <th>平均单字耗时</th>
+                    <th>结果</th>
+                </tr>
+            </thead>
+            {$strategyHtmls['cached']}
+        </table>
+
+        <div class="text-yellow-500">Smart 策略:</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>耗时</th>
+                    <th>平均单字耗时</th>
+                    <th>结果</th>
+                </tr>
+            </thead>
+            {$strategyHtmls['smart']}
+        </table>
 
         <div class="mt-1 mb-1 text-yellow-500">📊 策略性能对比:</div>
         <table>
             <thead>
                 <tr>
                     <th>策略</th>
-                    <th class="text-center">内存占用</th>
+                    <th class="text-center">内存增长</th>
                     <th class="text-center">总耗时</th>
                     <th class="text-center">速度倍率</th>
                     <th>适用场景</th>
@@ -244,5 +307,4 @@ render(<<<"HTML"
 HTML);
 
 // 清理缓存
-CachedConverter::clearCache();
-SmartConverter::clearCache();
+        Pinyin::clearCache();

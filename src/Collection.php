@@ -6,15 +6,20 @@ use ArrayAccess;
 use JsonSerializable;
 use Stringable;
 
+use function array_map;
+use function implode;
+use function is_array;
+
 class Collection implements ArrayAccess, JsonSerializable, Stringable
 {
     public function __construct(protected $items = []) {}
 
     public function join(string $separator = ' '): string
     {
-        return implode($separator, \array_map(function ($item) {
-            return \is_array($item) ? '['.\implode(', ', $item).']' : $item;
-        }, $this->items));
+        return implode($separator, array_map(
+            fn ($item) => is_array($item) ? '['.implode(', ', $item).']' : $item,
+            $this->items
+        ));
     }
 
     public function map(callable $callback): Collection
@@ -37,7 +42,7 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
         return json_encode($this->all(), $options);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->join();
     }
@@ -66,7 +71,7 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
         unset($this->items[$offset]);
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->items;
     }

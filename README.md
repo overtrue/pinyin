@@ -21,96 +21,10 @@
 使用 Composer 安装:
 
 ```bash
-composer require overtrue/pinyin:^5.0
+composer require overtrue/pinyin:^6.0
 ```
 
 ## 使用
-
-### 性能优化策略 🚀
-
-v5.0+ 版本提供了三种不同的转换策略，以适应不同的使用场景：
-
-#### 1. 内存优化策略（Memory Optimized）- 默认
-- **内存占用**：~400KB
-- **适用场景**：Web 请求、内存受限环境
-- **特点**：每次加载一个词典段，用完即释放
-
-```php
-use Overtrue\Pinyin\Pinyin;
-
-// 使用内存优化策略（默认）
-Pinyin::useMemoryOptimized();
-$result = Pinyin::sentence('你好世界');
-```
-
-#### 2. 缓存策略（Cached）
-- **内存占用**：~4MB
-- **适用场景**：批处理、长时运行进程
-- **特点**：缓存所有词典数据，重复转换速度提升 2-3 倍
-
-```php
-// 使用缓存策略
-Pinyin::useCached();
-
-// 批量处理时性能更好
-foreach ($largeDataset as $text) {
-    $result = Pinyin::sentence($text);
-}
-
-// 清理缓存（可选）
-\Overtrue\Pinyin\Converters\CachedConverter::clearCache();
-```
-
-#### 3. 智能策略（Smart）
-- **内存占用**：600KB-1.5MB
-- **适用场景**：通用场景、自动优化
-- **特点**：根据文本长度智能选择加载策略
-
-```php
-// 使用智能策略
-Pinyin::useSmart();
-
-// 短文本自动优化
-$result1 = Pinyin::sentence('你好');  // 跳过长词词典
-
-// 长文本自动调整
-$result2 = Pinyin::sentence($longText);  // 加载必要的词典
-```
-
-#### 自动选择策略
-
-```php
-// 根据运行环境自动选择最佳策略
-Pinyin::useAutoStrategy();
-```
-
-#### 直接使用 Converter
-
-```php
-use Overtrue\Pinyin\ConverterFactory;
-
-// 创建特定策略的转换器
-$converter = ConverterFactory::make('cached');
-$result = $converter->convert('你好世界');
-
-// 获取内存使用信息
-$info = $converter->getMemoryUsage();
-// ['strategy' => 'cached', 'peak_memory' => '~4MB', ...]
-```
-
-#### 性能对比
-
-| 策略 | 内存占用 | 首次转换 | 重复转换 | 推荐场景 |
-|-----|---------|---------|---------|---------|
-| Memory Optimized | ~400KB | 中等 | 中等 | Web 请求 |
-| Cached | ~4MB | 慢 | **最快** | 批处理 |
-| Smart | 600KB-1.5MB | 快 | 快 | 通用场景 |
-
-运行基准测试查看实际性能：
-```bash
-php benchmark/run.php
-php benchmark/compare-strategies.php
-```
 
 ### 拼音风格
 
@@ -176,16 +90,17 @@ json_encode($pinyin); // '["nǐ","hǎo","shì","jiè"]'
 
 ```php
 use Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\ToneStyle;
 
 echo Pinyin::sentence('带着希望去旅行，比到达终点更美好');
 // dài zhe xī wàng qù lǚ xíng ， bǐ dào dá zhōng diǎn gèng měi hǎo
 
 // 去除声调
-echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', 'none');
+echo Pinyin::sentence('带着希望去旅行，比到达终点更美好', ToneStyle::NONE);
 // dai zhe xi wang qu lv xing ， bi dao da zhong dian geng mei hao
 
 // 保留所有非汉字字符
-echo Pinyin::fullSentence('ル是片假名，π是希腊字母', 'none');
+echo Pinyin::fullSentence('ル是片假名，π是希腊字母', ToneStyle::NONE);
 // ル shi pian jia ming ，π shi xi la zi mu
 ```
 
@@ -246,7 +161,7 @@ Pinyin::passportName('律师'); // ['lyu', 'shi']
 多音字的返回值为关联数组的集合，默认返回去重后的所有读音：
 
 ```php
-$pinyin = Pinyin::polyphones('重庆');
+$pinyin = Pinyin::heteronym('重庆');
 
 $pinyin['重']; // ["zhòng", "chóng", "tóng"]
 $pinyin['庆']; // ["qìng"]
@@ -261,10 +176,10 @@ $pinyin->toArray();
 如果不想要去重，可以数组形式返回：
 
 ```php
-$pinyin = Pinyin::polyphones('重庆重庆', ToneStyle::SYMBOL, true);
+$pinyin = Pinyin::heteronym('重庆重庆', ToneStyle::SYMBOL, true);
 
-// or 
-$pinyin = Pinyin::polyphonesAsArray('重庆重庆', ToneStyle::SYMBOL);
+// or
+$pinyin = Pinyin::heteronymAsList('重庆重庆', ToneStyle::SYMBOL);
 
 $pinyin->toArray();
 // [
@@ -295,6 +210,106 @@ $pinyin->toArray();
 > **Warning**
 >
 > 当单字处理时由于多音字来自词频表中取得常用音，所以在词语环境下可能出现不正确的情况，建议使用多音字处理。
+
+## 性能优化策略 🚀
+
+v6.0+ 版本提供了三种不同的转换策略，以适应不同的使用场景：
+
+### 1. 内存优化策略（Memory Optimized）- 默认
+- **内存占用**：~400KB
+- **适用场景**：Web 请求、内存受限环境
+- **特点**：每次加载一个词典段，用完即释放
+
+```php
+use Overtrue\Pinyin\Pinyin;
+
+// 使用内存优化策略（默认）
+Pinyin::useMemoryOptimized();
+$result = Pinyin::sentence('你好世界');
+echo $result; // nǐ hǎo shì jiè
+```
+
+### 2. 缓存策略（Cached）
+- **内存占用**：~4MB
+- **适用场景**：批处理、长时运行进程
+- **特点**：缓存所有词典数据，重复转换速度提升 2-3 倍
+
+```php
+// 使用缓存策略
+Pinyin::useCached();
+
+// 批量处理时性能更好
+foreach ($largeDataset as $text) {
+    $result = Pinyin::sentence($text);
+    echo $result . "\n";
+}
+
+// 清理缓存（可选）
+\Overtrue\Pinyin\Converters\CachedConverter::clearCache();
+```
+
+### 3. 智能策略（Smart）
+- **内存占用**：600KB-1.5MB
+- **适用场景**：通用场景、自动优化
+- **特点**：根据文本长度智能选择加载策略
+
+```php
+// 使用智能策略
+Pinyin::useSmart();
+
+// 短文本自动优化
+$result1 = Pinyin::sentence('你好');  // 跳过长词词典
+echo $result1; // nǐ hǎo
+
+// 长文本自动调整
+$result2 = Pinyin::sentence($longText);  // 加载必要的词典
+echo $result2;
+```
+
+### 自动选择策略
+
+```php
+// 根据运行环境自动选择最佳策略
+Pinyin::useAutoStrategy();
+
+// 获取推荐策略信息
+$recommended = \Overtrue\Pinyin\ConverterFactory::recommend();
+echo "推荐策略: {$recommended}";
+```
+
+### 直接使用 Converter
+
+```php
+use Overtrue\Pinyin\ConverterFactory;
+
+// 创建特定策略的转换器
+$converter = ConverterFactory::make('cached');
+$result = $converter->convert('你好世界');
+echo $result; // nǐ hǎo shì jiè
+
+// 监控内存使用情况
+$initialMemory = memory_get_usage();
+$converter->convert('测试文本');
+$memoryGrowth = memory_get_usage() - $initialMemory;
+echo "内存增长: " . round($memoryGrowth / 1024, 2) . " KB";
+```
+
+### 性能对比
+
+| 策略 | 内存占用 | 首次转换 | 重复转换 | 推荐场景 |
+|-----|---------|---------|---------|---------|
+| Memory Optimized | ~400KB | 中等 | 中等 | Web 请求 |
+| Cached | ~4MB | 慢 | **最快** | 批处理 |
+| Smart | 600KB-1.5MB | 快 | 快 | 通用场景 |
+
+运行基准测试查看实际性能：
+```bash
+# 运行标准基准测试
+php benchmark/run.php
+
+# 详细的策略对比测试
+php benchmark/compare-strategies.php
+```
 
 ## 性能优化最佳实践
 
@@ -336,7 +351,7 @@ class ConvertPinyinJob implements ShouldQueue
     {
         // 队列任务中使用智能策略
         Pinyin::useSmart();
-        
+
         // 处理任务...
     }
 }
@@ -347,14 +362,17 @@ class ConvertPinyinJob implements ShouldQueue
 ```php
 use Overtrue\Pinyin\ConverterFactory;
 
-// 获取当前策略的内存使用情况
-$converter = ConverterFactory::make('cached');
-$converter->convert('测试文本');
-$memoryInfo = $converter->getMemoryUsage();
+// 监控不同策略的内存使用情况
+$strategies = ['memory', 'cached', 'smart'];
+foreach ($strategies as $strategy) {
+    $converter = ConverterFactory::make($strategy);
 
-echo "策略: " . $memoryInfo['strategy'] . PHP_EOL;
-echo "峰值内存: " . $memoryInfo['peak_memory'] . PHP_EOL;
-echo "持久缓存: " . ($memoryInfo['persistent_cache'] ? '是' : '否') . PHP_EOL;
+    $initialMemory = memory_get_usage();
+    $converter->convert('测试文本');
+    $memoryGrowth = memory_get_usage() - $initialMemory;
+
+    echo "策略: {$strategy}, 内存增长: " . round($memoryGrowth / 1024, 2) . " KB" . PHP_EOL;
+}
 ```
 
 ### 基准测试
@@ -367,10 +385,12 @@ php benchmark/run.php
 
 # 详细的策略对比
 php benchmark/compare-strategies.php
-
-# 命令行基准测试工具
-./bin/benchmark-strategy -s all -i 1000
 ```
+
+基准测试会显示不同策略的性能对比，包括：
+- 内存使用情况
+- 转换速度
+- 不同文本长度的性能表现
 
 ### 内存管理建议
 
@@ -436,10 +456,41 @@ php ./bin/pinyin --help
 # Options:
 #     -j, --json               输出 JSON 格式.
 #     -c, --compact            不格式化输出 JSON.
-#     -m, --method=[method]    转换方式，可选：sentence/sentenceFull/permalink/abbr/nameAbbr/name/passportName/phrase/polyphones/chars.
+#     -m, --method=[method]    转换方式，可选：sentence/fullSentence/permalink/abbr/nameAbbr/name/passportName/phrase/heteronym/chars.
 #     --no-tone                不使用音调.
 #     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
 #     -h, --help               显示帮助.
+```
+
+### 命令行工具示例
+
+```bash
+# 基本转换
+php ./bin/pinyin "你好世界"
+# ni hao shi jie
+
+# 指定音调风格
+php ./bin/pinyin "你好世界" --tone-style=symbol
+# nǐ hǎo shì jiè
+
+php ./bin/pinyin "你好世界" --tone-style=number
+# ni3 hao3 shi4 jie4
+
+# 生成链接格式
+php ./bin/pinyin "带着希望去旅行" --method=permalink
+# dai-zhe-xi-wang-qu-lv-xing
+
+# 获取首字母
+php ./bin/pinyin "带着希望去旅行" --method=abbr
+# d z x w q l x
+
+# 多音字转换（JSON格式）
+php ./bin/pinyin "重庆" --method=heteronym --json
+# {"重":["zhong","chong","tong"],"庆":["qing"]}
+
+# 姓名转换
+php ./bin/pinyin "欧阳修" --method=name
+# ou yang xiu
 ```
 
 ## 在 Laravel 中使用
@@ -460,19 +511,11 @@ php ./bin/pinyin --help
 ## 参考
 
 - [mozillazg/pinyin-data](https://github.com/mozillazg/pinyin-data)
-- [详细参考资料](https://github.com/overtrue/pinyin-resources)
+- [overtrue/pinyin-resources](https://github.com/overtrue/pinyin-resources)
 
 ## :heart: Sponsor me
 
-[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
-
 如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
-
-## Project supported by JetBrains
-
-Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects.
-
-[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/overtrue)
 
 ## PHP 扩展包开发
 

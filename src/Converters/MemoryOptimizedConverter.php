@@ -4,6 +4,11 @@ namespace Overtrue\Pinyin\Converters;
 
 use Overtrue\Pinyin\Collection;
 
+use function array_map;
+use function mb_strlen;
+use function mb_substr;
+use function str_starts_with;
+
 /**
  * 内存优化版本的转换器
  *
@@ -18,11 +23,17 @@ class MemoryOptimizedConverter extends AbstractConverter
     {
         $string = $this->preprocessString($string);
 
-        // 多音字
+        return $this->determineConversionStrategy($string);
+    }
+
+    private function determineConversionStrategy(string $string): Collection
+    {
+        // 多音字处理
         if ($this->heteronym) {
             return $this->convertAsChars($string, true);
         }
 
+        // 仅字符转换
         if ($this->noWords) {
             return $this->convertAsChars($string);
         }
@@ -44,13 +55,13 @@ class MemoryOptimizedConverter extends AbstractConverter
     {
         $map = require self::CHARS_PATH;
 
-        $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
+        $chars = mb_str_split($string);
         $items = [];
 
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
+                    $pinyin = array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
@@ -71,21 +82,11 @@ class MemoryOptimizedConverter extends AbstractConverter
         $surnames ??= require self::SURNAMES_PATH;
 
         foreach ($surnames as $surname => $pinyin) {
-            if (\str_starts_with($name, $surname)) {
-                return $pinyin.\mb_substr($name, \mb_strlen($surname));
+            if (str_starts_with($name, $surname)) {
+                return $pinyin.mb_substr($name, mb_strlen($surname));
             }
         }
 
         return $name;
-    }
-
-    public function getMemoryUsage(): array
-    {
-        return [
-            'strategy' => 'memory_optimized',
-            'peak_memory' => '~400KB',
-            'persistent_cache' => false,
-            'description' => '最小内存占用，每次加载一个段',
-        ];
     }
 }

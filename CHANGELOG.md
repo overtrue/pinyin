@@ -1,46 +1,71 @@
-# Changelog
+## [5.3.4] - 2025-03-16
 
-All notable changes to this project will be documented in this file.
+### 🚀 Features
 
-## [5.1.0] - 2024-01-XX
+- Resolved #211
 
-### Added
-- **Multi-Strategy Converter Architecture**: Introduced three different conversion strategies to optimize for different use cases
-  - `MemoryOptimizedConverter`: Minimal memory footprint (~400KB), ideal for web requests
-  - `CachedConverter`: Full caching (~4MB), 2-3x faster for repeated conversions
-  - `SmartConverter`: Adaptive optimization (600KB-1.5MB), balances memory and performance
-- `ConverterFactory` for creating strategy-specific converters
-- Strategy selection methods: `useMemoryOptimized()`, `useCached()`, `useSmart()`, `useAutoStrategy()`
-- Memory usage tracking with `getMemoryUsage()` method
-- Comprehensive benchmark tools:
-  - `benchmark/run.php`: Enhanced with multi-strategy comparison
-  - `benchmark/compare-strategies.php`: Detailed performance analysis
-  - `bin/benchmark-strategy`: Command-line benchmark tool
-- New test suites for converter strategies and memory usage
+### ⚙️ Miscellaneous Tasks
 
-### Changed
-- Default converter now uses the memory-optimized strategy
-- `Pinyin::converter()` now accepts an optional strategy parameter
-- Improved benchmark output with strategy comparison tables
+- Format
+## [5.3.3] - 2024-08-01
 
-### Performance Improvements
-- Cached strategy provides 2-3x speedup for batch processing
-- Smart strategy reduces memory usage for short texts by skipping unnecessary dictionaries
-- Memory-optimized strategy maintains low memory footprint while processing
+### 🚀 Features
 
-### Documentation
-- Added comprehensive performance optimization guide in README
-- Added strategy selection guidelines
-- Added memory management best practices
-- Added performance comparison data
+- 使用 heteronym 代替 polyphonic 多音字 #184
+- 取首字母时，能否保留完整的英文 #199
 
-### Backward Compatibility
-- All existing APIs remain unchanged and fully compatible
-- Default behavior remains the same (memory-optimized)
-- New features are opt-in
+### 🐛 Bug Fixes
 
-## [5.0.0] - Previous Release
+- 修复 琢 的音频顺序 #207
+- 补充案例 #207
+- Tests
+- Tests
+## [5.3.2] - 2024-03-19
 
-### Changed
-- Minimum PHP version requirement to 8.0.2
-- ...
+### 🚀 Features
+
+- 取首字母时，能否保留完整的英文 #199
+## [5.3.1] - 2024-03-19
+
+### 🐛 Bug Fixes
+
+- 「仆区」应该读 pú ōu 而非 pú qū #200
+- Tests #200
+## [5.3.0] - 2023-10-27
+
+### 🚀 Features
+
+- 添加sentenceFull，支持保留其他字符 (#198)
+- Full sentence, #198
+## [5.2.2] - 2023-09-27
+
+### ⚙️ Miscellaneous Tasks
+
+- Bin
+## [5.2.1] - 2023-06-17
+
+### 🐛 Bug Fixes
+
+- Bin
+## [5.2.0] - 2023-06-12
+
+### 🚀 Features
+
+- 增加 Pinyin::polyphonesAsArray. fixed #195
+
+### 📚 Documentation
+
+- 更新文档提示
+- 更新文档提示
+- 更新文档提示
+## [5.1.0] - 2023-04-27
+
+### 💼 Other
+
+- 移除错误语法 (#190)
+## [5.0.0] - 2022-07-24
+
+### 🐛 Bug Fixes
+
+- 优化符号匹配规则
+## [1.0-beta] - 2014-07-16

@@ -57,8 +57,7 @@ $scenarios = [
         'name' => '冷启动',
         'description' => '首次转换（无缓存）',
         'prepare' => function () {
-            CachedConverter::clearCache();
-            SmartConverter::clearCache();
+            Pinyin::clearCache();
         },
         'iterations' => 1,
     ],
@@ -77,8 +76,7 @@ $scenarios = [
         'name' => '批量处理',
         'description' => '顺序处理多个文本',
         'prepare' => function () {
-            CachedConverter::clearCache();
-            SmartConverter::clearCache();
+            Pinyin::clearCache();
         },
         'iterations' => 1,
         'batch' => true,
@@ -155,8 +153,7 @@ foreach ($scenarios as $scenarioKey => $scenario) {
 }
 
 // 清理
-CachedConverter::clearCache();
-SmartConverter::clearCache();
+Pinyin::clearCache();
 
 // 生成报告
 $html = [];
@@ -228,21 +225,23 @@ $html[] = '<table>';
 $html[] = '<thead><tr>';
 $html[] = '<th>策略</th>';
 $html[] = '<th>峰值内存</th>';
-$html[] = '<th>持久缓存</th>';
+$html[] = '<th>速度</th>';
 $html[] = '<th>最适用场景</th>';
 $html[] = '</tr></thead>';
 $html[] = '<tbody>';
 
 foreach ($strategies as $strategyKey => $strategy) {
+    // 运行时内存监控
+    $initialMemory = memory_get_usage();
     $converter = ConverterFactory::make($strategyKey);
-    $converter->convert('测试'); // 触发加载
-    $info = $converter->getMemoryUsage();
+    $converter->convert('测试文本'); // 触发加载
+    $memoryGrowth = memory_get_usage() - $initialMemory;
 
     $html[] = '<tr>';
     $html[] = sprintf('<td class="text-%s-500">%s</td>', $strategy['color'], $strategy['name']);
-    $html[] = sprintf('<td>%s</td>', $info['peak_memory']);
-    $html[] = sprintf('<td>%s</td>', $info['persistent_cache'] ? 'Yes' : 'No');
-    $html[] = sprintf('<td>%s</td>', $info['description']);
+    $html[] = sprintf('<td>%.1f KB</td>', $memoryGrowth / 1024);
+    $html[] = sprintf('<td>%s</td>', $strategy['speed']);
+    $html[] = sprintf('<td>%s</td>', $strategy['use_case']);
     $html[] = '</tr>';
 }
 

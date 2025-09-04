@@ -38,6 +38,4 @@ interface ConverterInterface
     public function yuToYu(): static;
 
     public function when(bool $condition, callable $callback): static;
-
-    public function getMemoryUsage(): array;
 }

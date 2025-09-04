@@ -4,6 +4,12 @@ namespace Overtrue\Pinyin;
 
 use InvalidArgumentException;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
+use Overtrue\Pinyin\Converters\CachedConverter;
+use Overtrue\Pinyin\Converters\SmartConverter;
+
+use function is_numeric;
+use function mb_substr;
+use function method_exists;
 
 /**
  * @method static ConverterInterface surname()
@@ -17,7 +23,6 @@ use Overtrue\Pinyin\Contracts\ConverterInterface;
  * @method static ConverterInterface useNumberTone()
  * @method static ConverterInterface yuToV()
  * @method static ConverterInterface yuToU()
- * @method static ConverterInterface polyphonic(bool $asList = false)
  * @method static ConverterInterface withToneStyle(string|ToneStyle $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
@@ -63,24 +68,6 @@ class Pinyin
         return self::heteronym($string, $toneStyle, true);
     }
 
-    /**
-     * @deprecated Use `heteronym` instead.
-     *             This method will be removed in the next major version.
-     */
-    public static function polyphones(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL, bool $asList = false): Collection
-    {
-        return self::heteronym($string, $toneStyle, $asList);
-    }
-
-    /**
-     * @deprecated Use `heteronymAsList` instead.
-     *             This method will be removed in the next major version.
-     */
-    public static function polyphonesAsArray(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
-    {
-        return self::heteronym($string, $toneStyle, true);
-    }
-
     public static function chars(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->onlyHans()->noWords()->withToneStyle($toneStyle)->convert($string);
@@ -113,7 +100,7 @@ class Pinyin
                 }
 
                 // 常用于电影名称入库索引处理，例如：《晚娘2012》-> WN2012
-                return \is_numeric($pinyin) || preg_match('/\d{2,}/', $pinyin) ? $pinyin : \mb_substr($pinyin, 0, 1);
+                return is_numeric($pinyin) || preg_match('/\d{2,}/', $pinyin) ? $pinyin : mb_substr($pinyin, 0, 1);
             });
     }
 
@@ -174,11 +161,20 @@ class Pinyin
         self::setConverterStrategy($strategy);
     }
 
+    /**
+     * 清理所有转换器的缓存
+     */
+    public static function clearCache(): void
+    {
+        CachedConverter::clearCache();
+        SmartConverter::clearCache();
+    }
+
     public static function __callStatic(string $name, array $arguments)
     {
         $converter = self::converter();
 
-        if (\method_exists($converter, $name)) {
+        if (method_exists($converter, $name)) {
             return $converter->$name(...$arguments);
         }
 

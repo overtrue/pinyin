@@ -7,6 +7,7 @@ use Overtrue\Pinyin\ConverterFactory;
 use Overtrue\Pinyin\Converters\CachedConverter;
 use Overtrue\Pinyin\Converters\MemoryOptimizedConverter;
 use Overtrue\Pinyin\Converters\SmartConverter;
+use Overtrue\Pinyin\Pinyin;
 use PHPUnit\Framework\TestCase;
 
 class ConverterStrategiesTest extends TestCase
@@ -17,13 +18,6 @@ class ConverterStrategiesTest extends TestCase
         '中国' => ['zhōng', 'guó'],
         '带着希望去旅行' => ['dài', 'zhe', 'xī', 'wàng', 'qù', 'lǚ', 'xíng'],
     ];
-
-    protected function tearDown(): void
-    {
-        // 清理缓存
-        CachedConverter::clearCache();
-        SmartConverter::clearCache();
-    }
 
     /**
      * 测试所有策略的基本转换功能
@@ -71,10 +65,7 @@ class ConverterStrategiesTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertEquals(['nǐ', 'hǎo', 'shì', 'jiè'], $result->toArray());
 
-        // 测试内存信息
-        $memoryInfo = $converter->getMemoryUsage();
-        $this->assertEquals('memory_optimized', $memoryInfo['strategy']);
-        $this->assertFalse($memoryInfo['persistent_cache']);
+        // 测试内存优化策略的基本功能
 
         // 测试多音字
         $result = $converter->heteronym()->convert('重庆');
@@ -99,13 +90,10 @@ class ConverterStrategiesTest extends TestCase
         $result2 = $converter->convert('你好');
         $this->assertEquals(['nǐ', 'hǎo'], $result2->toArray());
 
-        // 测试内存信息
-        $memoryInfo = $converter->getMemoryUsage();
-        $this->assertEquals('cached', $memoryInfo['strategy']);
-        $this->assertTrue($memoryInfo['persistent_cache']);
+        // 测试缓存策略的基本功能
 
         // 测试缓存清理
-        CachedConverter::clearCache();
+        Pinyin::clearCache();
 
         // 清理后再次转换应该仍然正常工作
         $result3 = $converter->convert('世界');
@@ -134,10 +122,7 @@ class ConverterStrategiesTest extends TestCase
         $result = $converter->convert($longText);
         $this->assertInstanceOf(Collection::class, $result);
 
-        // 测试内存信息
-        $memoryInfo = $converter->getMemoryUsage();
-        $this->assertEquals('smart', $memoryInfo['strategy']);
-        $this->assertEquals('partial', $memoryInfo['persistent_cache']);
+        // 测试智能策略的基本功能
     }
 
     /**

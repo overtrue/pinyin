@@ -3,8 +3,6 @@
 namespace Overtrue\Pinyin\Tests;
 
 use Overtrue\Pinyin\ConverterFactory;
-use Overtrue\Pinyin\Converters\CachedConverter;
-use Overtrue\Pinyin\Converters\SmartConverter;
 use Overtrue\Pinyin\Pinyin;
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +17,7 @@ class PinyinStrategyTest extends TestCase
     protected function tearDown(): void
     {
         // 清理缓存
-        CachedConverter::clearCache();
-        SmartConverter::clearCache();
+        Pinyin::clearCache();
 
         // 重置为默认策略
         Pinyin::useMemoryOptimized();

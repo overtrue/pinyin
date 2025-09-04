@@ -5,15 +5,15 @@ namespace Overtrue\Pinyin\Tests;
 use Overtrue\Pinyin\Converters\CachedConverter;
 use Overtrue\Pinyin\Converters\MemoryOptimizedConverter;
 use Overtrue\Pinyin\Converters\SmartConverter;
+use Overtrue\Pinyin\Pinyin;
 use PHPUnit\Framework\TestCase;
 
-class MemoryUsageTest extends TestCase
+class MemoryMonitoringTest extends TestCase
 {
     protected function tearDown(): void
     {
         // 清理缓存
-        CachedConverter::clearCache();
-        SmartConverter::clearCache();
+        Pinyin::clearCache();
     }
 
     /**
@@ -38,11 +38,6 @@ class MemoryUsageTest extends TestCase
         // 允许一些小的增长（用于临时变量等）
         $this->assertLessThan(500 * 1024, $memoryGrowth,
             'Memory optimized converter should not grow memory significantly');
-
-        // 获取策略信息
-        $info = $converter->getMemoryUsage();
-        $this->assertEquals('memory_optimized', $info['strategy']);
-        $this->assertFalse($info['persistent_cache']);
     }
 
     /**
@@ -66,12 +61,12 @@ class MemoryUsageTest extends TestCase
         }
         $secondLoadMemory = memory_get_usage() - $beforeSecond;
 
-        // 第二次的内存增长应该远小于第一次
-        $this->assertLessThan($firstLoadMemory / 10, $secondLoadMemory,
+        // 第二次的内存增长应该远小于第一次（或者为0，表示没有额外内存分配）
+        $this->assertLessThanOrEqual($firstLoadMemory / 10, $secondLoadMemory,
             'Cached converter should reuse loaded data');
 
         // 清理缓存
-        CachedConverter::clearCache();
+        Pinyin::clearCache();
 
         // 清理后内存应该释放
         $afterClear = memory_get_usage();
@@ -135,7 +130,7 @@ class MemoryUsageTest extends TestCase
         }
         $memoryUsage['cached'] = memory_get_usage() - $start;
 
-        // 清理
+        // 清理缓存策略的缓存
         CachedConverter::clearCache();
         unset($converter);
 
@@ -190,57 +185,6 @@ class MemoryUsageTest extends TestCase
     }
 
     /**
-     * 测试缓存策略的缓存大小
-     */
-    public function test_cached_converter_cache_size()
-    {
-        $converter = new CachedConverter;
-
-        // 初始状态
-        $info = $converter->getMemoryUsage();
-        $this->assertEquals('0MB', $info['cache_size']);
-
-        // 加载一些数据
-        $converter->convert('中华人民共和国');
-        $converter->convert('带着希望去旅行');
-
-        // 缓存应该有数据了
-        $info = $converter->getMemoryUsage();
-        $this->assertNotEquals('0MB', $info['cache_size']);
-
-        // 解析缓存大小
-        $cacheSize = floatval($info['cache_size']);
-        $this->assertGreaterThan(0, $cacheSize);
-        $this->assertLessThan(10, $cacheSize); // 应该小于10MB
-    }
-
-    /**
-     * 测试智能策略的缓存段数
-     */
-    public function test_smart_converter_cached_segments()
-    {
-        $converter = new SmartConverter;
-
-        // 初始状态
-        $info = $converter->getMemoryUsage();
-        $this->assertEquals(0, $info['cached_segments']);
-
-        // 处理短文本
-        $converter->convert('你好');
-        $info = $converter->getMemoryUsage();
-        // 短文本可能不需要缓存额外段，所以允许为0
-        $this->assertGreaterThanOrEqual(0, $info['cached_segments']);
-        $this->assertLessThanOrEqual(3, $info['cached_segments']); // 最多缓存3段
-
-        // 处理更多文本
-        $converter->convert('带着希望去旅行');
-        $converter->convert('中华人民共和国');
-
-        $info = $converter->getMemoryUsage();
-        $this->assertLessThanOrEqual(3, $info['cached_segments']); // 仍然最多3段
-    }
-
-    /**
      * 测试内存泄漏
      */
     public function test_no_memory_leak()
@@ -266,5 +210,60 @@ class MemoryUsageTest extends TestCase
         // 允许一些小的增长，但不应该是线性增长
         $this->assertLessThan(100 * 1024, $memoryGrowth,
             'Should not have memory leak');
+    }
+
+    /**
+     * 测试运行时内存监控功能
+     */
+    public function test_runtime_memory_monitoring()
+    {
+        $strategies = [
+            'memory' => MemoryOptimizedConverter::class,
+            'cached' => CachedConverter::class,
+            'smart' => SmartConverter::class,
+        ];
+
+        $memoryResults = [];
+
+        foreach ($strategies as $name => $class) {
+            $converter = new $class;
+
+            $initialMemory = memory_get_usage();
+            $converter->convert('测试文本');
+            $memoryGrowth = memory_get_usage() - $initialMemory;
+
+            $memoryResults[$name] = $memoryGrowth;
+
+            // 内存增长应该大于等于0（可能为0如果数据已经加载）
+            $this->assertGreaterThanOrEqual(0, $memoryGrowth, "Strategy {$name} should not have negative memory growth");
+        }
+
+        // 验证不同策略的内存使用差异
+        $this->assertNotEquals($memoryResults['memory'], $memoryResults['cached'],
+            'Different strategies should have different memory usage');
+    }
+
+    /**
+     * 测试峰值内存监控
+     */
+    public function test_peak_memory_monitoring()
+    {
+        $converter = new CachedConverter;
+
+        $initialPeak = memory_get_peak_usage();
+
+        // 执行一些内存密集型操作
+        for ($i = 0; $i < 100; $i++) {
+            $converter->convert('这是一个很长的测试文本，用来测试峰值内存使用情况');
+        }
+
+        $finalPeak = memory_get_peak_usage();
+        $peakGrowth = $finalPeak - $initialPeak;
+
+        // 峰值内存应该有增长
+        $this->assertGreaterThan(0, $peakGrowth, 'Peak memory should increase');
+
+        // 但应该在合理范围内（放宽限制，因为测试环境可能不同）
+        $this->assertLessThan(50 * 1024 * 1024, $peakGrowth, 'Peak memory should be reasonable');
     }
 }

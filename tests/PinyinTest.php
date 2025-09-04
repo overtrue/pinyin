@@ -144,34 +144,7 @@ class PinyinTest extends TestCase
         ], Pinyin::heteronymAsList('重庆重庆', ToneStyle::NUMBER));
     }
 
-    public function test_polyphones()
-    {
-        $this->assertPinyin([
-            '重' => ['zhòng', 'chóng', 'tóng'],
-            '庆' => ['qìng'],
-        ], Pinyin::polyphones('重庆'));
-
-        $this->assertPinyin([
-            '重' => ['zhong', 'chong', 'tong'],
-            '庆' => ['qing'],
-        ], Pinyin::polyphones('重庆', ToneStyle::NONE));
-
-        $this->assertPinyin([
-            ['重' => ['zhong4', 'chong2', 'tong2']],
-            ['庆' => ['qing4']],
-            ['重' => ['zhong4', 'chong2', 'tong2']],
-            ['庆' => ['qing4']],
-        ], Pinyin::polyphones('重庆重庆', ToneStyle::NUMBER, true));
-
-        $this->assertPinyin([
-            ['重' => ['zhong4', 'chong2', 'tong2']],
-            ['庆' => ['qing4']],
-            ['重' => ['zhong4', 'chong2', 'tong2']],
-            ['庆' => ['qing4']],
-        ], Pinyin::polyphonesAsArray('重庆重庆', ToneStyle::NUMBER));
-    }
-
-    public function test_polyphones_chars()
+    public function test_chars()
     {
         // 因为非多音字模式，所以已词频文件来决定拼音的顺序
         $this->assertPinyin(['重' => 'zhòng', '庆' => 'qìng'], Pinyin::chars('重庆'));
@@ -435,7 +408,7 @@ class PinyinTest extends TestCase
             '什' => ['shen2', 'shi2'],
             '么' => ['me', 'yao1', 'mo2', 'ma'],
             '的' => ['de', 'di1', 'di2', 'di4'],
-        ], Pinyin::polyphones('你电脑电脑电脑什么的', ToneStyle::NUMBER)->toArray());
+        ], Pinyin::heteronym('你电脑电脑电脑什么的', ToneStyle::NUMBER)->toArray());
 
         $this->assertSame([
             ['你' => ['ni3']],
@@ -448,6 +421,6 @@ class PinyinTest extends TestCase
             ['什' => ['shen2', 'shi2']],
             ['么' => ['me', 'yao1', 'mo2', 'ma']],
             ['的' => ['de', 'di1', 'di2', 'di4']],
-        ], Pinyin::polyphonesAsArray('你电脑电脑电脑什么的', ToneStyle::NUMBER)->toArray());
+        ], Pinyin::heteronymAsList('你电脑电脑电脑什么的', ToneStyle::NUMBER)->toArray());
     }
 }

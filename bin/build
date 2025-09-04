@@ -3,94 +3,403 @@
 
 require __DIR__ . '/utils.php';
 
-$polyphones = explode(',', file_get_contents(__DIR__ . '/../sources/polyphones.txt'));
-$charsSouce = __DIR__ . '/../sources/chars.txt';
-$charsPathes = __DIR__.'/../sources/pathes/chars.txt';
-$wordsSouce = __DIR__ . '/../sources/words.txt';
-$wordsPathes = __DIR__ . '/../sources/pathes/words.txt';
-$surnamesSource = file(__DIR__.'/../sources/surnames.txt');
+/**
+ * 拼音数据构建器
+ *
+ * 负责下载、解析和构建拼音数据文件
+ */
+class PinyinDataBuilder
+{
+    private const CHARS_DATA_URL = 'https://raw.githubusercontent.com/mozillazg/pinyin-data/master/pinyin.txt';
+    private const WORDS_DATA_URL = 'https://raw.githubusercontent.com/mozillazg/phrase-pinyin-data/master/large_pinyin.txt';
 
+    private string $baseDir;
+    private array $config;
+    private array $stats = [];
 
-if (!file_exists($charsSouce)) {
-    file_put_contents($charsSouce, file_get_contents('https://raw.githubusercontent.com/mozillazg/pinyin-data/master/pinyin.txt'));
-}
-
-if (!file_exists($wordsSouce)) {
-    file_put_contents($wordsSouce, file_get_contents('https://raw.githubusercontent.com/mozillazg/phrase-pinyin-data/master/large_pinyin.txt'));
-}
-
-
-// ------------------------------------------------
-$surnames = [];
-foreach ($surnamesSource as $line) {
-    [$surname, $pinyin] = explode(':', trim($line));
-
-    $surnames[trim($surname)] = join("\t", ["", ...preg_split('/\s+/', trim($pinyin)), ""]);
-}
-
-
-// ------------------------------------------------
-
-// 单字，带多音
-$charWithPolyphones = [];
-// 单字，不带多音
-$chars = [];
-
-foreach (parse_chars($charsSouce) as $char => $pinyin) {
-    $charWithPolyphones[$char] = $pinyin;
-    $chars[$char] = "\t{$pinyin[0]}\t";
-}
-
-// 补丁部分
-foreach (parse_chars($charsPathes, fn ($p) => "\t{$p[0]}\t") as $char => $pinyin) {
-    $chars[$char] = $pinyin;
-}
-
-// ------------------------------------------------
-
-$words = [];
-
-foreach (parse_words($wordsSouce) as $word => $pinyin) {
-    $wordChars = preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY);
-
-    try {
-        $pinyinSegments = array_combine($wordChars, $pinyin);
-    } catch (Throwable $e) {
-        throw new Exception("行解析错误：$line");
+    public function __construct(?string $baseDir = null)
+    {
+        $this->baseDir = $baseDir ?? dirname(__DIR__);
+        $this->config = [
+            'sources' => [
+                'chars' => self::CHARS_DATA_URL,
+                'words' => self::WORDS_DATA_URL,
+            ],
+            'paths' => [
+                'heteronyms' => $this->baseDir . '/sources/heteronyms.txt',
+                'chars' => $this->baseDir . '/sources/chars.txt',
+                'chars_patches' => $this->baseDir . '/sources/patches/chars.txt',
+                'words' => $this->baseDir . '/sources/words.txt',
+                'words_patches' => $this->baseDir . '/sources/patches/words.txt',
+                'surnames' => $this->baseDir . '/sources/surnames.txt',
+                'data_dir' => $this->baseDir . '/data',
+            ],
+            'chunk_size' => 8000,
+        ];
     }
 
-    // 多音字处理
-    $polyphoneChars = array_intersect_key($wordChars, $polyphones);
+    /**
+     * 执行构建过程
+     */
+    public function build(): void
+    {
+        $this->log('开始构建拼音数据...');
 
-    foreach ($polyphoneChars as $char) {
-        // 如果词里的任何一个多音字在词里的读音和常用读音不一致，则需要加入词典，否则抛弃该词
-        if (isset($charWithPolyphones[$char]) && $pinyinSegments[$char] != $charWithPolyphones[$char][0]) {
-            $words[$word] = join("\t", ["", ...$pinyin, ""]);
-            break;
+        try {
+            $this->ensureDataDirectory();
+            $this->downloadSourceFiles();
+
+            $heteronyms = $this->loadHeteronyms();
+            $surnames = $this->processSurnames();
+            [$chars, $charWithHeteronyms] = $this->processChars();
+            $words = $this->processWords($heteronyms, $charWithHeteronyms);
+
+            $this->generateDataFiles($surnames, $chars, $charWithHeteronyms, $words);
+            $this->validateResults();
+            $this->printStats();
+
+            $this->log('构建完成！');
+        } catch (Exception $e) {
+            $this->log('构建失败: ' . $e->getMessage(), 'error');
+            throw $e;
         }
     }
+
+    /**
+     * 确保数据目录存在
+     */
+    private function ensureDataDirectory(): void
+    {
+        $dataDir = $this->config['paths']['data_dir'];
+        if (!is_dir($dataDir)) {
+            mkdir($dataDir, 0755, true);
+            $this->log("创建数据目录: {$dataDir}");
+        }
+    }
+
+    /**
+     * 下载源文件
+     */
+    private function downloadSourceFiles(): void
+    {
+        $this->log('检查并下载源文件...');
+
+        foreach ($this->config['sources'] as $type => $url) {
+            $path = $this->config['paths'][$type];
+
+            if (!file_exists($path)) {
+                $this->log("下载 {$type} 数据: {$url}");
+                $this->downloadFile($url, $path);
+            } else {
+                $this->log("{$type} 数据已存在，跳过下载");
+            }
+        }
+    }
+
+    /**
+     * 下载文件
+     */
+    private function downloadFile(string $url, string $path): void
+    {
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 30,
+                'user_agent' => 'Pinyin Data Builder/1.0',
+            ]
+        ]);
+
+        $content = @file_get_contents($url, false, $context);
+        if ($content === false) {
+            throw new Exception("无法下载文件: {$url}");
+        }
+
+        if (file_put_contents($path, $content) === false) {
+            throw new Exception("无法保存文件: {$path}");
+        }
+
+        $this->log("文件下载完成: " . basename($path));
+    }
+
+    /**
+     * 加载多音字列表
+     */
+    private function loadHeteronyms(): array
+    {
+        $heteronymsFile = $this->config['paths']['heteronyms'];
+        if (!file_exists($heteronymsFile)) {
+            throw new Exception("多音字文件不存在: {$heteronymsFile}");
+        }
+
+        $heteronyms = explode(',', file_get_contents($heteronymsFile));
+        $this->stats['heteronyms_count'] = count($heteronyms);
+        $this->log("加载多音字: {$this->stats['heteronyms_count']} 个");
+
+        return $heteronyms;
+    }
+
+    /**
+     * 处理姓氏数据
+     */
+    private function processSurnames(): array
+    {
+        $this->log('处理姓氏数据...');
+
+        $surnamesFile = $this->config['paths']['surnames'];
+        if (!file_exists($surnamesFile)) {
+            throw new Exception("姓氏文件不存在: {$surnamesFile}");
+        }
+
+        $surnames = [];
+        $lines = file($surnamesFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $lineNum => $line) {
+            $line = trim($line);
+            if (empty($line) || str_starts_with($line, '#')) {
+                continue;
+            }
+
+            if (!str_contains($line, ':')) {
+                throw new Exception("姓氏文件格式错误，第 " . ($lineNum + 1) . " 行: {$line}");
+            }
+
+            [$surname, $pinyin] = explode(':', $line, 2);
+            $surname = trim($surname);
+            $pinyin = trim($pinyin);
+
+            if (empty($surname) || empty($pinyin)) {
+                continue;
+            }
+
+            $surnames[$surname] = join("\t", ["", ...preg_split('/\s+/', $pinyin), ""]);
+        }
+
+        $this->stats['surnames_count'] = count($surnames);
+        $this->log("处理姓氏: {$this->stats['surnames_count']} 个");
+
+        return $surnames;
+    }
+
+    /**
+     * 处理字符数据
+     */
+    private function processChars(): array
+    {
+        $this->log('处理字符数据...');
+
+        $charsSource = $this->config['paths']['chars'];
+        $charsPatches = $this->config['paths']['chars_patches'];
+
+        // 单字，带多音
+        $charWithHeteronyms = [];
+        // 单字，不带多音
+        $chars = [];
+
+        // 处理主字符文件
+        foreach (parse_chars($charsSource) as $char => $pinyin) {
+            $charWithHeteronyms[$char] = $pinyin;
+            $chars[$char] = "\t{$pinyin[0]}\t";
+        }
+
+        // 处理补丁文件
+        if (file_exists($charsPatches)) {
+            foreach (parse_chars($charsPatches, fn ($p) => "\t{$p[0]}\t") as $char => $pinyin) {
+                $chars[$char] = $pinyin;
+            }
+        }
+
+        $this->stats['chars_count'] = count($chars);
+        $this->stats['chars_with_heteronyms_count'] = count($charWithHeteronyms);
+        $this->log("处理字符: {$this->stats['chars_count']} 个（含多音字 {$this->stats['chars_with_heteronyms_count']} 个）");
+
+        return [$chars, $charWithHeteronyms];
+    }
+
+    /**
+     * 处理词汇数据
+     */
+    private function processWords(array $heteronyms, array $charWithHeteronyms): array
+    {
+        $this->log('处理词汇数据...');
+
+        $wordsSource = $this->config['paths']['words'];
+        $wordsPatches = $this->config['paths']['words_patches'];
+
+        $words = [];
+        $processedCount = 0;
+
+        // 处理主词汇文件
+        foreach (parse_words($wordsSource) as $word => $pinyin) {
+            $processedCount++;
+            if ($processedCount % 10000 === 0) {
+                $this->log("已处理词汇: {$processedCount} 个");
+            }
+
+            $wordChars = preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY);
+
+            try {
+                $pinyinSegments = array_combine($wordChars, $pinyin);
+            } catch (Throwable $e) {
+                throw new Exception("词汇解析错误：{$word}");
+            }
+
+            // 多音字处理
+            $heteronymChars = array_intersect_key($wordChars, $heteronyms);
+
+            foreach ($heteronymChars as $char) {
+                // 如果词里的任何一个多音字在词里的读音和常用读音不一致，则需要加入词典
+                if (isset($charWithHeteronyms[$char]) && $pinyinSegments[$char] != $charWithHeteronyms[$char][0]) {
+                    $words[$word] = join("\t", ["", ...$pinyin, ""]);
+                    break;
+                }
+            }
+        }
+
+        // 处理补丁文件
+        if (file_exists($wordsPatches)) {
+            foreach (parse_words($wordsPatches) as $word => $pinyin) {
+                $words[$word] = join("\t", ["", ...$pinyin, ""]);
+            }
+        }
+
+        $this->stats['words_count'] = count($words);
+        $this->log("处理词汇: {$this->stats['words_count']} 个");
+
+        return $words;
+    }
+
+    /**
+     * 生成数据文件
+     */
+    private function generateDataFiles(array $surnames, array $chars, array $charWithHeteronyms, array $words): void
+    {
+        $this->log('生成数据文件...');
+
+        $dataDir = $this->config['paths']['data_dir'];
+
+        // 清理旧数据
+        $this->cleanDataDirectory($dataDir);
+
+        // 生成姓氏文件
+        $this->writePhpFile($dataDir . '/surnames.php', $surnames);
+        $this->log("保存姓氏: " . count($surnames) . " 个");
+
+        // 生成字符文件（带多音）
+        $this->writePhpFile($dataDir . '/chars.php', $charWithHeteronyms);
+        $this->log("保存字符: " . count($chars) . " 个");
+
+        // 合并词汇和字符，按长度排序
+        $allWords = array_merge($words, $chars);
+        uksort($allWords, fn ($a, $b) => strlen($b) <=> strlen($a));
+
+        // 分块保存词汇文件
+        $chunkSize = $this->config['chunk_size'];
+        $chunks = array_chunk($allWords, $chunkSize, true);
+
+        foreach ($chunks as $index => $chunk) {
+            $filename = $dataDir . "/words-{$index}.php";
+            $this->writePhpFile($filename, $chunk);
+            $this->log("保存词汇块 {$index}: " . count($chunk) . " 个");
+        }
+
+        $this->stats['total_words'] = count($allWords);
+        $this->stats['chunks_count'] = count($chunks);
+    }
+
+    /**
+     * 清理数据目录
+     */
+    private function cleanDataDirectory(string $dataDir): void
+    {
+        if (is_dir($dataDir)) {
+            $files = glob($dataDir . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            $this->log("清理数据目录: {$dataDir}");
+        }
+    }
+
+    /**
+     * 写入PHP文件
+     */
+    private function writePhpFile(string $filename, array $data): void
+    {
+        $content = "<?php\nreturn " . var_export($data, true) . ";\n";
+
+        if (file_put_contents($filename, $content) === false) {
+            throw new Exception("无法写入文件: {$filename}");
+        }
+    }
+
+    /**
+     * 验证结果
+     */
+    private function validateResults(): void
+    {
+        $this->log('验证生成的数据...');
+
+        $dataDir = $this->config['paths']['data_dir'];
+        $requiredFiles = ['surnames.php', 'chars.php'];
+
+        foreach ($requiredFiles as $file) {
+            $path = $dataDir . '/' . $file;
+            if (!file_exists($path)) {
+                throw new Exception("必需文件缺失: {$file}");
+            }
+
+            // 验证文件可读性
+            $data = include $path;
+            if (!is_array($data)) {
+                throw new Exception("文件格式错误: {$file}");
+            }
+        }
+
+        // 检查词汇文件
+        $wordFiles = glob($dataDir . '/words-*.php');
+        if (empty($wordFiles)) {
+            throw new Exception("词汇文件缺失");
+        }
+
+        $this->log("数据验证通过");
+    }
+
+    /**
+     * 打印统计信息
+     */
+    private function printStats(): void
+    {
+        $this->log('=== 构建统计 ===');
+        $this->log("多音字: {$this->stats['heteronyms_count']} 个");
+        $this->log("姓氏: {$this->stats['surnames_count']} 个");
+        $this->log("字符: {$this->stats['chars_count']} 个");
+        $this->log("词汇: {$this->stats['words_count']} 个");
+        $this->log("总计: {$this->stats['total_words']} 个");
+        $this->log("分块数: {$this->stats['chunks_count']} 个");
+    }
+
+    /**
+     * 日志记录
+     */
+    private function log(string $message, string $level = 'info'): void
+    {
+        $timestamp = date('Y-m-d H:i:s');
+        $prefix = match($level) {
+            'error' => '[ERROR]',
+            'warning' => '[WARN]',
+            default => '[INFO]'
+        };
+
+        echo "{$timestamp} {$prefix} {$message}\n";
+    }
 }
 
-foreach (parse_words($wordsPathes) as $word => $pinyin) {
-    $words[$word] = join("\t", ["", ...$pinyin, ""]);
-}
-
-// 清理
-exec('rm -rf ' . __DIR__ . '/../data/*');
-
-// 姓氏
-file_put_contents(__DIR__ . '/../data/surnames.php', "<?php\nreturn ".var_export($surnames, true).";\n");
-echo count($surnames)." surnames saved.\n";
-
-// 单字：带多音
-file_put_contents(__DIR__ . '/../data/chars.php', "<?php\nreturn ".var_export($charWithPolyphones, true).";\n");
-echo count($chars)." chars saved.\n";
-
-// 词：从长到短 + 单字
-$words = array_merge($words, $chars);
-uksort($words, fn ($a, $b) => strlen($b) <=> strlen($a));
-
-foreach (array_chunk($words, 8000, true) as $index => $group) {
-    file_put_contents(__DIR__ . "/../data/words-{$index}.php", "<?php\nreturn ".var_export($group, true).";\n");
-    echo count($group)." words saved in ".__DIR__ . "/../data/words-{$index}.php \n";
+// 执行构建
+try {
+    $builder = new PinyinDataBuilder();
+    $builder->build();
+} catch (Exception $e) {
+    echo "构建失败: " . $e->getMessage() . "\n";
+    exit(1);
 }

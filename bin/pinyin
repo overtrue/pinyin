@@ -6,7 +6,7 @@ require __DIR__ . '/utils.php';
 
 use Overtrue\Pinyin\Pinyin;
 
-$methods = ['sentence','fullSentence','name','passportName','phrase','permalink','polyphones','chars','abbr','nameAbbr'];
+$methods = ['sentence','fullSentence','name','passportName','phrase','permalink','heteronym','heteronymAsList','chars','abbr','nameAbbr'];
 $method = 'sentence';
 $inputOptions = [];
 $methodAsString = implode('/', $methods);
@@ -63,7 +63,7 @@ if (! in_array($method, $methods)) {
 
 $result = Pinyin::$method($input, $method === 'permalink' ? '-' : $toneStyle);
 
-$toJson = has_option('json', 'j') || in_array($method, ['polyphones']);
+$toJson = has_option('json', 'j') || in_array($method, ['heteronym', 'heteronymAsList']);
 
 if ($toJson) {
     $options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;

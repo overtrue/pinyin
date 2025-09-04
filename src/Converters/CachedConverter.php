@@ -4,6 +4,11 @@ namespace Overtrue\Pinyin\Converters;
 
 use Overtrue\Pinyin\Collection;
 
+use function array_map;
+use function mb_strlen;
+use function mb_substr;
+use function str_starts_with;
+
 /**
  * 缓存版本的转换器
  *
@@ -27,11 +32,17 @@ class CachedConverter extends AbstractConverter
     {
         $string = $this->preprocessString($string);
 
-        // 多音字
+        return $this->determineConversionStrategy($string);
+    }
+
+    private function determineConversionStrategy(string $string): Collection
+    {
+        // 多音字处理
         if ($this->heteronym) {
             return $this->convertAsChars($string, true);
         }
 
+        // 仅字符转换
         if ($this->noWords) {
             return $this->convertAsChars($string);
         }
@@ -72,17 +83,15 @@ class CachedConverter extends AbstractConverter
 
     protected function convertAsChars(string $string, bool $polyphonic = false): Collection
     {
-        if (self::$charsCache === null) {
-            self::$charsCache = require self::CHARS_PATH;
-        }
+        self::$charsCache ??= require self::CHARS_PATH;
 
-        $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
+        $chars = mb_str_split($string);
         $items = [];
 
         foreach ($chars as $char) {
             if (isset(self::$charsCache[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), self::$charsCache[$char]);
+                    $pinyin = array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), self::$charsCache[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
@@ -99,13 +108,11 @@ class CachedConverter extends AbstractConverter
 
     protected function convertSurname(string $name): string
     {
-        if (self::$surnamesCache === null) {
-            self::$surnamesCache = require self::SURNAMES_PATH;
-        }
+        self::$surnamesCache ??= require self::SURNAMES_PATH;
 
         foreach (self::$surnamesCache as $surname => $pinyin) {
-            if (\str_starts_with($name, $surname)) {
-                return $pinyin.\mb_substr($name, \mb_strlen($surname));
+            if (str_starts_with($name, $surname)) {
+                return $pinyin.mb_substr($name, mb_strlen($surname));
             }
         }
 
@@ -121,24 +128,5 @@ class CachedConverter extends AbstractConverter
         self::$surnamesCache = null;
         self::$wordsCache = [];
         self::$fullDictionary = null;
-    }
-
-    public function getMemoryUsage(): array
-    {
-        $cacheSize = 0;
-        if (self::$charsCache !== null) {
-            $cacheSize += strlen(serialize(self::$charsCache));
-        }
-        if (self::$fullDictionary !== null) {
-            $cacheSize += strlen(serialize(self::$fullDictionary));
-        }
-
-        return [
-            'strategy' => 'cached',
-            'peak_memory' => '~4MB',
-            'persistent_cache' => true,
-            'cache_size' => round($cacheSize / 1024 / 1024, 2).'MB',
-            'description' => '全缓存，适合批处理和长时运行',
-        ];
     }
 }

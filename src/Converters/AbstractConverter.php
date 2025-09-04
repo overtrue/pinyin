@@ -6,6 +6,13 @@ use Overtrue\Pinyin\Collection;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
 use Overtrue\Pinyin\ToneStyle;
 
+use function array_values;
+use function implode;
+use function preg_replace;
+use function sprintf;
+use function str_contains;
+use function str_replace;
+
 abstract class AbstractConverter implements ConverterInterface
 {
     protected const SEGMENTS_COUNT = 10;
@@ -41,8 +48,6 @@ abstract class AbstractConverter implements ConverterInterface
     ];
 
     abstract public function convert(string $string): Collection;
-
-    abstract public function getMemoryUsage(): array;
 
     public function heteronym(bool $asList = false): static
     {
@@ -170,7 +175,7 @@ abstract class AbstractConverter implements ConverterInterface
 
         // 过滤掉不保留的字符
         if ($this->cleanup) {
-            $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+            $string = preg_replace(sprintf('~[^%s]~u', implode($this->regexps)), '', $string);
         }
 
         return $string;
@@ -178,7 +183,7 @@ abstract class AbstractConverter implements ConverterInterface
 
     protected function split(string $item): Collection
     {
-        $items = \array_values(array_filter(preg_split('/\s+/i', $item)));
+        $items = array_values(array_filter(preg_split('/\s+/i', $item)));
 
         foreach ($items as $index => $item) {
             $items[$index] = $this->formatTone($item, $this->toneStyle->value);
@@ -193,48 +198,25 @@ abstract class AbstractConverter implements ConverterInterface
             return $pinyin;
         }
 
+        // @formatter:off
         $replacements = [
-            'ɑ' => ['a', 5],
-            'ü' => ['v', 5],
-            'üē' => ['ue', 1],
-            'üé' => ['ue', 2],
-            'üě' => ['ue', 3],
-            'üè' => ['ue', 4],
-            'ā' => ['a', 1],
-            'ē' => ['e', 1],
-            'ī' => ['i', 1],
-            'ō' => ['o', 1],
-            'ū' => ['u', 1],
-            'ǖ' => ['v', 1],
-            'á' => ['a', 2],
-            'é' => ['e', 2],
-            'í' => ['i', 2],
-            'ó' => ['o', 2],
-            'ú' => ['u', 2],
-            'ǘ' => ['v', 2],
-            'ǎ' => ['a', 3],
-            'ě' => ['e', 3],
-            'ǐ' => ['i', 3],
-            'ǒ' => ['o', 3],
-            'ǔ' => ['u', 3],
-            'ǚ' => ['v', 3],
-            'à' => ['a', 4],
-            'è' => ['e', 4],
-            'ì' => ['i', 4],
-            'ò' => ['o', 4],
-            'ù' => ['u', 4],
-            'ǜ' => ['v', 4],
+            'ɑ' => ['a', 5], 'ü' => ['v', 5], 'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
+            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
+            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
+            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
+            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['v', 4],
         ];
+        // @formatter:on
 
         foreach ($replacements as $unicode => $replacement) {
-            if (\str_contains($pinyin, $unicode)) {
+            if (str_contains($pinyin, $unicode)) {
                 $umlaut = $replacement[0];
 
                 if ($this->yuTo !== 'v' && $umlaut === 'v') {
                     $umlaut = $this->yuTo;
                 }
 
-                $pinyin = \str_replace($unicode, $umlaut, $pinyin);
+                $pinyin = str_replace($unicode, $umlaut, $pinyin);
 
                 if ($style === ToneStyle::NUMBER->value) {
                     $pinyin .= $replacement[1];

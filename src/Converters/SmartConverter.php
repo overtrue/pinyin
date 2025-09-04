@@ -4,6 +4,11 @@ namespace Overtrue\Pinyin\Converters;
 
 use Overtrue\Pinyin\Collection;
 
+use function array_map;
+use function mb_strlen;
+use function mb_substr;
+use function str_starts_with;
+
 /**
  * 智能版本的转换器
  *
@@ -17,8 +22,6 @@ class SmartConverter extends AbstractConverter
 {
     private static ?array $surnamesCache = null;
 
-    private static ?array $commonWordsCache = null;
-
     private static array $segmentCache = [];
 
     private static ?array $fullDictionary = null;
@@ -29,11 +32,17 @@ class SmartConverter extends AbstractConverter
     {
         $string = $this->preprocessString($string);
 
-        // 多音字
+        return $this->determineConversionStrategy($string);
+    }
+
+    private function determineConversionStrategy(string $string): Collection
+    {
+        // 多音字处理
         if ($this->heteronym) {
             return $this->convertAsChars($string, true);
         }
 
+        // 仅字符转换
         if ($this->noWords) {
             return $this->convertAsChars($string);
         }
@@ -57,44 +66,20 @@ class SmartConverter extends AbstractConverter
         return strtr($string, $dictionary);
     }
 
-    private function analyzeTextComplexity(string $text, int $length): int
-    {
-        // 简化：不再使用复杂的段选择逻辑
-        return 0;
-    }
-
-    private function convertWithCache(string $string, int $startSegment): string
-    {
-        // 缓存最近使用的几个段
-        for ($i = $startSegment; $i < self::SEGMENTS_COUNT; $i++) {
-            if (! isset(self::$segmentCache[$i])) {
-                // 缓存数量限制
-                if (count(self::$segmentCache) >= self::MAX_CACHE_SEGMENTS) {
-                    // 移除最早的缓存（简单的FIFO）
-                    array_shift(self::$segmentCache);
-                }
-                self::$segmentCache[$i] = require sprintf(self::WORDS_PATH, $i);
-            }
-            $string = strtr($string, self::$segmentCache[$i]);
-        }
-
-        return $string;
-    }
-
     private function getFullDictionary(): array
     {
         if (self::$fullDictionary === null) {
             self::$fullDictionary = [];
             // 按顺序加载，保证长词优先
             for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
-                self::$fullDictionary += $this->loadWordsSegment($i);
+                self::$fullDictionary += $this->loadSegmentWithCache($i);
             }
         }
 
         return self::$fullDictionary;
     }
 
-    private function loadWordsSegment(int $index): array
+    private function loadSegmentWithCache(int $index): array
     {
         if (! isset(self::$segmentCache[$index])) {
             // 缓存数量限制
@@ -113,13 +98,13 @@ class SmartConverter extends AbstractConverter
         // 字符表太大，不缓存
         $map = require self::CHARS_PATH;
 
-        $chars = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
+        $chars = mb_str_split($string);
         $items = [];
 
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
+                    $pinyin = array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle->value), $map[$char]);
                     if ($this->heteronymAsList) {
                         $items[] = [$char => $pinyin];
                     } else {
@@ -137,13 +122,11 @@ class SmartConverter extends AbstractConverter
     protected function convertSurname(string $name): string
     {
         // 姓氏表很小，可以缓存
-        if (self::$surnamesCache === null) {
-            self::$surnamesCache = require self::SURNAMES_PATH;
-        }
+        self::$surnamesCache ??= require self::SURNAMES_PATH;
 
         foreach (self::$surnamesCache as $surname => $pinyin) {
-            if (\str_starts_with($name, $surname)) {
-                return $pinyin.\mb_substr($name, \mb_strlen($surname));
+            if (str_starts_with($name, $surname)) {
+                return $pinyin.mb_substr($name, mb_strlen($surname));
             }
         }
 
@@ -156,23 +139,7 @@ class SmartConverter extends AbstractConverter
     public static function clearCache(): void
     {
         self::$surnamesCache = null;
-        self::$commonWordsCache = null;
         self::$segmentCache = [];
         self::$fullDictionary = null;
-    }
-
-    public function getMemoryUsage(): array
-    {
-        $cacheCount = count(self::$segmentCache);
-        $estimatedSize = $cacheCount * 200; // 每段约200KB
-
-        return [
-            'strategy' => 'smart',
-            'peak_memory' => '~600KB-1.5MB',
-            'persistent_cache' => 'partial',
-            'cached_segments' => $cacheCount,
-            'estimated_cache_size' => $estimatedSize.'KB',
-            'description' => '智能策略：短文本使用缓存，长文本直接加载',
-        ];
     }
 }

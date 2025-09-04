@@ -8,7 +8,7 @@
  *
  * @throws Exception
  */
-function parse_chars(string $path, callable $fn = null): Generator
+function parse_chars(string $path, ?callable $fn = null): Generator
 {
     $fn ??= fn ($p) => $p;
 
@@ -31,7 +31,7 @@ function parse_chars(string $path, callable $fn = null): Generator
  *
  * @throws Exception
  */
-function parse_words(string $path, callable $fn = null): Generator
+function parse_words(string $path, ?callable $fn = null): Generator
 {
     $fn ??= fn ($p) => $p;
 

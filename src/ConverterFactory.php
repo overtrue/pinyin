@@ -124,18 +124,14 @@ class ConverterFactory
     private static function parseBytes(string $value): int
     {
         $value = trim($value);
-        $last = strtolower($value[strlen($value) - 1]);
+        $last = strtolower($value[-1]);
         $value = (int) $value;
 
-        switch ($last) {
-            case 'g':
-                $value *= 1024;
-            case 'm':
-                $value *= 1024;
-            case 'k':
-                $value *= 1024;
-        }
-
-        return $value;
+        return match ($last) {
+            'g' => $value * 1024 * 1024 * 1024,
+            'm' => $value * 1024 * 1024,
+            'k' => $value * 1024,
+            default => $value,
+        };
     }
 }
