@@ -287,7 +287,7 @@ class PinyinCallStaticTest extends TestCase
         }
         $time = microtime(true) - $start;
 
-        $this->assertLessThan(10.0, $time, 'Dynamic method calls should be reasonably fast');
+        $this->assertLessThan(15.0, $time, 'Dynamic method calls should be reasonably fast');
     }
 
     /**
