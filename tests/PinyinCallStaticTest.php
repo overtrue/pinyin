@@ -298,9 +298,9 @@ class PinyinCallStaticTest extends TestCase
 
         // 动态方法调用不应该比直接调用慢太多（最多3倍）
         $ratio = $dynamicTime / $directTime;
-        $this->assertLessThan(3.0, $ratio, 
+        $this->assertLessThan(3.0, $ratio,
             "Dynamic method calls should not be significantly slower than direct calls. Ratio: {$ratio}");
-        
+
         // 确保两种方法都能正常工作
         $this->assertEquals(['ni', 'hao'], Pinyin::noTone()->convert($testText)->toArray());
         $this->assertEquals('nǐ hǎo', Pinyin::sentence($testText));
