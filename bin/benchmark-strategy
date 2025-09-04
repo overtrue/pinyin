@@ -1,0 +1,218 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Overtrue\Pinyin\Pinyin;
+use Overtrue\Pinyin\ConverterFactory;
+use Overtrue\Pinyin\Converters\CachedConverter;
+use Overtrue\Pinyin\Converters\SmartConverter;
+
+// 解析命令行参数
+$options = getopt('s:t:i:h', ['strategy:', 'text:', 'iterations:', 'help']);
+
+if (isset($options['h']) || isset($options['help'])) {
+    echo <<<HELP
+Pinyin Strategy Benchmark Tool
+
+Usage: {$argv[0]} [options]
+
+Options:
+  -s, --strategy    Strategy to test (memory|cached|smart|all) [default: all]
+  -t, --text        Text to convert [default: sample text]
+  -i, --iterations  Number of iterations [default: 100]
+  -h, --help        Show this help message
+
+Examples:
+  # Test all strategies with default text
+  {$argv[0]}
+  
+  # Test specific strategy
+  {$argv[0]} -s cached
+  
+  # Test with custom text
+  {$argv[0]} -t "你好世界"
+  
+  # Test with more iterations
+  {$argv[0]} -i 1000
+
+HELP;
+    exit(0);
+}
+
+// 参数设置
+$strategyOption = $options['s'] ?? $options['strategy'] ?? 'all';
+$text = $options['t'] ?? $options['text'] ?? '带着希望去旅行，比到达终点更美好';
+$iterations = (int) ($options['i'] ?? $options['iterations'] ?? 100);
+
+// 策略配置
+$strategies = [
+    'memory' => [
+        'name' => 'Memory Optimized',
+        'setup' => function() { Pinyin::useMemoryOptimized(); },
+        'color' => "\033[34m", // Blue
+    ],
+    'cached' => [
+        'name' => 'Cached',
+        'setup' => function() { Pinyin::useCached(); },
+        'color' => "\033[32m", // Green
+    ],
+    'smart' => [
+        'name' => 'Smart',
+        'setup' => function() { Pinyin::useSmart(); },
+        'color' => "\033[33m", // Yellow
+    ],
+];
+
+// 确定要测试的策略
+$testStrategies = [];
+if ($strategyOption === 'all') {
+    $testStrategies = $strategies;
+} elseif (isset($strategies[$strategyOption])) {
+    $testStrategies = [$strategyOption => $strategies[$strategyOption]];
+} else {
+    echo "\033[31mError: Unknown strategy '{$strategyOption}'\033[0m\n";
+    echo "Available strategies: memory, cached, smart, all\n";
+    exit(1);
+}
+
+// 显示测试信息
+echo "\033[36m=== Pinyin Strategy Benchmark ===\033[0m\n\n";
+echo "Text: \033[33m{$text}\033[0m\n";
+echo "Text length: " . mb_strlen($text) . " characters\n";
+echo "Iterations: {$iterations}\n";
+echo "\n";
+
+// 运行测试
+$results = [];
+$maxNameLength = max(array_map(fn($s) => strlen($s['name']), $strategies));
+
+foreach ($testStrategies as $key => $strategy) {
+    echo "Testing {$strategy['color']}{$strategy['name']}\033[0m... ";
+    
+    // 清理缓存
+    if ($key === 'cached') {
+        CachedConverter::clearCache();
+    } elseif ($key === 'smart') {
+        SmartConverter::clearCache();
+    }
+    
+    // 设置策略
+    $strategy['setup']();
+    
+    // 预热（第一次调用）
+    $result = Pinyin::sentence($text);
+    $output = $result->join(' ');
+    
+    // 计时
+    $start = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+        Pinyin::sentence($text);
+    }
+    $elapsed = microtime(true) - $start;
+    
+    $avgTime = ($elapsed / $iterations) * 1000; // 转换为毫秒
+    $results[$key] = [
+        'name' => $strategy['name'],
+        'time' => $avgTime,
+        'total' => $elapsed * 1000,
+        'output' => $output,
+        'color' => $strategy['color'],
+    ];
+    
+    echo sprintf("%.3f ms/op\n", $avgTime);
+}
+
+// 清理缓存
+CachedConverter::clearCache();
+SmartConverter::clearCache();
+
+// 显示结果
+echo "\n\033[36m=== Results ===\033[0m\n\n";
+
+// 排序结果
+uasort($results, fn($a, $b) => $a['time'] <=> $b['time']);
+
+// 找出最快和最慢
+$fastest = reset($results);
+$slowest = end($results);
+
+// 显示排序后的结果
+$rank = 1;
+foreach ($results as $key => $result) {
+    $speedup = $result === $fastest ? '' : sprintf(' (%.1fx slower)', $result['time'] / $fastest['time']);
+    
+    printf(
+        "%d. %s%-{$maxNameLength}s\033[0m: %.3f ms/op%s\n",
+        $rank++,
+        $result['color'],
+        $result['name'],
+        $result['time'],
+        $speedup
+    );
+}
+
+// 显示转换结果样例
+echo "\n\033[36m=== Conversion Output ===\033[0m\n";
+echo "Input:  {$text}\n";
+echo "Output: " . $fastest['output'] . "\n";
+
+// 内存使用信息
+if ($strategyOption === 'all') {
+    echo "\n\033[36m=== Memory Usage ===\033[0m\n\n";
+    
+    foreach (['memory', 'cached', 'smart'] as $key) {
+        $converter = ConverterFactory::make($key);
+        $converter->convert('测试'); // 触发加载
+        $info = $converter->getMemoryUsage();
+        
+        printf(
+            "%s%-{$maxNameLength}s\033[0m: %s (%s)\n",
+            $strategies[$key]['color'],
+            $strategies[$key]['name'],
+            $info['peak_memory'],
+            $info['description']
+        );
+    }
+}
+
+// 性能提升总结
+if (count($results) > 1) {
+    echo "\n\033[36m=== Performance Summary ===\033[0m\n";
+    
+    $improvement = ($slowest['time'] / $fastest['time']);
+    printf(
+        "\n%s%s\033[0m is \033[32m%.1fx faster\033[0m than %s%s\033[0m\n",
+        $fastest['color'],
+        $fastest['name'],
+        $improvement,
+        $slowest['color'],
+        $slowest['name']
+    );
+    
+    if ($iterations > 1) {
+        printf(
+            "Total time saved over %d iterations: %.1f ms\n",
+            $iterations,
+            $slowest['total'] - $fastest['total']
+        );
+    }
+}
+
+// 建议
+echo "\n\033[36m=== Recommendations ===\033[0m\n\n";
+
+$textLength = mb_strlen($text);
+if ($textLength < 10) {
+    echo "For short text (< 10 chars): \033[34mMemory Optimized\033[0m or \033[33mSmart\033[0m\n";
+} elseif ($textLength < 50) {
+    echo "For medium text (10-50 chars): \033[33mSmart\033[0m strategy is recommended\n";
+} else {
+    echo "For long text (> 50 chars): \033[32mCached\033[0m strategy for batch, \033[33mSmart\033[0m for single\n";
+}
+
+if ($iterations > 100) {
+    echo "For high-frequency conversions: \033[32mCached\033[0m strategy is recommended\n";
+}
+
+echo "\n";

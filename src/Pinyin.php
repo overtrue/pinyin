@@ -3,56 +3,62 @@
 namespace Overtrue\Pinyin;
 
 use InvalidArgumentException;
+use Overtrue\Pinyin\Contracts\ConverterInterface;
 
 /**
- * @method static Converter surname()
- * @method static Converter noWords()
- * @method static Converter onlyHans()
- * @method static Converter noAlpha()
- * @method static Converter noNumber()
- * @method static Converter noCleanup()
- * @method static Converter noPunctuation()
- * @method static Converter noTone()
- * @method static Converter useNumberTone()
- * @method static Converter yuToV()
- * @method static Converter yuToU()
- * @method static Converter polyphonic(bool $asList = false)
- * @method static Converter withToneStyle(string $toneStyle = 'symbol')
+ * @method static ConverterInterface surname()
+ * @method static ConverterInterface noWords()
+ * @method static ConverterInterface onlyHans()
+ * @method static ConverterInterface noAlpha()
+ * @method static ConverterInterface noNumber()
+ * @method static ConverterInterface noCleanup()
+ * @method static ConverterInterface noPunctuation()
+ * @method static ConverterInterface noTone()
+ * @method static ConverterInterface useNumberTone()
+ * @method static ConverterInterface yuToV()
+ * @method static ConverterInterface yuToU()
+ * @method static ConverterInterface polyphonic(bool $asList = false)
+ * @method static ConverterInterface withToneStyle(string|ToneStyle $toneStyle = 'symbol')
  * @method static Collection convert(string $string, callable $beforeSplit = null)
  */
 class Pinyin
 {
-    public static function name(string $name, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    /**
+     * 当前使用的转换策略
+     */
+    private static ?string $converterStrategy = null;
+
+    public static function name(string $name, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->surname()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function passportName(string $name, string $toneStyle = Converter::TONE_STYLE_NONE): Collection
+    public static function passportName(string $name, string|ToneStyle $toneStyle = ToneStyle::NONE): Collection
     {
         return self::converter()->surname()->yuToYu()->withToneStyle($toneStyle)->convert($name);
     }
 
-    public static function phrase(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function phrase(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->noPunctuation()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function sentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function sentence(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function fullSentence(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function fullSentence(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->noCleanup()->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function heteronym(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
+    public static function heteronym(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL, bool $asList = false): Collection
     {
         return self::converter()->heteronym($asList)->withToneStyle($toneStyle)->convert($string);
     }
 
-    public static function heteronymAsList(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function heteronymAsList(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::heteronym($string, $toneStyle, true);
     }
@@ -61,7 +67,7 @@ class Pinyin
      * @deprecated Use `heteronym` instead.
      *             This method will be removed in the next major version.
      */
-    public static function polyphones(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL, bool $asList = false): Collection
+    public static function polyphones(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL, bool $asList = false): Collection
     {
         return self::heteronym($string, $toneStyle, $asList);
     }
@@ -70,12 +76,12 @@ class Pinyin
      * @deprecated Use `heteronymAsList` instead.
      *             This method will be removed in the next major version.
      */
-    public static function polyphonesAsArray(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function polyphonesAsArray(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::heteronym($string, $toneStyle, true);
     }
 
-    public static function chars(string $string, string $toneStyle = Converter::TONE_STYLE_SYMBOL): Collection
+    public static function chars(string $string, string|ToneStyle $toneStyle = ToneStyle::SYMBOL): Collection
     {
         return self::converter()->onlyHans()->noWords()->withToneStyle($toneStyle)->convert($string);
     }
@@ -111,9 +117,61 @@ class Pinyin
             });
     }
 
-    public static function converter(): Converter
+    /**
+     * 获取 Converter 实例
+     *
+     * @param  string|null  $strategy  指定策略，null 则使用默认策略
+     */
+    public static function converter(?string $strategy = null): ConverterInterface
     {
-        return Converter::make();
+        // 使用新的工厂模式
+        $strategy = $strategy ?? self::$converterStrategy;
+
+        return ConverterFactory::make($strategy);
+    }
+
+    /**
+     * 设置默认转换策略
+     *
+     * @param  string  $strategy  策略名称
+     */
+    public static function setConverterStrategy(string $strategy): void
+    {
+        self::$converterStrategy = $strategy;
+        ConverterFactory::setDefaultStrategy($strategy);
+    }
+
+    /**
+     * 使用内存优化策略
+     */
+    public static function useMemoryOptimized(): void
+    {
+        self::setConverterStrategy(ConverterFactory::MEMORY_OPTIMIZED);
+    }
+
+    /**
+     * 使用缓存策略
+     */
+    public static function useCached(): void
+    {
+        self::setConverterStrategy(ConverterFactory::CACHED);
+    }
+
+    /**
+     * 使用智能策略
+     */
+    public static function useSmart(): void
+    {
+        self::setConverterStrategy(ConverterFactory::SMART);
+    }
+
+    /**
+     * 根据运行环境自动选择策略
+     */
+    public static function useAutoStrategy(): void
+    {
+        $strategy = ConverterFactory::recommend();
+        self::setConverterStrategy($strategy);
     }
 
     public static function __callStatic(string $name, array $arguments)
