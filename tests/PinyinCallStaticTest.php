@@ -275,19 +275,35 @@ class PinyinCallStaticTest extends TestCase
     }
 
     /**
-     * 测试性能 - 大量动态方法调用
+     * 测试性能 - 动态方法调用相对性能
      */
     public function test_performance_dynamic_method_calls()
     {
-        $iterations = 1000;
+        $iterations = 100;
+        $testText = '你好';
 
+        // 测试直接调用（基准）
         $start = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
-            Pinyin::noTone()->convert('你好');
+            Pinyin::sentence($testText);
         }
-        $time = microtime(true) - $start;
+        $directTime = microtime(true) - $start;
 
-        $this->assertLessThan(15.0, $time, 'Dynamic method calls should be reasonably fast');
+        // 测试动态方法调用
+        $start = microtime(true);
+        for ($i = 0; $i < $iterations; $i++) {
+            Pinyin::noTone()->convert($testText);
+        }
+        $dynamicTime = microtime(true) - $start;
+
+        // 动态方法调用不应该比直接调用慢太多（最多3倍）
+        $ratio = $dynamicTime / $directTime;
+        $this->assertLessThan(3.0, $ratio, 
+            "Dynamic method calls should not be significantly slower than direct calls. Ratio: {$ratio}");
+        
+        // 确保两种方法都能正常工作
+        $this->assertEquals(['ni', 'hao'], Pinyin::noTone()->convert($testText)->toArray());
+        $this->assertEquals('nǐ hǎo', Pinyin::sentence($testText));
     }
 
     /**
