@@ -9,8 +9,6 @@ use Overtrue\Pinyin\ToneStyle;
 use function implode;
 use function preg_replace;
 use function sprintf;
-use function str_contains;
-use function str_replace;
 
 abstract class AbstractConverter implements ConverterInterface
 {
@@ -198,8 +196,8 @@ abstract class AbstractConverter implements ConverterInterface
         }
 
         // @formatter:off
-        $replacements = [
-            'ɑ' => ['a', 5], 'ü' => ['v', 5], 'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
+        $map = [
+            'ɑ' => ['a', 5], 'ü' => ['v', 5],
             'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
             'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
             'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
@@ -207,20 +205,29 @@ abstract class AbstractConverter implements ConverterInterface
         ];
         // @formatter:on
 
-        foreach ($replacements as $unicode => $replacement) {
-            if (str_contains($pinyin, $unicode)) {
-                $umlaut = $replacement[0];
+        $tones = [];
 
-                if ($this->yuTo !== 'v' && $umlaut === 'v') {
-                    $umlaut = $this->yuTo;
-                }
+        $pinyin = preg_replace_callback('/./u', function (array $matches) use ($map, &$tones) {
+            $char = $matches[0];
 
-                $pinyin = str_replace($unicode, $umlaut, $pinyin);
-
-                if ($style === ToneStyle::NUMBER->value) {
-                    $pinyin .= $replacement[1];
-                }
+            if (! isset($map[$char])) {
+                return $char;
             }
+
+            [$base, $tone] = $map[$char];
+
+            if ($base === 'v' && $this->yuTo !== 'v') {
+                $base = $this->yuTo;
+            }
+
+            $tones[] = $tone;
+
+            return $base;
+        }, $pinyin) ?? $pinyin;
+
+        if ($style === ToneStyle::NUMBER->value && $tones !== []) {
+            $realTones = array_values(array_filter($tones, static fn (int $tone): bool => $tone !== 5));
+            $pinyin .= $realTones !== [] ? (string) $realTones[0] : '5';
         }
 
         return $pinyin;

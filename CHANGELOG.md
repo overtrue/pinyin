@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### 🐛 Bug Fixes
+
+- 修复 `ToneStyle::NUMBER` 对含 `ü` 与带调元音音节输出双声调数字的问题（如 `lüè` → `lve4` 而非 `lve54`），并使 `yuToU` / `yuToYu` 在 `üe` 韵母上与生僻单 `ü` 音节一致（#221）
+
 ## [6.0.0] - 2025-09-09
 
 ### 🚀 Major Features
